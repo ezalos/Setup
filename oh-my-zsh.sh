@@ -5,7 +5,10 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 	sed -i "s~ZSH_THEME=\"robyrussell\"~ZSH_THEME=\"agnoster\"~g" ~/.zshrc
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	# Mac OSX
-	sed -i '' "s~ZSH_THEME=\"robyrussell\"~ZSH_THEME=\"agnoster\"~g" ~/.zshrc
+	sed -i '' 's~ZSH_THEME="robyrussell"~ZSH_THEME="agnoster"~g' ~/.zshrc
+	curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz
+	tar xzf nvim-macos.tar.gz
+	alias nvim='~/Setup/nvim-osx64/bin/nvim'
 #elif [[ "$OSTYPE" == "cygwin" ]]; then
 	# POSIX compatibility layer and Linux environment emulation for Windows
 #elif [[ "$OSTYPE" == "msys" ]]; then
