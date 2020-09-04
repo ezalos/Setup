@@ -1,0 +1,20 @@
+# EZALOS Setup
+
+## Git clone self
+
+	cd ~
+	git clone https://github.com/ezalos/Setup.git
+	cd Setup
+
+## Oh-My-ZSH
+	
+	sh oh-my-zsh.sh
+	sh oh-my-zsh-themes.sh
+
+## NVIM
+
+	sh nvim_setup.sh
+
+## GitHub credential
+
+	git config --global credential.helper cache
