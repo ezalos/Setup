@@ -20,15 +20,21 @@ RUN cd ~ \
 	&& git clone https://github.com/ezalos/Setup.git \
 	&& cd Setup
 
+# TMP: Python install
+RUN apt install software-properties-common -y \
+	&& add-apt-repository ppa:deadsnakes/ppa \
+	&& apt update \
+	&& apt install python3 -y \
+	&& rm -rf /var/lib/apt/lists/*
+
 # Dotfiles management
-RUN python scripts/dotfiles.py -k -a ~/.config/nvim/init.vim \
-	&& python scripts/dotfiles.py -k -a ~/.zshrc \
-	&& python scripts/dotfiles.py -k -a ~/.vimrc
+RUN cd ~/Setup \
+	&& python3 scripts/dotfiles.py -k -a ~/.config/nvim/init.vim \
+	&& python3 scripts/dotfiles.py -k -a ~/.zshrc \
+	&& python3 scripts/dotfiles.py -k -a ~/.vimrc
 
 # Neovim setup
 RUN curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
-	&& md -p ~/.config/nvim/ \
-	&& wget https://raw.githubusercontent.com/ezalos/Setup/master/dotfiles/init.vim ~/.config/nvim/ -O ~/.config/nvim//init.vim \
 	&& nvim --headless +PlugInstall +qa
 
 

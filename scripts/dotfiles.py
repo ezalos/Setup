@@ -50,7 +50,11 @@ def get_dotfile_name(src):
 def create_backup(src, dst):
 	now = datetime.now()
 	current_time = now.strftime("%Y-%m-%d_%H:%M")
-	shutil.copy(src, BACKUP_DIR + dst + '_' + IDENTIFIER + '_' + current_time)
+	if os.path.exists(src):
+		shutil.copy(src, BACKUP_DIR + dst + '_' + IDENTIFIER + '_' + current_time)
+		print(f'Backed up as {DOTFILE_DIR + dst}')
+	else:
+		print(f'{src} does not exist, no backup will be done')
 
 
 def add_file(src, dst=None, force_dst_update=False, keep_src=False):
@@ -66,11 +70,12 @@ def add_file(src, dst=None, force_dst_update=False, keep_src=False):
 	if data not in JSON_OBJ:
 		JSON_OBJ.append(data)
 	# Backup
-	print(f'Backed up as {DOTFILE_DIR + dst}')
 	create_backup(src, dst)
 	# Copy
 	if force_dst_update or not os.path.exists(DOTFILE_DIR + dst):
-		shutil.copy(src, DOTFILE_DIR + dst)
+		if os.path.exists(src):
+			shutil.copy(src, DOTFILE_DIR + dst)
+			print(f'{DOTFILE_DIR + dst} as been added as main {src}')
 	else:
 		print(f'File {dst} already exist in Setup')
 	# Replace
