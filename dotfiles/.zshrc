@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/27 23:02:39 by ezalos            #+#    #+#              #
-#    Updated: 2021/03/28 00:58:54 by ezalos           ###   ########.fr        #
+#    Updated: 2021/03/28 14:14:34 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,12 +53,9 @@ fi
 autoload -U compinit && compinit -u
 source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.oh-my-zsh/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source ~/Setup/Installs/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-
-#plugins=( [plugins...] history-substring-search)
 plugins=(git)
-
 
 #---------
 #  Conda
@@ -93,7 +90,7 @@ bindkey '^[[1;5B' history-substring-search-down
 #  ALIAS
 #---------
 
-alias indent="python3 /home/ezalos/42/Python_Indentation/Indent.py -f"
+alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
 # open ~/.zshrc in using the default editor specified in $EDITOR
 alias ec="$EDITOR $HOME/.zshrc"
 # source ~/.zshrc
