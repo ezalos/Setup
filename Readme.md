@@ -23,7 +23,7 @@
 
  - Oh-my-zsh
 
- - nvim
+ - nvim					#TODO
    - download
    - install
    - plugins
@@ -31,13 +31,14 @@
  - Dotfiles
 
  - pip install
+   - Atleast everything needed for setup
 
- - My utils
+ - My utils				#TODO
    - python indent
-   - prototype catcher #TODO
+   - prototype catcher	#TODO
 
  - Programs
-   - VScode config #TODO
+   - VScode config		#TODO
 
- - Background jobs
+ - Background jobs		#TODO
    - emails
