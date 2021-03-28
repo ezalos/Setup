@@ -2,19 +2,19 @@
 
 ## Git clone self
 ```sh
-	cd ~
-	git clone https://github.com/ezalos/Setup.git
-	cd Setup
+cd ~
+git clone https://github.com/ezalos/Setup.git
+cd Setup
 ```
 ## Oh-My-ZSH
 ```sh
-	sh oh-my-zsh.sh
-	sh oh-my-zsh-themes.sh
+sh oh-my-zsh.sh
+sh oh-my-zsh-themes.sh
 ```
 
 ## NVIM
 ```sh
-	sh nvim_setup.sh
+sh nvim_setup.sh
 ```
 
 
