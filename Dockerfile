@@ -15,11 +15,6 @@ RUN echo 'Y' | sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/release
 	-p https://github.com/zsh-users/zsh-history-substring-search \
 	-p https://github.com/zsh-users/zsh-autosuggestions 
 
-# Download Setup
-RUN cd ~ \
-	&& git clone https://github.com/ezalos/Setup.git \
-	&& cd Setup
-
 # TMP: Python install
 RUN apt install software-properties-common -y \
 	&& add-apt-repository ppa:deadsnakes/ppa \
@@ -27,11 +22,14 @@ RUN apt install software-properties-common -y \
 	&& apt install python3 -y \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Download Setup
+RUN git clone https://github.com/ezalos/Setup.git ~/Setup
+
 # Dotfiles management
 RUN cd ~/Setup \
-	&& python3 scripts/dotfiles.py -k -a ~/.config/nvim/init.vim \
-	&& python3 scripts/dotfiles.py -k -a ~/.zshrc \
-	&& python3 scripts/dotfiles.py -k -a ~/.vimrc
+	&& python3 scripts/dotfiles.py -a ~/.config/nvim/init.vim \
+	&& python3 scripts/dotfiles.py -a ~/.zshrc \
+	&& python3 scripts/dotfiles.py -a ~/.vimrc
 
 # Neovim setup
 RUN curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
