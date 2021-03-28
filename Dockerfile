@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # APT packages
 RUN apt-get update && apt-get upgrade -y \
-	&& apt-get install apt-utils vim git python3 wget curl unzip -y \
+	&& apt-get install apt-utils vim git python3 wget curl unzip neovim -y \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Oh-my-zsh setup
@@ -15,11 +15,25 @@ RUN echo 'Y' | sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/release
 	-p https://github.com/zsh-users/zsh-history-substring-search \
 	-p https://github.com/zsh-users/zsh-autosuggestions 
 
+# Download Setup
+RUN cd ~ \
+	&& git clone https://github.com/ezalos/Setup.git \
+	&& cd Setup
+
+# Dotfiles management
+RUN python scripts/dotfiles.py -k -a ~/.config/nvim/init.vim \
+	&& python scripts/dotfiles.py -k -a ~/.zshrc \
+	&& python scripts/dotfiles.py -k -a ~/.vimrc
+
+# Neovim setup
+RUN curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+	&& md -p ~/.config/nvim/ \
+	&& wget https://raw.githubusercontent.com/ezalos/Setup/master/dotfiles/init.vim ~/.config/nvim/ -O ~/.config/nvim//init.vim \
+	&& nvim --headless +PlugInstall +qa
 
 
-ENTRYPOINT /bin/zsh
 
-# pip pacages
+# pip packages
 # RUN /usr/local/bin/python -m pip install --upgrade pip \
 # 	&& pip install Keras  Pillow  docopt  gym  imageio  imgaug \
 # 	matplotlib  numpy  opencv_python  paho_mqtt  pandas  pickle-mixin \
@@ -31,3 +45,5 @@ ENTRYPOINT /bin/zsh
 # Cloning projects
 # RUN git clone https://github.com/ezalos/1st_DQN.git /dqn \
 # 	&& cd /dqn && git checkout Louis 
+
+ENTRYPOINT /bin/zsh

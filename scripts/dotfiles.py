@@ -75,7 +75,13 @@ def add_file(src, dst=None, force_dst_update=False, keep_src=False):
 		print(f'File {dst} already exist in Setup')
 	# Replace
 	if not keep_src:
-		os.remove(src)
+		if os.path.exists(src):
+			os.remove(src)
+		dirs = os.path.dirname(src)
+		print(f'Extarcting dir part of src: {dirs}')
+		if not os.path.exists(dirs):
+			print(f'{dirs} does not exist: creating it')
+			os.makedirs(dirs)
 		os.symlink(PWD + DOTFILE_DIR + dst, src)
 	# Save depedencie
 	save_json()
