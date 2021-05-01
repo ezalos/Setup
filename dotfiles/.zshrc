@@ -6,7 +6,7 @@
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/27 23:02:39 by ezalos            #+#    #+#              #
-#    Updated: 2021/04/21 19:42:57 by ezalos           ###   ########.fr        #
+#    Updated: 2021/04/29 13:59:40 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -91,6 +91,7 @@ bindkey '^[[1;5B' history-substring-search-down
 #---------
 
 alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
+alias gcl="git clone"
 alias pyg="pygmentize"
 # open ~/.zshrc in using the default editor specified in $EDITOR
 alias ec="$EDITOR $HOME/.zshrc"
@@ -105,4 +106,4 @@ alias sc="source $HOME/.zshrc"
 neofetch --disable Public_IP --separator '\t'
 
 
-
+source ~/.autoenv/activate.sh
