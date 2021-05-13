@@ -18,5 +18,30 @@
         "init.vim",
         "/home/ezalos/.config/nvim/init.vim",
         "ezalos.TM1704.ezalos"
+    ],
+    [
+        ".bashrc",
+        "/home/ezalos/.bashrc",
+        "TheBeast.ezalos"
+    ],
+    [
+        ".zsh",
+        "/home/ezalos/.zsh",
+        "TheBeast.ezalos"
+    ],
+    [
+        ".zshrc",
+        "/home/ezalos/.zshrc",
+        "TheBeast.ezalos"
+    ],
+    [
+        "config.conf",
+        "/home/ezalos/.config/neofetch/config.conf",
+        "TheBeast.ezalos"
+    ],
+    [
+        "init.vim",
+        "/home/ezalos/.config/nvim/init.vim",
+        "TheBeast.ezalos"
     ]
 ]
