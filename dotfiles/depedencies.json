@@ -43,8 +43,15 @@
         "init.vim",
         "/home/ezalos/.config/nvim/init.vim",
         "TheBeast.ezalos"
+    ],
+    [
         "config",
         "/home/ezalos/.config/terminator/config",
         "ezalos.TM1704.ezalos"
+    ],
+    [
+        "config",
+        "/home/ezalos/.config/terminator/config",
+        "TheBeast.ezalos"
     ]
 ]

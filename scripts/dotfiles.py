@@ -16,6 +16,8 @@ from datetime import datetime
 # Datastructure:
 #	Json: ['saved_name','original_place', 'computer']
 #	TODO:	Should be changed to dic {.file_name: {infos}}
+#	The first level of indexation should be the program itself,
+#	Then the couples computer/location 
 
 def get_computer_name():
 	identifier = socket.gethostname() + "." + getuser()
