@@ -53,5 +53,10 @@
         "config",
         "/home/ezalos/.config/terminator/config",
         "TheBeast.ezalos"
+    ],
+    [
+        ".p10k.zsh",
+        "/home/ezalos/.p10k.zsh",
+        "TheBeast.ezalos"
     ]
 ]
