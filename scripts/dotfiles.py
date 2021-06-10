@@ -1,10 +1,18 @@
-import argparse
-import re
+
+# File operations
 import os
-from getpass import getuser
 import shutil
+
+# Allow to name computer
 import socket
+import re
+from getpass import getuser
+
+# DB
 import json
+
+# Utils
+import argparse
 from datetime import datetime
 
 # Usage:
