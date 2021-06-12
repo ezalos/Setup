@@ -25,16 +25,17 @@ class DotFile():
 
 		Args:
 			path (str): [Path to system .file]
-			name (str, optional): [.file alias. Useful when all the .file are named config.conf]. Defaults to None.
+			alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
 			backup (str, optional): [path for the backup]. Defaults to None.
 			main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
 		self.path = path
+		print(self.path)
 		self.name = file_name(self.path)
 		if alias == None:
-			self.alias = alias
+			self.alias = self.name
 		else:
-			self.alias = name
+			self.alias = alias
 		if backup:
 			self.backup_path = backup
 		else:
@@ -42,9 +43,9 @@ class DotFile():
 			# 	If better idea: will be changed
 			self.backup_path = config.backup_dir \
 							+ self.name \
-							+ ' ' \
+							+ '_' \
 							+ config.identifier \
-							+ ' ' \
+							+ '_' \
 							+ get_time()
 		self.main = main
 
@@ -97,19 +98,19 @@ class DotFile():
 
 	def to_db(self):
 		self.dict = {
-				'backup': self.backup_path,
-				'name': self.name,
+				'alias': self.alias,
 				'path': self.path,
-				'identifier': config.identifier
-				'main': self.main
+				'main': self.main,
+				'backup': self.backup_path,
+				'identifier': config.identifier,
 		}
 		return self.dict
 
 	def from_db(self, data):
-		backup_path = data[0]
+		alias = data[0]
 		path = data[1]
 		# identifier = data[2]
-		self.__init__(path, backup=path)
+		self.__init__(path, alias=alias)
 
 	def __str__(self):
-		return self.to_db()
+		return str(self.to_db())

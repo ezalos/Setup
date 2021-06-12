@@ -1,0 +1,86 @@
+[
+    {
+        "alias": ".neofetch",
+        "path": "/home/ezalos/.config/neofetch/config.conf",
+        "main": null,
+        "backup": "dotfiles/old/config.conf_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".zshrc",
+        "path": "/home/ezalos/.zshrc",
+        "main": null,
+        "backup": "dotfiles/old/.zshrc_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".vimrc",
+        "path": "/home/ezalos/.vimrc",
+        "main": null,
+        "backup": "dotfiles/old/.vimrc_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": "init.vim",
+        "path": "/home/ezalos/.config/nvim/init.vim",
+        "main": null,
+        "backup": "dotfiles/old/init.vim_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".bashrc",
+        "path": "/home/ezalos/.bashrc",
+        "main": null,
+        "backup": "dotfiles/old/.bashrc_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".zsh",
+        "path": "/home/ezalos/.zsh",
+        "main": null,
+        "backup": "dotfiles/old/.zsh_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".zshrc",
+        "path": "/home/ezalos/.zshrc",
+        "main": null,
+        "backup": "dotfiles/old/.zshrc_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": "config.conf",
+        "path": "/home/ezalos/.config/neofetch/config.conf",
+        "main": null,
+        "backup": "dotfiles/old/config.conf_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": "init.vim",
+        "path": "/home/ezalos/.config/nvim/init.vim",
+        "main": null,
+        "backup": "dotfiles/old/init.vim_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": "config",
+        "path": "/home/ezalos/.config/terminator/config",
+        "main": null,
+        "backup": "dotfiles/old/config_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": "config",
+        "path": "/home/ezalos/.config/terminator/config",
+        "main": null,
+        "backup": "dotfiles/old/config_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    },
+    {
+        "alias": ".p10k.zsh",
+        "path": "/home/ezalos/.p10k.zsh",
+        "main": null,
+        "backup": "dotfiles/old/.p10k.zsh_ezalos.TM1704.ezalos_2021-06-12_20:50",
+        "identifier": "ezalos.TM1704.ezalos"
+    }
+]

@@ -1,6 +1,7 @@
 import socket
 import re
 from getpass import getuser
+import os
 
 class DotDict(dict):
     """
@@ -31,8 +32,8 @@ def get_project_path():
 	print(f'Current pwd: {project_path}')
 	return project_path
 
-config.project_path = get_project_path()
+name = get_project_path()
 config.dotfiles_dir = 'dotfiles/'
-config.backup_dir = config.dotfile_dir + 'old/'
-config.depedencies_path = config.dotfile_dir + 'depedencies.json'
+config.backup_dir = config.dotfiles_dir + 'old/'
+config.depedencies_path = config.dotfiles_dir + 'depedencies.json'
 config.identifier = get_computer_name()
