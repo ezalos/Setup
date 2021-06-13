@@ -2,7 +2,7 @@
     {
         "alias": ".neofetch",
         "path": "/home/ezalos/.config/neofetch/config.conf",
-        "main": "dotfiles/.neofetch",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.neofetch",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -10,17 +10,17 @@
                 "identifier": "ezalos.TM1704.ezalos",
                 "datetime": "2021-03-28_00:39"
             },
-			{
-				"backup_path": "dotfiles/old/config.conf_TheBeast.ezalos_2021-05-12_17:54",
-				"identifier": "TheBeast.ezalos",
-				"datetime": "2021-05-12_17:54"
-			}
+            {
+                "backup_path": "dotfiles/old/config.conf_TheBeast.ezalos_2021-05-12_17:54",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-05-12_17:54"
+            }
         ]
     },
     {
         "alias": ".zshrc",
         "path": "/home/ezalos/.zshrc",
-        "main": "dotfiles/.zshrc",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.zshrc",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -38,7 +38,7 @@
     {
         "alias": ".vimrc",
         "path": "/home/ezalos/.vimrc",
-        "main": "dotfiles/.vimrc",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.vimrc",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -51,7 +51,7 @@
     {
         "alias": "init.vim",
         "path": "/home/ezalos/.config/nvim/init.vim",
-        "main": "dotfiles/init.vim",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/init.vim",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -69,7 +69,7 @@
     {
         "alias": ".bashrc",
         "path": "/home/ezalos/.bashrc",
-        "main": "dotfiles/.bashrc",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.bashrc",
         "identifier": "TheBeast.ezalos",
         "backups": [
             {
@@ -82,7 +82,7 @@
     {
         "alias": "terminator",
         "path": "/home/ezalos/.config/terminator/config",
-        "main": "dotfiles/terminator",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/terminator",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -100,7 +100,7 @@
     {
         "alias": ".p10k.zsh",
         "path": "/home/ezalos/.p10k.zsh",
-        "main": "dotfiles/.p10k.zsh",
+        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.p10k.zsh",
         "identifier": "TheBeast.ezalos",
         "backups": [
             {

@@ -26,25 +26,14 @@ class Backup():
 		#	Computer
 		#	Date
 		#	Original path
-		alias_dic = {}
-		for dot in self.data:
-			if dot.alias not in alias_dic:
-				alias_dic[dot.alias] = [dot]
-			else:
-				alias_dic[dot.alias].append(dot)
-
-		new_db = []
-		for alias in alias_dic.values():
-			backups = []
-			for dot in alias:
-				backups.append(dot.backups)
-			alias[0].backups = backups
-			new_db.append(alias[0].to_db())
-			
-		self.data = new_db
+		pass
+		
 
 	def save_all(self):
-		self.db.save(self.data)
+		to_db = []
+		for d in self.data:
+			to_db.append(d.to_db())
+		self.db.save(to_db, test=True)
 
 	def add_elem(self, path, alias=None):
 		dot = DotFile(path, alias)
@@ -56,7 +45,8 @@ class Backup():
 		pass
 
 	def deploy(self):
-		pass
+		for d in self.data:
+			d.deploy()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-a', '--add', nargs='+', help='-a SRC [.filename]	Add one file to setup, create backup, make symlink')
@@ -70,5 +60,5 @@ args = parser.parse_args()
 # 	add_file(src, dst, args.force, args.keep)
 
 b = Backup()
-b.transform_db()
+b.deploy()
 b.save_all()

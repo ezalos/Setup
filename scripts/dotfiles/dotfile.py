@@ -39,7 +39,6 @@ class DotFile():
 		else:
 			self.alias = alias
 		self.main = main
-		# is_main has little use
 		self.backups = backups
 		if identifier == None:
 			identifier = config.identifier
@@ -70,9 +69,9 @@ class DotFile():
 		if not os.path.exists(dirs):
 			print(f'{dirs} does not exist: creating it')
 			os.makedirs(dirs)
-		# Main should have been loaded in case of changes in config
-		self.main = config.project_path + config.dotfiles_dir + self.alias
+		self.main = config.project_path + self.main
 		os.symlink(self.main, self.path)
+		print(f"Symlink created {self.path} -> {self.main}")
 
 	def backup(self):
 		if os.path.exists(self.path):

@@ -14,10 +14,11 @@ class Depedencies():
 	# 	# * Here to surcharge 'in' operator
     #     return key in self.numbers
 
-	def save(self, depedencies):
-		# TODO: Remove _test
-		# dest = config.dotfiles_dir + "test_" + 'depedencies.json'
-		dest = config.depedencies_path 
+	def save(self, depedencies, test=False):
+		if test:
+			dest = config.dotfiles_dir + 'test_' + 'meta.json'
+		else:
+			dest = config.depedencies_path 
 		with open(dest, 'w') as backup:
 			json.dump(depedencies, backup, indent=4)
 
