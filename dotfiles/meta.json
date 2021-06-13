@@ -58,15 +58,6 @@
             "identifier": "TheBeast.ezalos"
         }
     ],
-    ".zsh": [
-        {
-            "alias": ".zsh",
-            "path": "/home/ezalos/.zsh",
-            "main": "dotfiles/old/.zsh",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
     "config.conf": [
         {
             "alias": "config.conf",

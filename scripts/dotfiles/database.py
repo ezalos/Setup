@@ -16,8 +16,8 @@ class Depedencies():
 
 	def save(self, depedencies):
 		# TODO: Remove _test
-		dest = config.dotfiles_dir + "test_" + 'depedencies.json'
-		# dest = config.depedencies_path 
+		# dest = config.dotfiles_dir + "test_" + 'depedencies.json'
+		dest = config.depedencies_path 
 		with open(dest, 'w') as backup:
 			json.dump(depedencies, backup, indent=4)
 

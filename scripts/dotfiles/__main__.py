@@ -8,14 +8,35 @@ class Backup():
 	def __init__(self):
 		self.db = Depedencies()
 		self.depedencies = self.db.load()
-		self.data = []
-		for dep in self.depedencies:
-			dot = DotFile(dep[1])
-			dot.from_db(dep)
-			print(dot)
-			self.data.append(dot.to_db())
+		self.data = self.load_all(self.db)
+	
+	def load_all(self, db):
+		depedencies = db.load()
+		data = []
+		for dep in depedencies.values():
+			for d in dep:
+				dot = DotFile(d['path'])
+				dot.from_db(d)
+				print(dot)
+				data.append(dot)
+		return data
+
+	def transform_db(self):
+		# Should be stored by Alias
+		# Backup should be a list:
+		#	Computer
+		#	Date
+		#	Original path
+		alias_dic = {}
+		for dot in self.data:
+			if dot.alias not in alias_dic:
+				alias_dic[dot.alias] = [dot.to_db()]
+			else:
+				alias_dic[dot.alias].append(dot.to_db())
+		self.data = alias_dic
+
+	def save_all(self):
 		self.db.save(self.data)
-		
 
 	def add_elem(self, path, alias=None):
 		dot = DotFile(path, alias)
@@ -41,3 +62,5 @@ args = parser.parse_args()
 # 	add_file(src, dst, args.force, args.keep)
 
 b = Backup()
+b.transform_db()
+b.save_all()

@@ -35,5 +35,5 @@ def get_project_path():
 name = get_project_path()
 config.dotfiles_dir = 'dotfiles/'
 config.backup_dir = config.dotfiles_dir + 'old/'
-config.depedencies_path = config.dotfiles_dir + 'depedencies.json'
+config.depedencies_path = config.dotfiles_dir + 'meta.json'
 config.identifier = get_computer_name()

@@ -16,7 +16,9 @@ def get_time():
 	return current_time
 
 class DotFile():
-	def __init__(self, path: str, alias: str=None, backup: str=None, main: str=None):
+	def __init__(self, path: str,
+				alias: str=None, identifier:str=config.identifier,
+				backup: str=None, main: str=None):
 		"""[summary]
 		DotFile allows to backup a dotfile or deploy it.
 			It is an important element of my personal backup system
@@ -26,42 +28,33 @@ class DotFile():
 		Args:
 			path (str): [Path to system .file]
 			alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
+			identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifer.
 			backup (str, optional): [path for the backup]. Defaults to None.
 			main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
 		self.path = path
-		print(self.path)
-		self.name = file_name(self.path)
 		if alias == None:
-			self.alias = self.name
+			self.alias = file_name(self.path)
 		else:
 			self.alias = alias
-		if backup:
-			self.backup_path = backup
-		else:
-			# Time do not reflect the moment file is saved.
-			# 	If better idea: will be changed
-			self.backup_path = config.backup_dir \
-							+ self.name \
-							+ '_' \
-							+ config.identifier \
-							+ '_' \
-							+ get_time()
+		self.backup_path = backup
 		self.main = main
+		if identifier == None:
+			identifier = config.identifier
+		self.identifier = identifier
+		# is_main has little use
+		self.is_main = False
 
-	def add_file(self,
-				src, 
-				dst=None,
-				force_dst_update=False,
-				keep_src=False):
-		print(f'Adding {dst} from {src}')
-		if os.path.islink(src):
-			print(f'Error: {src} is already a symlink')
+	def add_file(self, use_as_main=True, deploy=True):
+		print(f'Adding {self.alias} from {self.path}')
+
+		if os.path.islink(self.path):
+			print(f'Error: {self.alias} is already a symlink')
 			return
 		self.backup()
-		if force_dst_update:
+		if use_as_main:
 			self.copy_as_main()
-		if not keep_src:
+		if deploy:
 			self.deploy()
 
 	def deploy(self):
@@ -69,32 +62,41 @@ class DotFile():
 			Deploy the dotfile in the system.
 			/!\ Will delete the file -> should be used with add()
 		"""
-		if os.path.exists(src):
-			os.remove(src)
-		dirs = os.path.dirname(src)
+		dirs = os.path.dirname(self.path)
 		print(f'Extarcting dir part of src: {dirs}')
+		if os.path.exists(self.path):
+			print(f'Deleting {self.path}')
+			os.remove(self.path)
 		if not os.path.exists(dirs):
 			print(f'{dirs} does not exist: creating it')
 			os.makedirs(dirs)
-		saved_main = config.project_path + config.dotfiles_dir + self.main
-		os.symlink(PWD + DOTFILE_DIR + dst, src)
+		# Main should have been loaded in case of changes in config
+		self.main = config.project_path + config.dotfiles_dir + self.alias
+		os.symlink(self.main, self.path)
 
 	def backup(self):
 		if os.path.exists(self.path):
-			shutil.copy(self.path, self.dotfiles_dir + self.name)
-			print(f'Backed up as {self.dotfiles_dir + self.name}')
+			self.backup_path = config.backup_dir \
+							+ self.alias \
+							+ '_' \
+							+ config.identifier \
+							+ '_' \
+							+ get_time()
+			shutil.copy(self.path, self.backup_path)
+			print(f'Backed up as {self.backup_path}')
 		else:
-			print(f'{src} does not exist, no backup will be done')
+			print(f'{self.path} does not exist, no backup will be done')
 
-	def copy_as_main(self):
-		self.main =  config.dotfiles_dir + self.name
-		if not os.path.exists(self.main):
-			if os.path.exists(self.path):
-				shutil.copy(self.path, self.main)
-				self.is_main = True
-				print(f'{self.main} has been added as main for {self.path}')
-		else:
+	def copy_as_main(self, force=False):
+		self.main =  config.dotfiles_dir + self.alias
+		if os.path.exists(self.main):
 			print(f'File {self.path} already exist in Setup')
+			if not force:
+				return
+		if os.path.exists(self.path):
+			shutil.copy(self.path, self.main)
+			self.is_main = True
+			print(f'{self.main} has been added as main for {self.path}')
 
 	def to_db(self):
 		self.dict = {
@@ -102,15 +104,17 @@ class DotFile():
 				'path': self.path,
 				'main': self.main,
 				'backup': self.backup_path,
-				'identifier': config.identifier,
+				'identifier': self.identifier,
 		}
 		return self.dict
 
 	def from_db(self, data):
-		alias = data[0]
-		path = data[1]
-		# identifier = data[2]
-		self.__init__(path, alias=alias)
+		alias = data['alias']
+		main = data['main']
+		path = data['path']
+		backup = data['backup']
+		identifier = data['identifier']
+		self.__init__(path, alias=alias, identifier=identifier, backup=backup, main=main)
 
 	def __str__(self):
 		return str(self.to_db())
