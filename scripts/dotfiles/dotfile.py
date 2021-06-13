@@ -33,15 +33,13 @@ class DotFile():
 			main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
 		self.path = path
+		# TODO: create alias suggestor one level up
 		if alias == None:
 			self.alias = file_name(self.path)
 		else:
 			self.alias = alias
 		self.main = main
 		# is_main has little use
-		self.is_main = False
-		# There is multiple backups for one main
-		# Should be a list
 		self.backups = backups
 		if identifier == None:
 			identifier = config.identifier
@@ -106,7 +104,6 @@ class DotFile():
 				return
 		if os.path.exists(self.path):
 			shutil.copy(self.path, self.main)
-			self.is_main = True
 			print(f'{self.main} has been added as main for {self.path}')
 
 	def to_db(self):
