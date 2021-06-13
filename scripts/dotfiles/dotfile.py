@@ -66,7 +66,7 @@ class DotFile():
 		if os.path.exists(self.path):
 			print(f'Deleting {self.path}')
 			os.remove(self.path)
-		os.remove(self.path)
+		# os.remove(self.path)
 		if not os.path.exists(dirs):
 			print(f'{dirs} does not exist: creating it')
 			os.makedirs(dirs)

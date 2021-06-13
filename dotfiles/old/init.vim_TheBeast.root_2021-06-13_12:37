@@ -33,25 +33,6 @@ au BufRead, BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
 set encoding=utf-8
 
-
-"setup vim-plug {{{
-
-  "Note: install vim-plug if not present
-  if empty(glob('~/.config/nvim/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall
-  endif
-
-  "Note: Skip initialization for vim-tiny or vim-small.
-  if !1 | finish | endif
-  if has('vim_starting')
-    set nocompatible               " Be iMproved
-    " Required:
-    call plug#begin()
-  endif
-
-"}}}
-
 "You'll need to install plug vim first
 "curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 "    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -62,9 +43,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
-
-" call plug#begin()
+call plug#begin()
 
 "Live compilations errors for c and other languages
 Plug 'vim-syntastic/syntastic'
@@ -140,7 +119,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 
 "provides an overview of the structure of source code files 
-"Plug 'vim-scripts/taglist.vim'
+Plug 'vim-scripts/taglist.vim'
 
 "Rainbow Parentheses
 Plug 'frazrepo/vim-rainbow'

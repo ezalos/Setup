@@ -32,6 +32,11 @@
                 "backup_path": "dotfiles/old/.zshrc_TheBeast.ezalos_2021-05-12_16:54",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-12_16:54"
+            },
+            {
+                "backup_path": "dotfiles/old/.zshrc_TheBeast.root_2021-06-13_12:37",
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     },
@@ -45,6 +50,11 @@
                 "backup_path": "dotfiles/old/.vimrc_ezalos.TM1704.ezalos_2021-03-28_01:01",
                 "identifier": "ezalos.TM1704.ezalos",
                 "datetime": "2021-03-28_01:01"
+            },
+            {
+                "backup_path": "dotfiles/old/.vimrc_TheBeast.root_2021-06-13_12:37",
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     },
@@ -63,6 +73,11 @@
                 "backup_path": "dotfiles/old/init.vim_TheBeast.ezalos_2021-05-12_18:01",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-12_18:01"
+            },
+            {
+                "backup_path": "dotfiles/old/init.vim_TheBeast.root_2021-06-13_12:37",
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     },
@@ -76,6 +91,11 @@
                 "backup_path": "dotfiles/old/.bashrc_TheBeast.ezalos_2021-05-12_15:59",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-12_15:59"
+            },
+            {
+                "backup_path": "dotfiles/old/.bashrc_TheBeast.root_2021-06-13_12:37",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     },
@@ -94,6 +114,11 @@
                 "backup_path": "dotfiles/old/config_TheBeast.ezalos_2021-05-13_09:27",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-13_09:27"
+            },
+            {
+                "backup_path": "dotfiles/old/terminator_TheBeast.root_2021-06-13_12:37",
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     },
@@ -107,6 +132,11 @@
                 "backup_path": "dotfiles/old/.p10k.zsh_TheBeast.ezalos_2021-06-10_17:27",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-06-10_17:27"
+            },
+            {
+                "backup_path": "dotfiles/old/.p10k.zsh_TheBeast.root_2021-06-13_12:37",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-06-13_12:37"
             }
         ]
     }
