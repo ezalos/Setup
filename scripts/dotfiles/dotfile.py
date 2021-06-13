@@ -18,7 +18,7 @@ def get_time():
 class DotFile():
 	def __init__(self, path: str,
 				alias: str=None, identifier:str=config.identifier,
-				backup: str=None, main: str=None):
+				backups: list=[], main: str=None):
 		"""[summary]
 		DotFile allows to backup a dotfile or deploy it.
 			It is an important element of my personal backup system
@@ -29,7 +29,7 @@ class DotFile():
 			path (str): [Path to system .file]
 			alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
 			identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifer.
-			backup (str, optional): [path for the backup]. Defaults to None.
+			backups (str, optional): [path + id for the backups]. Defaults to None.
 			main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
 		self.path = path
@@ -37,13 +37,15 @@ class DotFile():
 			self.alias = file_name(self.path)
 		else:
 			self.alias = alias
-		self.backup_path = backup
 		self.main = main
+		# is_main has little use
+		self.is_main = False
+		# There is multiple backups for one main
+		# Should be a list
+		self.backups = backups
 		if identifier == None:
 			identifier = config.identifier
 		self.identifier = identifier
-		# is_main has little use
-		self.is_main = False
 
 	def add_file(self, use_as_main=True, deploy=True):
 		print(f'Adding {self.alias} from {self.path}')
@@ -76,14 +78,23 @@ class DotFile():
 
 	def backup(self):
 		if os.path.exists(self.path):
-			self.backup_path = config.backup_dir \
+			stime = get_time()
+			backup_path = config.backup_dir \
 							+ self.alias \
 							+ '_' \
 							+ config.identifier \
 							+ '_' \
-							+ get_time()
-			shutil.copy(self.path, self.backup_path)
-			print(f'Backed up as {self.backup_path}')
+							+ stime
+			shutil.copy(self.path, backup_path)
+			print(f'Backed up as {backup_path}')
+			# Unsure for identifier
+			# It might be more pertinent to use the one in config
+			meta = {
+				'backup_path': backup_path,
+				'identifier': self.identifier,
+				'datetime': stime,
+			}
+			self.backups.append(meta)
 		else:
 			print(f'{self.path} does not exist, no backup will be done')
 
@@ -103,8 +114,8 @@ class DotFile():
 				'alias': self.alias,
 				'path': self.path,
 				'main': self.main,
-				'backup': self.backup_path,
 				'identifier': self.identifier,
+				'backups': self.backups,
 		}
 		return self.dict
 
@@ -114,7 +125,12 @@ class DotFile():
 		path = data['path']
 		backup = data['backup']
 		identifier = data['identifier']
-		self.__init__(path, alias=alias, identifier=identifier, backup=backup, main=main)
+		backups = {
+			'backup_path': backup,
+			'identifier': identifier,
+			'datetime': '',
+		}
+		self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
 
 	def __str__(self):
 		return str(self.to_db())

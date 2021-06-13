@@ -30,10 +30,19 @@ class Backup():
 		alias_dic = {}
 		for dot in self.data:
 			if dot.alias not in alias_dic:
-				alias_dic[dot.alias] = [dot.to_db()]
+				alias_dic[dot.alias] = [dot]
 			else:
-				alias_dic[dot.alias].append(dot.to_db())
-		self.data = alias_dic
+				alias_dic[dot.alias].append(dot)
+
+		new_db = []
+		for alias in alias_dic.values():
+			backups = []
+			for dot in alias:
+				backups.append(dot.backups)
+			alias[0].backups = backups
+			new_db.append(alias[0].to_db())
+			
+		self.data = new_db
 
 	def save_all(self):
 		self.db.save(self.data)

@@ -1,95 +1,121 @@
-{
-    ".neofetch": [
-        {
-            "alias": ".neofetch",
-            "path": "/home/ezalos/.config/neofetch/config.conf",
-            "main": "dotfiles/old/.neofetch",
-            "backup": null,
-            "identifier": "ezalos.TM1704.ezalos"
-        }
-    ],
-    ".zshrc": [
-        {
-            "alias": ".zshrc",
-            "path": "/home/ezalos/.zshrc",
-            "main": "dotfiles/old/.zshrc",
-            "backup": null,
-            "identifier": "ezalos.TM1704.ezalos"
-        },
-        {
-            "alias": ".zshrc",
-            "path": "/home/ezalos/.zshrc",
-            "main": "dotfiles/old/.zshrc",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
-    ".vimrc": [
-        {
-            "alias": ".vimrc",
-            "path": "/home/ezalos/.vimrc",
-            "main": "dotfiles/old/.vimrc",
-            "backup": null,
-            "identifier": "ezalos.TM1704.ezalos"
-        }
-    ],
-    "init.vim": [
-        {
-            "alias": "init.vim",
-            "path": "/home/ezalos/.config/nvim/init.vim",
-            "main": "dotfiles/old/init.vim",
-            "backup": null,
-            "identifier": "ezalos.TM1704.ezalos"
-        },
-        {
-            "alias": "init.vim",
-            "path": "/home/ezalos/.config/nvim/init.vim",
-            "main": "dotfiles/old/init.vim",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
-    ".bashrc": [
-        {
-            "alias": ".bashrc",
-            "path": "/home/ezalos/.bashrc",
-            "main": "dotfiles/old/.bashrc",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
-    "config.conf": [
-        {
-            "alias": "config.conf",
-            "path": "/home/ezalos/.config/neofetch/config.conf",
-            "main": "dotfiles/old/config.conf",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
-    "config": [
-        {
-            "alias": "config",
-            "path": "/home/ezalos/.config/terminator/config",
-            "main": "dotfiles/old/config",
-            "backup": null,
-            "identifier": "ezalos.TM1704.ezalos"
-        },
-        {
-            "alias": "config",
-            "path": "/home/ezalos/.config/terminator/config",
-            "main": "dotfiles/old/config",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ],
-    ".p10k.zsh": [
-        {
-            "alias": ".p10k.zsh",
-            "path": "/home/ezalos/.p10k.zsh",
-            "main": "dotfiles/old/.p10k.zsh",
-            "backup": null,
-            "identifier": "TheBeast.ezalos"
-        }
-    ]
-}
+[
+    {
+        "alias": ".neofetch",
+        "path": "/home/ezalos/.config/neofetch/config.conf",
+        "main": "dotfiles/old/.neofetch",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": ".zshrc",
+        "path": "/home/ezalos/.zshrc",
+        "main": "dotfiles/old/.zshrc",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": ""
+            },
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": ".vimrc",
+        "path": "/home/ezalos/.vimrc",
+        "main": "dotfiles/old/.vimrc",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": "init.vim",
+        "path": "/home/ezalos/.config/nvim/init.vim",
+        "main": "dotfiles/old/init.vim",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": ""
+            },
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": ".bashrc",
+        "path": "/home/ezalos/.bashrc",
+        "main": "dotfiles/old/.bashrc",
+        "identifier": "TheBeast.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": "config.conf",
+        "path": "/home/ezalos/.config/neofetch/config.conf",
+        "main": "dotfiles/old/config.conf",
+        "identifier": "TheBeast.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": "config",
+        "path": "/home/ezalos/.config/terminator/config",
+        "main": "dotfiles/old/config",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": ""
+            },
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    },
+    {
+        "alias": ".p10k.zsh",
+        "path": "/home/ezalos/.p10k.zsh",
+        "main": "dotfiles/old/.p10k.zsh",
+        "identifier": "TheBeast.ezalos",
+        "backups": [
+            {
+                "backup_path": null,
+                "identifier": "TheBeast.ezalos",
+                "datetime": ""
+            }
+        ]
+    }
+]
