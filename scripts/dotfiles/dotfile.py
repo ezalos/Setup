@@ -66,12 +66,13 @@ class DotFile():
 		if os.path.exists(self.path):
 			print(f'Deleting {self.path}')
 			os.remove(self.path)
+		os.remove(self.path)
 		if not os.path.exists(dirs):
 			print(f'{dirs} does not exist: creating it')
 			os.makedirs(dirs)
-		self.main = config.project_path + self.main
-		os.symlink(self.main, self.path)
-		print(f"Symlink created {self.path} -> {self.main}")
+		main = config.project_path + self.main
+		print(f"Symlink created {self.path} -> {main}")
+		os.symlink(main, self.path)
 
 	def backup(self):
 		if os.path.exists(self.path):

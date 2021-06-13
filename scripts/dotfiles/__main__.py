@@ -29,11 +29,11 @@ class Backup():
 		pass
 		
 
-	def save_all(self):
+	def save_all(self, test=False):
 		to_db = []
 		for d in self.data:
 			to_db.append(d.to_db())
-		self.db.save(to_db, test=True)
+		self.db.save(to_db, test=test)
 
 	def add_elem(self, path, alias=None):
 		dot = DotFile(path, alias)
@@ -46,6 +46,7 @@ class Backup():
 
 	def deploy(self):
 		for d in self.data:
+			d.backup()
 			d.deploy()
 
 parser = argparse.ArgumentParser()
