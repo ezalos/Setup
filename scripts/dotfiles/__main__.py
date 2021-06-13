@@ -13,12 +13,11 @@ class Backup():
 	def load_all(self, db):
 		depedencies = db.load()
 		data = []
-		for dep in depedencies.values():
-			for d in dep:
-				dot = DotFile(d['path'])
-				dot.from_db(d)
-				print(dot)
-				data.append(dot)
+		for d in depedencies:
+			dot = DotFile(d['path'])
+			dot.from_db(d)
+			print(dot)
+			data.append(dot)
 		return data
 
 	def transform_db(self):

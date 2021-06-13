@@ -123,13 +123,8 @@ class DotFile():
 		alias = data['alias']
 		main = data['main']
 		path = data['path']
-		backup = data['backup']
+		backups = data['backups']
 		identifier = data['identifier']
-		backups = {
-			'backup_path': backup,
-			'identifier': identifier,
-			'datetime': '',
-		}
 		self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
 
 	def __str__(self):
