@@ -123,7 +123,7 @@ export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
 
 
 
-source ~/.autoenv/activate.sh
+# source ~/.autoenv/activate.sh
 source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -131,3 +131,4 @@ source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k
 
 # neofetch --disable Public_IP --separator '\t'
 
+source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh

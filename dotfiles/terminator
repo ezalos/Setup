@@ -1,30 +1,34 @@
 [global_config]
-  geometry_hinting = True
   borderless = True
+  geometry_hinting = True
   title_hide_sizetext = True
 [keybindings]
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      profile = default
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+[plugins]
 [profiles]
   [[default]]
     background_color = "#230525"
     background_darkness = 0.95
     background_type = transparent
     cursor_color = "#aaaaaa"
-    scrollback_lines = 10000
+    font = MesloLGS NF 10
     scrollback_infinite = True
+    scrollback_lines = 10000
+    use_system_font = False
   [[Outside]]
     background_color = "#fdf6e3"
     background_darkness = 0.9
     background_type = transparent
     cursor_color = "#aaaaaa"
+    font = MesloLGS NF 10
     foreground_color = "#657b83"
     palette = "#fbf1c7:#cc241d:#98971a:#d79921:#458588:#b16286:#689d6a:#7c6f64:#928374:#9d0006:#79740e:#b57614:#076678:#8f3f71:#427b58:#3c3836"
-[layouts]
-  [[default]]
-    [[[window0]]]
-      type = Window
-      parent = ""
-    [[[child1]]]
-      type = Terminal
-      parent = window0
-      profile = default
-[plugins]
+    use_system_font = False
