@@ -5,6 +5,15 @@ from database import Depedencies
 from config import config
 from dotfile import DotFile
 
+def path_security_check(path):
+	if path[:len(config.pwd)] != config.pwd:
+		print(f"/!\\ CAREFULL -> Path {path} do not start by {config.pwd}")
+		print("\tCurrent path resolution might cause a lot of problems")
+		if 'y' != input("If you are sure to continue: enter 'y':"):
+			print("Exiting...")
+			return True
+	return False
+
 class Backup():
 	def __init__(self, args):
 		self.db = Depedencies()
@@ -16,13 +25,8 @@ class Backup():
 			print(f"Using test database: {self.db.path_test}")
 		self.data = self.db.load_all(args.test)
 		if args.add_deploy == "add":
-			if args.path:
-				if args.path[:len(config.pwd)] != config.pwd:
-					print(f"/!\\ CAREFULL -> Path {args.path} do not start by {config.pwd}")
-					print("\tCurrent path resolution might cause a lot of problems")
-					if 'y' != input("If you are sure to continue: enter 'y':"):
-						print("Exiting...")
-						return
+			if args.path and path_security_check(args.path):
+				return
 			print("Add!")
 			self.add(args)
 		elif args.add_deploy == "deploy":
