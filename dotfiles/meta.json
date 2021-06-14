@@ -109,5 +109,18 @@
                 "datetime": "2021-06-10_17:27"
             }
         ]
+    },
+    {
+        "alias": ".gdbinit",
+        "path": "/home/ezalos/.gdbinit",
+        "main": "dotfiles/.gdbinit",
+        "identifier": "ezalos.TM1704.ezalos",
+        "backups": [
+            {
+                "backup_path": "dotfiles/old/.gdbinit_ezalos.TM1704.ezalos_2021-06-14_12:48",
+                "identifier": "ezalos.TM1704.ezalos",
+                "datetime": "2021-06-14_12:48"
+            }
+        ]
     }
 ]

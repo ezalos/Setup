@@ -24,16 +24,20 @@ def get_computer_name():
 		identifier = identifier + 'x'
 	return identifier
 
-def get_project_path():
+def get_project_path(pwd=False):
 	# TODO: Function uses a trick which is not viable long term
 	project_path = os.path.dirname(os.path.realpath(__file__))
-	surplus = "scripts/dotfiles"
+	if pwd:
+		surplus = "Setup/scripts/dotfiles"
+	else:
+		surplus = "scripts/dotfiles"
 	if project_path[-len(surplus):] == surplus:
 		project_path = project_path[:-len(surplus)]
 	# project_path = "~/Setup/"
-	print(f'Current pwd: {project_path}')
+	print(f'Current {"pwd" if pwd else "project path"}: {project_path}')
 	return project_path
 
+config.pwd = get_project_path(pwd=True)
 config.project_path = get_project_path()
 config.dotfiles_dir = 'dotfiles/'
 config.backup_dir = config.dotfiles_dir + 'old/'

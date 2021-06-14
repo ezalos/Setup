@@ -81,7 +81,7 @@ class DotFile():
 		print(f"Symlink created {self.path} -> {main}")
 		os.symlink(main, self.path)
 
-	def backup_add_meta_data(self, backup_path, identifier, datetime):
+	def backup_add_meta_data(self, backup_path, identifier, stime):
 		meta = {
 			'backup_path': backup_path,
 			'identifier': identifier,
@@ -91,6 +91,9 @@ class DotFile():
 
 	def backup(self):
 		if os.path.exists(self.path):
+			if os.path.islink(self.path):
+				print(f"File is already a simlink, it will not be backup")
+				return
 			stime = get_time()
 			backup_path = config.backup_dir \
 							+ self.alias \
@@ -101,7 +104,6 @@ class DotFile():
 			shutil.copy(self.path, backup_path)
 			print(f'Backed up as {backup_path}')
 			self.backup_add_meta_data(backup_path, config.identifier, stime)
-			self.backups.append(meta)
 		else:
 			print(f'{self.path} does not exist, no backup will be done')
 

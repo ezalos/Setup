@@ -16,6 +16,13 @@ class Backup():
 			print(f"Using test database: {self.db.path_test}")
 		self.data = self.db.load_all(args.test)
 		if args.add_deploy == "add":
+			if args.path:
+				if args.path[:len(config.pwd)] != config.pwd:
+					print(f"/!\\ CAREFULL -> Path {args.path} do not start by {config.pwd}")
+					print("\tCurrent path resolution might cause a lot of problems")
+					if 'y' != input("If you are sure to continue: enter 'y':"):
+						print("Exiting...")
+						return
 			print("Add!")
 			self.add(args)
 		elif args.add_deploy == "deploy":
@@ -24,42 +31,43 @@ class Backup():
 		self.save(test=args.test)
 
 	def add_exists(self, exists, dot):
-		# Dotfile is already in the system with a different path
+		# Dotfile is already in the system with possibly a different path
 		# Complexity here comes from db architecture
 		# 	db suppose there is only one path for all devices
-		#	Which obviously could sometime be False 
+		#	Which obviously could sometime be False
+		# Everything could be more simple by having a structure
+		# 	Similar to backup for the main
+		#	One main path (... I mean if I need 2 shouldn't I use another alias ?)
+		#	list of Devices/System_path -> with autocompletion
 		print(f"Alias {exists.alias} already exists in the system")
 		if exists.path == dot.path:
+			print("Argument path is the same as the one in the system")
 			# Path resolution is way more complex than this :/
 			exists.backup()
 			exists.deploy()
 		else:
+			print("Argument path is different from the one in the system")
+			print(f"{exists.path} != {dot.path}")
 			raise NotImplemented
 
 	def add(self, args):
-		if agrs.alias == "":
+		if args.alias == "":
 			# User wants help selecting alias
-			dot = self.select_alias(alias=None)
-		elif agrs.alias == None:
-			# User did not use alias
+			dot = DotFile(args.path)
+			exists = self.select_alias(alias=None)
+			self.add_exists(exists, dot)
+		else:
 			dot = DotFile(args.path, alias=args.alias)
-			print(f"Alias generated from path: {dot.alias}")
+			if args.alias == None:
+				# User did not use alias
+				print(f"Alias generated from path: {dot.alias}")
 			exists = self.select_alias(alias=dot.alias)
 			if exists:
 				self.add_exists(exists, dot)
 			else:
 				print(f"Alias {dot.alias} is new for the system")
-				self.add_elem(dot)
-		else:
-			# User choosed is alias
-			dot = self.select_alias(alias=args.alias)
-			exists = self.select_alias(alias=args.alias)
-			if exists:
-				self.add_exists(exists, dot)
-			else:
-				dot = DotFile(args.path, alias=args.alias)
-				print(f"Alias {dot.alias} is new for the system")
-				self.add_elem(dot)
+				dot.add_file()
+				self.data.append(dot)
 
 	def deploy(self, args):
 		if args.alias:
@@ -71,10 +79,6 @@ class Backup():
 			self.deploy_elem(dot)
 		else:
 			self.deploy_all()
-
-	def add_elem(self, path, alias=None):
-		dot = DotFile(path, alias)
-		self.data.append(dot)
 
 	def deploy_elem(self, dot):
 		print(f"Deploying {dot.alias}")
@@ -115,17 +119,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--update_test', action='store_true', help='Update test db')
 parser.add_argument('-t', '--test', action='store_true', help='Use test db')
 
+# Creation of subparsers Add and Deploy
 subparsers = parser.add_subparsers(help='Add or Deploy a dotfile', dest="add_deploy")
 # create the parser for the "add" command
 parser_add = subparsers.add_parser('add', help='Add a file to the backup')
 parser_add.add_argument('path', type=str, help='dotfile path')
-
 parser_add.add_argument('-a', '--alias', nargs="?", type=str, const="", help='Alias to use for dotfile')
+
 # create the parser for the "deploy" command
 parser_deploy = subparsers.add_parser('deploy', help='Deploy a file from the backup')
 parser_deploy.add_argument('-a', '--alias', type=str, help='if None -> deploy all ; if nonsense -> asks user')
 
-
+# Parsing args
 args = parser.parse_args()
 
 
