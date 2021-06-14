@@ -1,65 +1,132 @@
+#!/usr/bin/env python3
+
 import argparse
 from database import Depedencies
 from config import config
 from dotfile import DotFile
 
-
 class Backup():
-	def __init__(self):
+	def __init__(self, args):
 		self.db = Depedencies()
-		self.depedencies = self.db.load()
-		self.data = self.load_all(self.db)
-	
-	def load_all(self, db):
-		depedencies = db.load()
-		data = []
-		for d in depedencies:
-			dot = DotFile(d['path'])
-			dot.from_db(d)
-			print(dot)
-			data.append(dot)
-		return data
+		if args.update_test:
+			print(f"Updating {self.db.path_test} from {self.db.path}")
+			self.data = self.db.load_all(test=True)
+			self.save()
+		if args.test:
+			print(f"Using test database: {self.db.path_test}")
+		self.data = self.db.load_all(args.test)
+		if args.add_deploy == "add":
+			print("Add!")
+			self.add(args)
+		elif args.add_deploy == "deploy":
+			print("Deploy!")
+			self.deploy(args)
+		self.save(test=args.test)
 
-	def transform_db(self):
-		# Should be stored by Alias
-		# Backup should be a list:
-		#	Computer
-		#	Date
-		#	Original path
-		pass
-		
+	def add_exists(self, exists, dot):
+		# Dotfile is already in the system with a different path
+		# Complexity here comes from db architecture
+		# 	db suppose there is only one path for all devices
+		#	Which obviously could sometime be False 
+		print(f"Alias {exists.alias} already exists in the system")
+		if exists.path == dot.path:
+			# Path resolution is way more complex than this :/
+			exists.backup()
+			exists.deploy()
+		else:
+			raise NotImplemented
 
-	def save_all(self, test=False):
-		to_db = []
-		for d in self.data:
-			to_db.append(d.to_db())
-		self.db.save(to_db, test=test)
+	def add(self, args):
+		if agrs.alias == "":
+			# User wants help selecting alias
+			dot = self.select_alias(alias=None)
+		elif agrs.alias == None:
+			# User did not use alias
+			dot = DotFile(args.path, alias=args.alias)
+			print(f"Alias generated from path: {dot.alias}")
+			exists = self.select_alias(alias=dot.alias)
+			if exists:
+				self.add_exists(exists, dot)
+			else:
+				print(f"Alias {dot.alias} is new for the system")
+				self.add_elem(dot)
+		else:
+			# User choosed is alias
+			dot = self.select_alias(alias=args.alias)
+			exists = self.select_alias(alias=args.alias)
+			if exists:
+				self.add_exists(exists, dot)
+			else:
+				dot = DotFile(args.path, alias=args.alias)
+				print(f"Alias {dot.alias} is new for the system")
+				self.add_elem(dot)
+
+	def deploy(self, args):
+		if args.alias:
+			print(f"User wants to deploy {args.alias}")
+			dot = self.select_alias(alias=args.alias)
+			if dot == None:
+				print(f"Impossible to find alias, asking user")
+				dot = self.select_alias(alias=None)
+			self.deploy_elem(dot)
+		else:
+			self.deploy_all()
 
 	def add_elem(self, path, alias=None):
 		dot = DotFile(path, alias)
-		# dot.ad
+		self.data.append(dot)
 
-		pass
+	def deploy_elem(self, dot):
+		print(f"Deploying {dot.alias}")
+		dot.backup()
+		dot.deploy()
 
-	def deploy_elem(self):
-		pass
-
-	def deploy(self):
+	def deploy_all(self):
 		for d in self.data:
-			d.backup()
-			d.deploy()
+			self.deploy_elem(d)
 
+	def select_alias(self, alias=None):
+		if alias == None:
+			from simple_term_menu import TerminalMenu
+			selection = [d.alias for d in self.data]
+			terminal_menu = TerminalMenu(selection)
+			menu_entry_index = terminal_menu.show()
+			return self.data[menu_entry_index]
+		else:
+			selection = [d for d in self.data if d.alias == alias]
+			if len(selection) == 1:
+				return selection[0]
+			elif len(selection) > 1:
+				print(f"There is {len(selection)} dotfiles named {alias}")
+				for d in selection:
+					print(d)
+				print("Selecting 1st entry!")
+				return selection[0]
+			else:
+				print(f"There is no match in database for {alias}")
+				return None
+
+	def save(self, test=False):
+		self.db.save_all(self.data, test=test)
+
+
+# create the top-level parser
 parser = argparse.ArgumentParser()
-parser.add_argument('-a', '--add', nargs='+', help='-a SRC [.filename]	Add one file to setup, create backup, make symlink')
-parser.add_argument('-f', '--force', default=False, action='store_true', help='Force file remplacement')
-parser.add_argument('-k', '--keep', default=False, action='store_true', help='Will not alter source file')
+parser.add_argument('-u', '--update_test', action='store_true', help='Update test db')
+parser.add_argument('-t', '--test', action='store_true', help='Use test db')
+
+subparsers = parser.add_subparsers(help='Add or Deploy a dotfile', dest="add_deploy")
+# create the parser for the "add" command
+parser_add = subparsers.add_parser('add', help='Add a file to the backup')
+parser_add.add_argument('path', type=str, help='dotfile path')
+
+parser_add.add_argument('-a', '--alias', nargs="?", type=str, const="", help='Alias to use for dotfile')
+# create the parser for the "deploy" command
+parser_deploy = subparsers.add_parser('deploy', help='Deploy a file from the backup')
+parser_deploy.add_argument('-a', '--alias', type=str, help='if None -> deploy all ; if nonsense -> asks user')
+
+
 args = parser.parse_args()
 
-# if args.add:
-# 	src = args.add[0]
-# 	dst = args.add[1] if len(args.add) >= 2 else None
-# 	add_file(src, dst, args.force, args.keep)
 
-b = Backup()
-b.deploy()
-b.save_all()
+b = Backup(args)

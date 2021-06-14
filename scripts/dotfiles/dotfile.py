@@ -28,7 +28,7 @@ class DotFile():
 		Args:
 			path (str): [Path to system .file]
 			alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
-			identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifer.
+			identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifier.
 			backups (str, optional): [path + id for the backups]. Defaults to None.
 			main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
@@ -65,14 +65,29 @@ class DotFile():
 		print(f'Extarcting dir part of src: {dirs}')
 		if os.path.exists(self.path):
 			print(f'Deleting {self.path}')
+			# os.remove(self.path)
+		# There is pbm with remove
+		# sometimes file is not seen
+		# with above if.
+		# TODO: clean this trick
+		try:
 			os.remove(self.path)
-		# os.remove(self.path)
+		except:
+			pass
 		if not os.path.exists(dirs):
 			print(f'{dirs} does not exist: creating it')
 			os.makedirs(dirs)
 		main = config.project_path + self.main
 		print(f"Symlink created {self.path} -> {main}")
 		os.symlink(main, self.path)
+
+	def backup_add_meta_data(self, backup_path, identifier, datetime):
+		meta = {
+			'backup_path': backup_path,
+			'identifier': identifier,
+			'datetime': stime,
+		}
+		self.backups.append(meta)
 
 	def backup(self):
 		if os.path.exists(self.path):
@@ -85,13 +100,7 @@ class DotFile():
 							+ stime
 			shutil.copy(self.path, backup_path)
 			print(f'Backed up as {backup_path}')
-			# Unsure for identifier
-			# It might be more pertinent to use the one in config
-			meta = {
-				'backup_path': backup_path,
-				'identifier': self.identifier,
-				'datetime': stime,
-			}
+			self.backup_add_meta_data(backup_path, config.identifier, stime)
 			self.backups.append(meta)
 		else:
 			print(f'{self.path} does not exist, no backup will be done')
@@ -125,4 +134,10 @@ class DotFile():
 		self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
 
 	def __str__(self):
-		return str(self.to_db())
+		# return str(self.to_db())
+		msg = f"{self.alias} @{self.identifier}\n"
+		msg += f"{self.path} -> {self.main}\n"
+		for b in self.backups:
+			msg += f"\t@{b['identifier']} done at {b['datetime']}\n"
+			msg += f"\t-> {b['backup_path']}\n"
+		return msg
