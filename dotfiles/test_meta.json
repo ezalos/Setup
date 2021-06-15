@@ -2,7 +2,7 @@
     {
         "alias": ".neofetch",
         "path": "/home/ezalos/.config/neofetch/config.conf",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.neofetch",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/.neofetch",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -20,7 +20,7 @@
     {
         "alias": ".zshrc",
         "path": "/home/ezalos/.zshrc",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.zshrc",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/.zshrc",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -38,7 +38,7 @@
     {
         "alias": ".vimrc",
         "path": "/home/ezalos/.vimrc",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.vimrc",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/.vimrc",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -51,7 +51,7 @@
     {
         "alias": "init.vim",
         "path": "/home/ezalos/.config/nvim/init.vim",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/init.vim",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/init.vim",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -69,7 +69,7 @@
     {
         "alias": ".bashrc",
         "path": "/home/ezalos/.bashrc",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.bashrc",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/.bashrc",
         "identifier": "TheBeast.ezalos",
         "backups": [
             {
@@ -82,7 +82,7 @@
     {
         "alias": "terminator",
         "path": "/home/ezalos/.config/terminator/config",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/terminator",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/terminator",
         "identifier": "ezalos.TM1704.ezalos",
         "backups": [
             {
@@ -100,7 +100,7 @@
     {
         "alias": ".p10k.zsh",
         "path": "/home/ezalos/.p10k.zsh",
-        "main": "/home/ezalos/Setup/scripts/dotfilesdotfiles/.p10k.zsh",
+        "main": "/home/ezalos/Setup/scripts/dotfiles/.p10k.zsh",
         "identifier": "TheBeast.ezalos",
         "backups": [
             {

@@ -20,17 +20,17 @@ class DotFile():
 				alias: str=None, identifier:str=config.identifier,
 				backups: list=[], main: str=None):
 		"""[summary]
-		DotFile allows to backup a dotfile or deploy it.
-			It is an important element of my personal backup system
+			DotFile allows to backup a dotfile or deploy it.
+				It is an important element of my personal backup system
 
-			Most parameters are just for allowing an easy load from database.
+				Most parameters are just for allowing an easy load from database.
 
-		Args:
-			path (str): [Path to system .file]
-			alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
-			identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifier.
-			backups (str, optional): [path + id for the backups]. Defaults to None.
-			main (str, optional): [Should be used as main .file]. Defaults to None.
+			Args:
+				path (str): [Path to system .file]
+				alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
+				identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifier.
+				backups (str, optional): [path + id for the backups]. Defaults to None.
+				main (str, optional): [Should be used as main .file]. Defaults to None.
 		"""
 		self.path = path
 		# TODO: create alias suggestor one level up
@@ -38,11 +38,15 @@ class DotFile():
 			self.alias = file_name(self.path)
 		else:
 			self.alias = alias
-		self.main = main
+		if main == None: 
+			self.main =  config.dotfiles_dir + self.alias
+		else:
+			self.main = main
 		self.backups = backups
 		if identifier == None:
 			identifier = config.identifier
 		self.identifier = identifier
+
 
 	def add_file(self, use_as_main=True, deploy=True):
 		print(f'Adding {self.alias} from {self.path}')
@@ -55,6 +59,7 @@ class DotFile():
 			self.copy_as_main()
 		if deploy:
 			self.deploy()
+
 
 	def deploy(self):
 		"""[summary]
@@ -81,6 +86,7 @@ class DotFile():
 		print(f"Symlink created {self.path} -> {main}")
 		os.symlink(main, self.path)
 
+
 	def backup_add_meta_data(self, backup_path, identifier, stime):
 		meta = {
 			'backup_path': backup_path,
@@ -88,6 +94,7 @@ class DotFile():
 			'datetime': stime,
 		}
 		self.backups.append(meta)
+
 
 	def backup(self):
 		if os.path.exists(self.path):
@@ -107,8 +114,8 @@ class DotFile():
 		else:
 			print(f'{self.path} does not exist, no backup will be done')
 
+
 	def copy_as_main(self, force=False):
-		self.main =  config.dotfiles_dir + self.alias
 		if os.path.exists(self.main):
 			print(f'File {self.path} already exist in Setup')
 			if not force:
@@ -116,6 +123,7 @@ class DotFile():
 		if os.path.exists(self.path):
 			shutil.copy(self.path, self.main)
 			print(f'{self.main} has been added as main for {self.path}')
+
 
 	def to_db(self):
 		self.dict = {
@@ -127,6 +135,7 @@ class DotFile():
 		}
 		return self.dict
 
+
 	def from_db(self, data):
 		alias = data['alias']
 		main = data['main']
@@ -134,6 +143,8 @@ class DotFile():
 		backups = data['backups']
 		identifier = data['identifier']
 		self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
+
+		
 
 	def __str__(self):
 		# return str(self.to_db())
