@@ -32,6 +32,11 @@
                 "backup_path": "dotfiles/old/.zshrc_TheBeast.ezalos_2021-05-12_16:54",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-12_16:54"
+            },
+            {
+                "backup_path": "dotfiles/old/.zshrc_TheBeast.ezalos_2021-06-22_11:40",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-06-22_11:40"
             }
         ]
     },
@@ -76,6 +81,11 @@
                 "backup_path": "dotfiles/old/.bashrc_TheBeast.ezalos_2021-05-12_15:59",
                 "identifier": "TheBeast.ezalos",
                 "datetime": "2021-05-12_15:59"
+            },
+            {
+                "backup_path": "dotfiles/old/.bashrc_TheBeast.ezalos_2021-06-22_11:40",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-06-22_11:40"
             }
         ]
     },
@@ -120,6 +130,19 @@
                 "backup_path": "dotfiles/old/.gdbinit_ezalos.TM1704.ezalos_2021-06-14_12:48",
                 "identifier": "ezalos.TM1704.ezalos",
                 "datetime": "2021-06-14_12:48"
+            }
+        ]
+    },
+    {
+        "alias": "jupyter_notebook_config.py",
+        "path": "/home/ezalos/.jupyter/jupyter_notebook_config.py",
+        "main": "dotfiles/jupyter_notebook_config.py",
+        "identifier": "TheBeast.ezalos",
+        "backups": [
+            {
+                "backup_path": "dotfiles/old/jupyter_notebook_config.py_TheBeast.ezalos_2021-07-28_17:08",
+                "identifier": "TheBeast.ezalos",
+                "datetime": "2021-07-28_17:08"
             }
         ]
     }

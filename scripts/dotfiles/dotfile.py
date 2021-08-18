@@ -144,7 +144,6 @@ class DotFile():
 		identifier = data['identifier']
 		self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
 
-		
 
 	def __str__(self):
 		# return str(self.to_db())

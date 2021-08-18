@@ -109,6 +109,7 @@ alias tl="todo-txt ls"
 alias tr="todo-txt replace"
 alias ta="todo-txt add"
 alias neo="neofetch --separator '\t'"
+alias mkenv="python3.8 -m venv venv && echo \"source venv/bin/activate\" > .autoenv.zsh && cd ."
 
 #------------
 #  GPU Cuda
@@ -132,3 +133,4 @@ source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k
 # neofetch --disable Public_IP --separator '\t'
 
 source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh
+export PATH=/home/ezalos/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ezalos/miniconda3/bin:/home/ezalos/.local/bin
