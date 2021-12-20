@@ -1692,7 +1692,7 @@ typeset -g POWERLEVEL9K_CONFIG_FILE=${${(%):-%x}:a}
 
 function prompt_my_cpu_temp() {
 #   integer cpu_temp="$(</sys/class/thermal/thermal_zone0/temp) / 1000"
-  integer cpu_temp="$(sensors -u | grep -Po 'temp2_input:\s+\K\d+.\d+')"
+  integer cpu_temp="$(sensors -u | grep PCI -A 10 | grep -oP 'temp1_input:\s+\K\d+.\d+')"
   if (( cpu_temp >= 80 )); then
     p10k segment -s HOT  -f red    -t "${cpu_temp}"$'\uE339' -i $'\uF737'
   elif (( cpu_temp >= 60 )); then
