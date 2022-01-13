@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-source vdl-monitor.conf
 if [ -e /usr/share/X11/xorg.conf.d/20-intel.conf ]
 then
 	# Make sure your Android device is plugged in and accessible over adb.
