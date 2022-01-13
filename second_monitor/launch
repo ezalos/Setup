@@ -10,10 +10,20 @@ then
 	#	- 1680×1050
 	#	- 1920×1200
 	#	- 2560×1600
-	W=1200      # Virtual display width
-	H=1920      # Virtual display height
-	FPS=60
-	O=VIRTUAL1  # The name of the virtual display (check using xrandr)
+
+	if [[ `uname -n` = "TheBeast" ]]
+	then
+		O="DP-1"
+		W=900      # Virtual display width
+		H=1600      # Virtual display height
+		FPS=59.82
+	else
+		O=VIRTUAL1  # The name of the virtual display (check using xrandr)
+		W=1200      # Virtual display width
+		H=1920      # Virtual display height
+		FPS=60
+	fi
+	
 	P=eDP1      # The name of your physical display (check using xrandr)
 	PW="$(xrandr --current | grep \* | awk '{print $1;}' | cut -d x -f 1)"
 
