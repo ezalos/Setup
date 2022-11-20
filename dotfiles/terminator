@@ -19,7 +19,7 @@
     background_darkness = 0.95
     background_type = transparent
     cursor_color = "#aaaaaa"
-    font = MesloLGS NF 10
+    font = MesloLGS NF 14
     scrollback_infinite = True
     scrollback_lines = 10000
     use_system_font = False
