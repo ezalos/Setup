@@ -113,9 +113,9 @@ alias iscuda="python -c 'import sys; print(f\"{sys.version = }\"); import torch;
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
-	alias mkenv="python3 -m venv venv && echo \"source venv/bin/activate\n\nunset PS1\" > .envrc && direnv allow"
+	alias mkenv='echo "eval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
 else
-	alias mkenv="python3.8 -m venv venv && echo \"source venv/bin/activate\" > .envrc && direnv allow ."
+	alias mkenv='echo "eval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
 fi
 
 
