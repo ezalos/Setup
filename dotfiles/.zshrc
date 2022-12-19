@@ -102,14 +102,15 @@ alias pyg="pygmentize"
 alias ec="$EDITOR $HOME/.zshrc"
 # source ~/.zshrc
 alias sc="source $HOME/.zshrc"
-alias t="todo-txt"
-alias tl="todo-txt ls"
-alias tr="todo-txt replace"
-alias ta="todo-txt add"
+#alias t="todo-txt"
+#alias tl="todo-txt ls"
+#alias tr="todo-txt replace"
+#alias ta="todo-txt add"
 alias neo="neofetch --separator '\t'"
 
 alias iscuda="python -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
 
+alias bt="bat --paging=never --style=plain "
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
