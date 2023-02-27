@@ -114,10 +114,12 @@ alias bt="bat --paging=never --style=plain "
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
-	alias mkenv='echo "#\!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
+	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
 else
-	alias mkenv='echo "#\!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
+	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && direnv allow'
 fi
+alias mkenv_pip='python -m venv venv && echo "#!$(which bash)\n\n ./venv/bin/activate\n" > .envrc && direnv allow'
+alias mkenv='mkenv_conda'
 
 
 #------------
