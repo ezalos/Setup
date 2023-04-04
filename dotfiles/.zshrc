@@ -118,9 +118,11 @@ then
 else
 	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.9 -y && direnv allow'
 fi
-alias mkenv_pip='python -m venv venv && echo "#!$(which bash)\n\n ./venv/bin/activate\n" > .envrc && direnv allow'
+alias mkenv_pip='python -m venv venv && echo "#!$(which bash)\n\n source ./venv/bin/activate\n" > .envrc && direnv allow'
 alias mkenv='mkenv_conda'
 
+alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
+alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
 
 #------------
 #  GPU Cuda
