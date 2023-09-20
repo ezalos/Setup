@@ -110,7 +110,12 @@ alias neo="neofetch --separator '\t'"
 
 alias iscuda="python -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
 
+if [[ `uname -n` = "ezalos-TM1704" ]]
+then
+alias bt="batcat --paging=never --style=plain "
+else
 alias bt="bat --paging=never --style=plain "
+fi
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
