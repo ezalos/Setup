@@ -38,7 +38,8 @@
     vcs                     # git status
     # =========================[ Line #2 ]=========================
     newline                 # \n
-    # prompt_char           # prompt symbol
+	time					# current time
+    prompt_char             # prompt symbol
   )
 
   # The list of segments shown on the right. Fill it with less important segments.
@@ -542,7 +543,8 @@
   # Custom icon.
   typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_VISUAL_IDENTIFIER_EXPANSION=
   # Custom prefix.
-  # typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_PREFIX='took '
+  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_PREFIX='took '
+  typeset -g POWERLEVEL9K_TIME_LEFT_RIGHT_WHITESPACE=' %k%234F\uE0B4'
 
   #######################[ background_jobs: presence of background jobs ]#######################
   # Background jobs color.
@@ -1614,6 +1616,9 @@
   # Custom prefix.
   # typeset -g POWERLEVEL9K_TIME_PREFIX='at '
 
+  function p10k-on-post-prompt() { p10k display '1|2/left_frame'=hide '2/left/*'=show }
+  function p10k-on-pre-prompt()  { p10k display '1|2/left_frame'=show '2/left/*'=hide }
+
   # Example of a user-defined prompt segment. Function prompt_example will be called on every
   # prompt if `example` prompt segment is added to POWERLEVEL9K_LEFT_PROMPT_ELEMENTS or
   # POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS. It displays an icon and yellow text on red background
@@ -1655,7 +1660,7 @@
   #   - always:   Trim down prompt when accepting a command line.
   #   - same-dir: Trim down prompt when accepting a command line unless this is the first command
   #               typed after changing current working directory.
-  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
+  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=off
 
   # Instant prompt mode.
   #
@@ -1701,3 +1706,4 @@ function prompt_my_cpu_temp() {
     p10k segment -s COOL -f green -t "${cpu_temp}"$'\uE339' -i $'\uE350'
   fi
 }
+
