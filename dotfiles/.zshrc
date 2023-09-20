@@ -87,8 +87,8 @@ unset __conda_setup
 #  BINDKEY
 #-----------
 
-bindkey '^[[1;5A' history-substring-search-up
-bindkey '^[[1;5B' history-substring-search-down
+bindkey '^[[1;2A' history-substring-search-up
+bindkey '^[[1;2B' history-substring-search-down
 
 
 #---------
@@ -119,16 +119,25 @@ fi
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
-	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.9 -y && direnv allow'
+	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.10 -y && direnv allow'
 else
-	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.9 -y && direnv allow'
+	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.10 -y && direnv allow'
 fi
 alias mkenv_pip='python -m venv venv && echo "#!$(which bash)\n\n source ./venv/bin/activate\n" > .envrc && direnv allow'
 alias mkenv='mkenv_conda'
 
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
+alias docker_kill_all='docker kill $(docker ps -a -q)'
 
+ICONO_DIRECTORY="/home/ezalos/42/icono-web"
+alias ic_dl="bash $ICONO_DIRECTORY/scripts/monitor/download.sh"
+alias ic_dl_gib="bash $ICONO_DIRECTORY/scripts/monitor/download_gib_time.sh"
+alias ic_dl_speed="bash $ICONO_DIRECTORY/scripts/monitor/download_speed.sh"
+alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/extract.sh"
+alias ic_exs="bash $ICONO_DIRECTORY/scripts/monitor/extract_details.sh"
+alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
+alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
 #------------
 #  GPU Cuda
 #------------
@@ -140,8 +149,6 @@ export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
 #  Starting
 #------------
 
-
-
 # source ~/.autoenv/activate.sh
 source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
 
@@ -152,6 +159,10 @@ source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k
 
 # source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh
 
-export PATH=/home/ezalos/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ezalos/miniconda3/bin:/home/ezalos/.local/bin
+# export PATH=/home/ezalos/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ezalos/miniconda3/bin:/home/ezalos/.local/bin
+
+
+# add Pulumi to the PATH
+export PATH="$PATH:$HOME/.pulumi/bin"
 
 eval "$(direnv hook zsh)"
