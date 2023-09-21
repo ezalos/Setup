@@ -5,7 +5,7 @@ set shiftwidth=4
 set colorcolumn=81
 set autoindent
 set smartindent
-set relativenumber
+" set relativenumber
 set mouse=a
 set noexpandtab
 
