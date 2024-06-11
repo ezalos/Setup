@@ -95,6 +95,7 @@ bindkey '^[[1;2B' history-substring-search-down
 #  ALIAS
 #---------
 
+alias copy='xclip -sel c'
 alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
 alias gcl="git clone"
 alias pyg="pygmentize"
@@ -108,13 +109,13 @@ alias sc="source $HOME/.zshrc"
 #alias ta="todo-txt add"
 alias neo="neofetch --separator '\t'"
 
-alias iscuda="python -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
+alias iscuda="python3 -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
 then
 alias bt="batcat --paging=never --style=plain "
 else
-alias bt="bat --paging=never --style=plain "
+alias bt="batcat --paging=never --style=plain "
 fi
 
 if [[ `uname -n` = "ezalos-TM1704" ]]
@@ -129,13 +130,13 @@ alias mkenv='mkenv_conda'
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
 alias docker_kill_all='docker kill $(docker ps -a -q)'
+alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
+
 
 ICONO_DIRECTORY="/home/ezalos/42/icono-web"
-alias ic_dl="bash $ICONO_DIRECTORY/scripts/monitor/download.sh"
-alias ic_dl_gib="bash $ICONO_DIRECTORY/scripts/monitor/download_gib_time.sh"
-alias ic_dl_speed="bash $ICONO_DIRECTORY/scripts/monitor/download_speed.sh"
-alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/extract.sh"
-alias ic_exs="bash $ICONO_DIRECTORY/scripts/monitor/extract_details.sh"
+alias ic_dl="bash $ICONO_DIRECTORY/scripts/monitor/remote/download.sh"
+alias ic_dt="bash $ICONO_DIRECTORY/scripts/monitor/remote/detailer.sh"
+alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/remote/extract.sh"
 alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
 alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
 #------------
@@ -163,6 +164,6 @@ source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k
 
 
 # add Pulumi to the PATH
-export PATH="$PATH:$HOME/.pulumi/bin"
+# export PATH="$PATH:$HOME/.pulumi/bin"
 
 eval "$(direnv hook zsh)"
