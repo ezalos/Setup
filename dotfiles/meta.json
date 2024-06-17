@@ -1,4 +1,28 @@
 [
+	{
+		"alias": "mac.zshrc",
+		"path": "/Users/ezalos/.zshrc",
+		"main": "dotfiles/.zshrc",
+		"identifier": "Louiss.MBP.lan.ezalos",
+		"backups": [
+		]
+	},
+	{
+		"alias": "mac.p10k.zsh",
+		"path": "/Users/ezalos/.p10k.zsh",
+		"main": "dotfiles/.p10k.zsh",
+		"identifier": "Louiss.MBP.lan.ezalos",
+		"backups": [
+		]
+	},
+	{
+		"alias": "mac.vimrc",
+		"path": "/Users/ezalos/.vimrc",
+		"main": "dotfiles/.vimrc",
+		"identifier": "Louiss.MBP.lan.ezalos",
+		"backups": [
+		]
+	},
     {
         "alias": ".neofetch",
         "path": "/home/ezalos/.config/neofetch/config.conf",
@@ -150,5 +174,18 @@
                 "datetime": "2021-07-28_17:08"
             }
         ]
-    }
+    },
+    {
+		"alias": "warp",
+		"path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
+		"main": "dotfiles/warp",
+		"identifier": "Louiss.MBP.ezalos",
+		"backups": [
+			{
+				"backup_path": "/Users/ezalos/Setup/dotfiles/old/warp_Louiss.MBP.ezalos_2024-06-13_11:47",
+				"identifier": "Louiss.MBP.ezalos",
+				"datetime": "2024-06-13_11:47"
+			}
+		]
+	}
 ]

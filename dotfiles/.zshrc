@@ -151,7 +151,13 @@ export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
 #------------
 
 # source ~/.autoenv/activate.sh
+if [[ `uname -n` = "Louiss-MBP.lan" ]]
+then
+PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+else
 source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
+fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

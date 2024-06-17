@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
-from database import Depedencies
-from config import config
-from dotfile import DotFile
+from dotfiles.database import Depedencies
+from dotfiles.config import config
+from dotfiles.dotfile import DotFile
 
 def path_security_check(path):
 	if path[:len(config.pwd)] != config.pwd:
