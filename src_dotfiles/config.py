@@ -39,7 +39,7 @@ def get_project_path(pwd=False):
 
 config.pwd = get_project_path(pwd=False)
 config.project_path = get_project_path()
-config.dotfiles_dir = config.project_path + 'dotfiles/'
+config.dotfiles_dir = 'dotfiles/'
 config.backup_dir = config.dotfiles_dir + 'old/'
 config.depedencies_path = config.dotfiles_dir + 'meta.json'
 config.identifier = get_computer_name()
