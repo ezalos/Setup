@@ -170,6 +170,15 @@ export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH
 #                                     START                                    #
 # ---------------------------------------------------------------------------- #
 
+# Machine-specific aliases
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+    export PATH="$PATH:$HOME/.AppImage/"
+    # Created by `pipx` on 2024-07-15 15:54:12
+    export PATH="$PATH:/home/ezalos/.local/bin"
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+    export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+fi
+
 # source ~/.autoenv/activate.sh
 if [[ $WHICH_COMPUTER == "MacBook" ]]; then
     PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
@@ -182,27 +191,14 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 
-# Machine-specific aliases
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-    export PATH="$PATH:$HOME/.AppImage/"
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
-    export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-fi
-
 eval "$(direnv hook zsh)"
 
 
-# ---------------------------------------------------------------------------- #
-#                                    NOT ME                                    #
-# ---------------------------------------------------------------------------- #
-
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-# Created by `pipx` on 2024-07-15 15:54:12
-export PATH="$PATH:/home/ezalos/.local/bin"
-
 . "$HOME/.cargo/env"
+fi
 
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+if [[ $WHICH_COMPUTER == "MacBook" ]]; then
 # From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
 # Set CLICOLOR if you want Ansi Colors in iTerm2 
 export CLICOLOR=1
