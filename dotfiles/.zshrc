@@ -104,7 +104,6 @@ unset PS1
 EOF
     # python3 -m pip install --upgrade pip
 
-    # Machine-specific aliases
     if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
         python -m venv venv && direnv allow
     elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
