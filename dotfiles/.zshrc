@@ -17,31 +17,19 @@ fi
 #                                                                              #
 # **************************************************************************** #
 
-#-------------
-#  Oh-my-zsh
-#-------------
-
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
+# ---------------------------------------------------------------------------- #
+#                                   Oh-my-zsh                                  #
+# ---------------------------------------------------------------------------- #
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="agnoster"
 source $ZSH/oh-my-zsh.sh
-
-#Dont put in cmd history command starting with whitespace
 HISTCONTROL=ignorespace
+export LANG=en_US.UTF-8
 
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-#--------
-#  Init
-#--------
+# ---------------------------------------------------------------------------- #
+#                                     Init                                     #
+# ---------------------------------------------------------------------------- #
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -50,10 +38,21 @@ else
    export EDITOR='nvim'
 fi
 
+# Set computer identifier
+if [[ `uname -n` = "ezalos-TM1704" ]]; then
+    export WHICH_COMPUTER="TheBeast"
+elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
+    export WHICH_COMPUTER="MacBook"
+elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
+    export WHICH_COMPUTER="MacBook"
+else
+    export WHICH_COMPUTER="Unknown"
+fi
 
-#-----------
-#  Plugins
-#-----------
+
+# ---------------------------------------------------------------------------- #
+#                                    Plugins                                   #
+# ---------------------------------------------------------------------------- #
 
 
 source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -62,9 +61,15 @@ source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighti
 
 plugins=(git)
 
-#---------
-#  Conda
-#---------
+#  BINDKEY
+
+bindkey '^[[1;2A' history-substring-search-up
+bindkey '^[[1;2B' history-substring-search-down
+
+
+# ---------------------------------------------------------------------------- #
+#                                     Conda                                    #
+# ---------------------------------------------------------------------------- #
 
 export PATH=$PATH:/home/ezalos/miniconda3/bin
 # >>> conda initialize >>>
@@ -83,72 +88,89 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 
-#-----------
-#  BINDKEY
-#-----------
 
-bindkey '^[[1;2A' history-substring-search-up
-bindkey '^[[1;2B' history-substring-search-down
+# ---------------------------------------------------------------------------- #
+#                                     ALIAS                                    #
+# ---------------------------------------------------------------------------- #
+
+# Environment management aliases
+mkenv_pip() {
+    cat > .envrc << EOF
+#!$(which bash)
+
+source ./venv/bin/activate
+
+unset PS1
+EOF
+    # python3 -m pip install --upgrade pip
+
+    # Machine-specific aliases
+    if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+        python -m venv venv && direnv allow
+    elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+        python3 -m venv venv && direnv allow
+    fi
+}
+
+mkenv_conda() {
+    cat > .envrc << EOF
+#!$(which bash)
+
+eval "\$(conda shell.bash hook)"
+
+conda activate ${PWD##*/}
+
+unset PS1
+EOF
+    conda create -n ${PWD##*/} python=3.10 -y && direnv allow
+}
+alias mkenv='mkenv_pip'
 
 
-#---------
-#  ALIAS
-#---------
-
+# General aliases
 alias copy='xclip -sel c'
 alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
 alias gcl="git clone"
-alias pyg="pygmentize"
-# open ~/.zshrc in using the default editor specified in $EDITOR
 alias ec="$EDITOR $HOME/.zshrc"
-# source ~/.zshrc
 alias sc="source $HOME/.zshrc"
-#alias t="todo-txt"
-#alias tl="todo-txt ls"
-#alias tr="todo-txt replace"
-#alias ta="todo-txt add"
 alias neo="neofetch --separator '\t'"
-
 alias iscuda="python3 -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
+alias bt="batcat --paging=never --style=plain "
 
-if [[ `uname -n` = "ezalos-TM1704" ]]
-then
-alias bt="batcat --paging=never --style=plain "
-else
-alias bt="batcat --paging=never --style=plain "
+
+# Machine-specific aliases
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+    # ...
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+    # ...
 fi
 
-if [[ `uname -n` = "ezalos-TM1704" ]]
-then
-	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.10 -y && direnv allow'
-else
-	alias mkenv_conda='echo "#!$(which bash)\n\neval \"\$(conda shell.bash hook)\"\n\nconda activate ${PWD##*/}\n\nunset PS1\n" > .envrc && conda create -n ${PWD##*/} python=3.10 -y && direnv allow'
-fi
-alias mkenv_pip='python -m venv venv && echo "#!$(which bash)\n\n source ./venv/bin/activate\n" > .envrc && direnv allow'
-alias mkenv='mkenv_conda'
-
+# Docker cleanup aliases
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
 alias docker_kill_all='docker kill $(docker ps -a -q)'
 alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
 
-
+# Icono project aliases
 ICONO_DIRECTORY="/home/ezalos/42/icono-web"
 alias ic_dl="bash $ICONO_DIRECTORY/scripts/monitor/remote/download.sh"
 alias ic_dt="bash $ICONO_DIRECTORY/scripts/monitor/remote/detailer.sh"
 alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/remote/extract.sh"
 alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
 alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
-#------------
-#  GPU Cuda
-#------------
 
+
+# ---------------------------------------------------------------------------- #
+#                                   GPU Cuda                                   #
+# ---------------------------------------------------------------------------- #
 export LD_LIBRARY_PATH=/usr/lib/cuda/lib64:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-12.2/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH
 
-#------------
-#  Starting
-#------------
+# ---------------------------------------------------------------------------- #
+#                                     START                                    #
+# ---------------------------------------------------------------------------- #
 
 # source ~/.autoenv/activate.sh
 source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
@@ -156,14 +178,28 @@ source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# neofetch --disable Public_IP --separator '\t'
 
-# source ~/.dotfiles/lib/zsh-autoenv/autoenv.zsh
-
-# export PATH=/home/ezalos/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ezalos/miniconda3/bin:/home/ezalos/.local/bin
-
-
-# add Pulumi to the PATH
-# export PATH="$PATH:$HOME/.pulumi/bin"
+# Machine-specific aliases
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+    export PATH="$PATH:$HOME/.AppImage/"
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+    export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+fi
 
 eval "$(direnv hook zsh)"
+
+
+# ---------------------------------------------------------------------------- #
+#                                    NOT ME                                    #
+# ---------------------------------------------------------------------------- #
+
+# Created by `pipx` on 2024-07-15 15:54:12
+export PATH="$PATH:/home/ezalos/.local/bin"
+
+# From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
+# Set CLICOLOR if you want Ansi Colors in iTerm2 
+export CLICOLOR=1
+# Set colors to match iTerm2 Terminal Colors
+export TERM=xterm-256color
+
+. "$HOME/.cargo/env"
