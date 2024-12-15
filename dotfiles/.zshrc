@@ -200,11 +200,12 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 # Created by `pipx` on 2024-07-15 15:54:12
 export PATH="$PATH:/home/ezalos/.local/bin"
 
+. "$HOME/.cargo/env"
+
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
 # From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
 # Set CLICOLOR if you want Ansi Colors in iTerm2 
 export CLICOLOR=1
 # Set colors to match iTerm2 Terminal Colors
 export TERM=xterm-256color
-
-. "$HOME/.cargo/env"
 fi
