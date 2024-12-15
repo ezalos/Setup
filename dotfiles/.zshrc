@@ -171,12 +171,11 @@ export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH
 # ---------------------------------------------------------------------------- #
 
 # source ~/.autoenv/activate.sh
-if [[ `uname -n` = "Louiss-MBP.lan" ]]
-then
-PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-else
-source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
+if [[ $WHICH_COMPUTER == "MacBook" ]]; then
+    PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+elif [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+    source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -197,6 +196,7 @@ eval "$(direnv hook zsh)"
 #                                    NOT ME                                    #
 # ---------------------------------------------------------------------------- #
 
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 # Created by `pipx` on 2024-07-15 15:54:12
 export PATH="$PATH:/home/ezalos/.local/bin"
 
@@ -207,3 +207,4 @@ export CLICOLOR=1
 export TERM=xterm-256color
 
 . "$HOME/.cargo/env"
+fi
