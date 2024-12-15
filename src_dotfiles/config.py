@@ -37,9 +37,11 @@ def get_project_path(pwd=False):
 	print(f'Current {"pwd" if pwd else "project path"}: {project_path}')
 	return project_path
 
-config.pwd = get_project_path(pwd=True)
+config.pwd = get_project_path(pwd=False)
 config.project_path = get_project_path()
 config.dotfiles_dir = 'dotfiles/'
 config.backup_dir = config.dotfiles_dir + 'old/'
 config.depedencies_path = config.dotfiles_dir + 'meta.json'
 config.identifier = get_computer_name()
+
+print(f"{config.identifier = }")
