@@ -94,7 +94,7 @@ unset __conda_setup
 # ---------------------------------------------------------------------------- #
 
 # Environment management aliases
-mkenv_pip() {
+function mkenv_pip() {
     cat > .envrc << EOF
 #!$(which bash)
 
@@ -103,7 +103,6 @@ source ./venv/bin/activate
 unset PS1
 EOF
     # python3 -m pip install --upgrade pip
-
     if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
         python -m venv venv && direnv allow
     elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
@@ -111,7 +110,7 @@ EOF
     fi
 }
 
-mkenv_conda() {
+function mkenv_conda() {
     cat > .envrc << EOF
 #!$(which bash)
 
