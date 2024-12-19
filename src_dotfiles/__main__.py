@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
-from dotfiles.database import Depedencies
-from dotfiles.config import config
-from dotfiles.dotfile import DotFile
+from src_dotfiles.database import Depedencies
+from src_dotfiles.config import config
+from src_dotfiles.dotfile import DotFile
 
 def path_security_check(path):
-	if path[:len(config.pwd)] != config.pwd:
-		print(f"/!\\ CAREFULL -> Path {path} do not start by {config.pwd}")
+	if not path.startswith(config.home):
+		print(f"/!\\ CAREFULL -> Path {path} do not start by {config.home}")
 		print("\tCurrent path resolution might cause a lot of problems")
 		if 'y' != input("If you are sure to continue: enter 'y':"):
 			print("Exiting...")

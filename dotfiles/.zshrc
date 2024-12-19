@@ -47,6 +47,8 @@ fi
 # Set computer identifier
 if [[ `uname -n` = "ezalos-TM1704" ]]; then
     export WHICH_COMPUTER="TheBeast"
+elif [[ `uname -n` = "TheBeast" ]]; then
+    export WHICH_COMPUTER="TheBeast"
 elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then

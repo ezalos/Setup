@@ -1,6 +1,6 @@
-from dotfiles.config import config
+from src_dotfiles.config import config
 import json
-from dotfiles.dotfile import DotFile
+from src_dotfiles.dotfile import DotFile
 from pathlib import Path
 class Depedencies():
     def __init__(self):
