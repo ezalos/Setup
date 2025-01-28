@@ -130,8 +130,20 @@ unset PS1
 EOF
     conda create -n ${PWD##*/} python=3.10 -y && direnv allow
 }
-alias mkenv='mkenv_pip'
 
+function mkenv_uv() {
+    cat > .envrc << EOF
+#!$(which bash)
+
+# source ./${PWD##*/}/bin/activate
+source .venv/bin/activate
+
+unset PS1
+EOF
+    # uv venv ${PWD##*/} && direnv allow
+    uv venv && direnv allow
+}
+alias mkenv='mkenv_pip'
 
 # General aliases
 alias copy='xclip -sel c'
@@ -165,6 +177,14 @@ alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/remote/extract.sh"
 alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
 alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
 
+# ---------------------------------------------------------------------------- #
+#                                     PATH                                     #
+# ---------------------------------------------------------------------------- #
+
+export PATH=$HOME/Setup/bin:$PATH
+
+# ---------------------------------------------------------------------------- #
+export PATH=/usr/local/cuda-12.2/bin:$PATH
 
 # ---------------------------------------------------------------------------- #
 #                                   GPU Cuda                                   #
