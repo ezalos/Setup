@@ -4,13 +4,17 @@ import argparse
 from src_dotfiles.database import Depedencies
 from src_dotfiles.config import config
 from src_dotfiles.DotFile import DotFile
+from ezpy_logs.LoggerFactory import LoggerFactory
+
+LoggerFactory.setup_LoggerFactory()
+logger = LoggerFactory.getLogger(__name__)
 
 def path_security_check(path):
     if not path.startswith(config.home):
-        print(f"/!\\ CAREFULL -> Path {path} do not start by {config.home}")
-        print("\tCurrent path resolution might cause a lot of problems")
+        logger.warning(f"/!\\ CAREFULL -> Path {path} do not start by {config.home}")
+        logger.warning("\tCurrent path resolution might cause a lot of problems")
         if 'y' != input("If you are sure to continue: enter 'y':"):
-            print("Exiting...")
+            logger.info("Exiting...")
             return True
     return False
 
@@ -130,18 +134,18 @@ class ManageDotfiles():
 
         current_dot_file = self.db.select_by_alias(alias)
         if not current_dot_file:
-            print(f"Alias {alias} does not exist in the system")
+            logger.info(f"Alias {alias} does not exist in the system")
             new_dot_file.add_file()
             self.db.data.append(new_dot_file)
             self.db.save_all()
             return new_dot_file.alias
         else:       
             if current_dot_file and not force:
-                print(f"Alias {alias} already exists in the system, and force is not set")
+                logger.warning(f"Alias {alias} already exists in the system, and force is not set")
                 return
-            print(f"Alias {current_dot_file.alias} already exists in the system, and force is set")
+            logger.info(f"Alias {current_dot_file.alias} already exists in the system, and force is set")
             if current_dot_file.path == new_dot_file.path:
-                print("Argument path is the same as the one in the system")
+                logger.debug("Argument path is the same as the one in the system")
                 # Path resolution is way more complex than this :/
                 new_dot_file.backup()
                 new_dot_file.deploy()
@@ -149,20 +153,22 @@ class ManageDotfiles():
                 self.db.save_all()
                 return new_dot_file.alias
             else:
-                print("Argument path is different from the one in the system")
-                print(f"{current_dot_file.path} != {new_dot_file.path}")
+                logger.error("Argument path is different from the one in the system")
+                logger.error(f"{current_dot_file.path} != {new_dot_file.path}")
                 raise NotImplementedError
 
     def deploy(self, alias=None):
         if alias == None:
+            logger.info("Deploying all dotfiles")
             for dot_file in self.db.data:
                 dot_file.backup()
                 dot_file.deploy()
         else:
             dot_file = self.db.select_by_alias(alias)
             if dot_file is None:
-                print(f"There is no match in database for {alias}")
+                logger.warning(f"There is no match in database for {alias}")
                 return None
+            logger.info(f"Deploying {alias}")
             dot_file.backup()
             dot_file.deploy()
         self.db.save_all()
@@ -185,6 +191,14 @@ if __name__ == "__main__":
     parser_deploy.add_argument('-a', '--alias', type=str, help='if None -> deploy all ; if nonsense -> asks user')
 
     # Parsing args
-    # args = parser.parse_args()
+    args = parser.parse_args()
+    manager = ManageDotfiles()
 
-    # b = Backup(args)
+    if args.add_deploy == "add":
+        if args.path and path_security_check(args.path):
+            exit(1)
+        logger.info(f"Adding {args.path} with alias {args.alias if args.alias else 'None'}")
+        manager.add(args.path, args.alias)
+    elif args.add_deploy == "deploy":
+        logger.info(f"Deploying {args.alias if args.alias else 'all'}")
+        manager.deploy(args.alias)

@@ -12,3 +12,4 @@ data/test_data
 *.pyo
 
 .envrc
+.logs

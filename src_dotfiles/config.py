@@ -1,8 +1,12 @@
+from ezpy_logs.LoggerFactory import LoggerFactory
 import socket
 import re
 from getpass import getuser
 from pathlib import Path
 import os
+
+LoggerFactory.setup_LoggerFactory()
+logger = LoggerFactory.getLogger(__name__)
 
 class DotDict(dict):
     """
@@ -35,14 +39,14 @@ def get_project_path(pwd=False):
     if project_path[-len(surplus):] == surplus:
         project_path = project_path[:-len(surplus)]
     # project_path = "~/Setup/"
-    print(f'Current {"pwd" if pwd else "project path"}: {project_path}')
+    logger.debug(f'Current {"pwd" if pwd else "project path"}: {project_path}')
     return project_path
 
 
 def get_home_path():
     # TODO: Function uses a trick which is not viable long term
     home_path = Path(__file__).parent.parent.parent.as_posix()  # /home/ezalos (if cloned directly)
-    print(f'Current home path: {home_path}')
+    logger.debug(f'Current home path: {home_path}')
     return home_path
 
 def set_config(dotfiles_dir="dotfiles"):
@@ -55,11 +59,11 @@ def set_config(dotfiles_dir="dotfiles"):
     config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta.json').as_posix()
     config.identifier = get_computer_name()
     Path(config.dotfiles_dir).mkdir(parents=True, exist_ok=True)
-    print(f"Created directory for {config.dotfiles_dir = }")
+    logger.info(f"Created directory for {config.dotfiles_dir = }")
     Path(config.backup_dir).mkdir(parents=True, exist_ok=True)
-    print(f"Created directory for {config.backup_dir = }")
-    print(f"{config.depedencies_path = }")
+    logger.info(f"Created directory for {config.backup_dir = }")
+    logger.debug(f"{config.depedencies_path = }")
     return config
 
 set_config()
-print(f"{config.identifier = }")
+logger.debug(f"{config.identifier = }")

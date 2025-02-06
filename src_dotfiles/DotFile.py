@@ -4,7 +4,9 @@ import shutil
 from datetime import datetime
 from src_dotfiles.config import config
 from pathlib import Path
+from ezpy_logs.LoggerFactory import LoggerFactory
 
+logger = LoggerFactory.getLogger(__name__)
 
 def get_time():
     now = datetime.now()
@@ -44,10 +46,10 @@ class DotFile():
         self.identifier = identifier
 
     def add_file(self, use_as_main=True, deploy=True):
-        print(f'Adding {self.alias} from {self.path}')
+        logger.info(f'Adding {self.alias} from {self.path}')
 
         if os.path.islink(self.path):
-            print(f'Error: {self.alias} is already a symlink')
+            logger.warning(f'Error: {self.alias} is already a symlink')
             return
         self.backup()
         if use_as_main:
@@ -61,9 +63,9 @@ class DotFile():
             /!\ Will delete the file -> should be used with add()
         """
         dirs = os.path.dirname(self.path)
-        print(f'Extarcting dir part of src: {dirs}')
+        logger.debug(f'Extracting dir part of src: {dirs}')
         if os.path.exists(self.path):
-            print(f'Deleting {self.path}')
+            logger.debug(f'Deleting {self.path}')
             # os.remove(self.path)
         # There is pbm with remove
         # sometimes file is not seen
@@ -71,13 +73,14 @@ class DotFile():
         # TODO: clean this trick
         try:
             os.remove(self.path)
-        except:
+        except Exception as e:
+            logger.debug(f"Could not remove {self.path}: {str(e)}")
             pass
         if not os.path.exists(dirs):
-            print(f'{dirs} does not exist: creating it')
+            logger.info(f'{dirs} does not exist: creating it')
             os.makedirs(dirs)
         main = Path(config.project_path).joinpath(self.main).as_posix()
-        print(f"Symlink created {self.path} -> {main}")
+        logger.info(f"Symlink created {self.path} -> {main}")
         os.symlink(main, self.path)
 
     def backup_add_meta_data(self, backup_path, identifier, stime):
@@ -91,7 +94,7 @@ class DotFile():
     def backup(self):
         if os.path.exists(self.path):
             if os.path.islink(self.path):
-                print(f"File is already a simlink, it will not be backup")
+                logger.warning(f"File is already a symlink, it will not be backup")
                 return
             stime = get_time()
             backup_path = Path(config.project_path).joinpath(config.backup_dir).joinpath(
@@ -101,24 +104,24 @@ class DotFile():
                             + '_' \
                             + stime
             ).as_posix()
-            print(f"{self.path = }")
-            print(f"{backup_path = }")
+            logger.debug(f"{self.path = }")
+            logger.debug(f"{backup_path = }")
             
             shutil.copy(self.path, backup_path)
-            print(f"Backed up as {backup_path}")
+            logger.info(f"Backed up as {backup_path}")
             self.backup_add_meta_data(backup_path, config.identifier, stime)
         else:
-            print(f"{self.path} does not exist, no backup will be done")
+            logger.warning(f"{self.path} does not exist, no backup will be done")
 
     def copy_as_main(self, force=False):
-        print(f"Copying {self.path} as main to {self.main}")
+        logger.info(f"Copying {self.path} as main to {self.main}")
         if os.path.exists(self.main):
-            print(f'File {self.path} already exist in Setup')
+            logger.warning(f'File {self.path} already exist in Setup')
             if not force:
                 return
         if os.path.exists(self.path):
             shutil.copy(self.path, self.main)
-            print(f'{self.main} has been added as main for {self.path}')
+            logger.info(f'{self.main} has been added as main for {self.path}')
 
     def to_db(self):
         self.dict = {

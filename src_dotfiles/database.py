@@ -2,7 +2,9 @@ from src_dotfiles.config import config
 import json
 from src_dotfiles.DotFile import DotFile
 from pathlib import Path
+from ezpy_logs.LoggerFactory import LoggerFactory
 
+logger = LoggerFactory.getLogger(__name__)
 
 # Moving parts by identifiers:
 # - hostname
@@ -19,8 +21,8 @@ class Depedencies():
     def __init__(self):
         self.test = False
         self.depedencies = None
-        print(f"{config.depedencies_path = }")
-        print(f"{config.dotfiles_dir = }")
+        logger.debug(f"{config.depedencies_path = }")
+        logger.debug(f"{config.dotfiles_dir = }")
         self.path = config.depedencies_path
         self.path_test = config.dotfiles_dir + "test_" + "meta.json"
         self.data = self.load_all()
@@ -37,7 +39,7 @@ class Depedencies():
         dest = self.path_test if self.test  else self.path
 
         db_path = Path(config.project_path).joinpath(dest)
-        print(f"{db_path = }")
+        logger.debug(f"{db_path = }")
 
         if not db_path.exists():
             self.depedencies = []
@@ -62,7 +64,7 @@ class Depedencies():
         for d in depedencies:
             dot = DotFile(d['path'])
             dot.from_db(d)
-            print(f"Loaded {dot.path}")
+            logger.debug(f"Loaded {dot.path}")
             data.append(dot)
         return data
 
@@ -75,7 +77,7 @@ class Depedencies():
             test (bool, optional): [Use test db]. Defaults to False.
         """
         dest = self.path_test if self.test  else self.path
-        print(f"Saving to {dest}")
+        logger.info(f"Saving to {dest}")
         with open(dest, 'w') as backup:
             json.dump(depedencies, backup, indent=4)
 
@@ -88,7 +90,7 @@ class Depedencies():
         """
         to_db = []
         for d in self.data:
-            print(f"Adding {d.alias = } {d.path = } to future backup")
+            logger.debug(f"Adding {d.alias = } {d.path = } to future backup")
             to_db.append(d.to_db())
         self.save(to_db)
 
@@ -97,10 +99,11 @@ class Depedencies():
         if len(selection) == 1:
             return selection[0]
         elif len(selection) > 1:
-            print(f"There is {len(selection)} dotfiles named {alias}")
+            logger.warning(f"There is {len(selection)} dotfiles named {alias}")
             for d in selection:
-                print(d)
-            print("Selecting 1st entry!")
+                logger.warning(str(d))
+            logger.warning("Selecting 1st entry!")
             return selection[0]
         else:
+            logger.debug(f"There is no match in database for {alias}")
             return None
