@@ -19,11 +19,11 @@ class DotDict(dict):
 config = DotDict()
 
 def get_computer_name():
-	identifier = socket.gethostname() + "." + getuser()
-	identifier = re.sub(r"[^A-Za-z0-9\.]", ".", identifier)
-	if identifier[-1] == ".":
-		identifier = identifier + 'x'
-	return identifier
+    identifier = socket.gethostname() + "." + getuser()
+    identifier = re.sub(r"[^A-Za-z0-9\.]", ".", identifier)
+    if identifier[-1] == ".":
+        identifier = identifier + 'x'
+    return identifier
 
 def get_project_path(pwd=False):
     # TODO: Function uses a trick which is not viable long term
@@ -45,13 +45,21 @@ def get_home_path():
     print(f'Current home path: {home_path}')
     return home_path
 
+def set_config(dotfiles_dir="dotfiles"):
+    global config
+    config.pwd = get_project_path(pwd=False)
+    config.home = get_home_path()
+    config.project_path = get_project_path()
+    config.dotfiles_dir = dotfiles_dir
+    config.backup_dir = Path(config.dotfiles_dir).joinpath('old').as_posix()
+    config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta.json').as_posix()
+    config.identifier = get_computer_name()
+    Path(config.dotfiles_dir).mkdir(parents=True, exist_ok=True)
+    print(f"Created directory for {config.dotfiles_dir = }")
+    Path(config.backup_dir).mkdir(parents=True, exist_ok=True)
+    print(f"Created directory for {config.backup_dir = }")
+    print(f"{config.depedencies_path = }")
+    return config
 
-config.pwd = get_project_path(pwd=False)
-config.home = get_home_path()
-config.project_path = get_project_path()
-config.dotfiles_dir = 'dotfiles'
-config.backup_dir = Path(config.dotfiles_dir).joinpath('old').as_posix()
-config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta.json').as_posix()
-config.identifier = get_computer_name()
-
+set_config()
 print(f"{config.identifier = }")

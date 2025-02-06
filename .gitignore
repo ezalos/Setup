@@ -1,3 +1,14 @@
 nvim-osx64
 *.pyc
 venv
+
+.venv
+.pytest_cache
+test_dotfiles
+__pycache__
+data/test_data
+
+*.pyc
+*.pyo
+
+.envrc

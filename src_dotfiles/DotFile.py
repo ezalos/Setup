@@ -5,11 +5,6 @@ from datetime import datetime
 from src_dotfiles.config import config
 from pathlib import Path
 
-def file_name(src):
-    # TODO: Function uses a trick which is not viable long term
-    if '/' in src:
-        return src.split('/')[-1]
-    return src
 
 def get_time():
     now = datetime.now()
@@ -36,7 +31,7 @@ class DotFile():
         self.path = path
         # TODO: create alias suggestor one level up
         if alias == None:
-            self.alias = file_name(self.path)
+            self.alias = Path(self.path).name
         else:
             self.alias = alias
         if main == None: 
@@ -116,6 +111,7 @@ class DotFile():
             print(f"{self.path} does not exist, no backup will be done")
 
     def copy_as_main(self, force=False):
+        print(f"Copying {self.path} as main to {self.main}")
         if os.path.exists(self.main):
             print(f'File {self.path} already exist in Setup')
             if not force:
