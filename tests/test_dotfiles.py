@@ -3,8 +3,6 @@ from src_dotfiles.config import set_config, config
 from pathlib import Path
 import shutil
 
-_SETUP_DONE = False
-
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     print("\nInitializing test environment (this should happen only once)...")

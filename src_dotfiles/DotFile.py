@@ -5,45 +5,37 @@ from datetime import datetime
 from src_dotfiles.config import config
 from pathlib import Path
 from ezpy_logs.LoggerFactory import LoggerFactory
+from src_dotfiles.models import DotFileModel, BackupMetadata
+from typing import Optional, List
 
 logger = LoggerFactory.getLogger(__name__)
 
-def get_time():
+def get_time() -> str:
     now = datetime.now()
     current_time = now.strftime("%Y-%m-%d_%H:%M")
     return current_time
 
-class DotFile():
+class DotFile:
     def __init__(self, path: str,
-                alias: str=None, identifier:str=config.identifier,
-                backups: list=[], main: str=None):
-        """[summary]
-            DotFile allows to backup a dotfile or deploy it.
-                It is an important element of my personal backup system
+                alias: Optional[str] = None,
+                identifier: Optional[str] = None,
+                backups: Optional[List[BackupMetadata]] = None,
+                main: Optional[str] = None):
+        """DotFile allows to backup a dotfile or deploy it.
+        It is an important element of my personal backup system.
 
-                Most parameters are just for allowing an easy load from database.
-
-            Args:
-                path (str): [Path to system .file]
-                alias (str, optional): [.file name in the dotfiles directory]. Defaults to original filename.
-                identifier (str, optional): [Naming the system, it's the 'computer + user']. Defaults to config.identifier.
-                backups (str, optional): [path + id for the backups]. Defaults to None.
-                main (str, optional): [Should be used as main .file]. Defaults to None.
+        Args:
+            path (str): Path to system .file
+            alias (Optional[str]): .file name in the dotfiles directory. Defaults to original filename.
+            identifier (Optional[str]): Naming the system, it's the 'computer + user'. Defaults to config.identifier.
+            backups (Optional[List[BackupMetadata]]): List of backup metadata. Defaults to empty list.
+            main (Optional[str]): Should be used as main .file. Defaults to None.
         """
         self.path = path
-        # TODO: create alias suggestor one level up
-        if alias == None:
-            self.alias = Path(self.path).name
-        else:
-            self.alias = alias
-        if main == None: 
-            self.main =  Path(config.dotfiles_dir).joinpath(self.alias).as_posix()
-        else:
-            self.main = main
-        self.backups = backups
-        if identifier == None:
-            identifier = config.identifier
-        self.identifier = identifier
+        self.alias = alias if alias is not None else Path(self.path).name
+        self.main = main if main is not None else Path(config.dotfiles_dir).joinpath(self.alias).as_posix()
+        self.backups = backups if backups is not None else []
+        self.identifier = identifier if identifier is not None else config.identifier
 
     def add_file(self, use_as_main=True, deploy=True):
         logger.info(f'Adding {self.alias} from {self.path}')
@@ -83,12 +75,12 @@ class DotFile():
         logger.info(f"Symlink created {self.path} -> {main}")
         os.symlink(main, self.path)
 
-    def backup_add_meta_data(self, backup_path, identifier, stime):
-        meta = {
-            'backup_path': backup_path,
-            'identifier': identifier,
-            'datetime': stime,
-        }
+    def backup_add_meta_data(self, backup_path: str, identifier: str, stime: str) -> None:
+        meta = BackupMetadata(
+            backup_path=backup_path,
+            identifier=identifier,
+            datetime=stime
+        )
         self.backups.append(meta)
 
     def backup(self):
@@ -123,29 +115,30 @@ class DotFile():
             shutil.copy(self.path, self.main)
             logger.info(f'{self.main} has been added as main for {self.path}')
 
-    def to_db(self):
-        self.dict = {
-                'alias': self.alias,
-                'path': self.path,
-                'main': self.main,
-                'identifier': self.identifier,
-                'backups': self.backups,
-        }
-        return self.dict
+    def to_db(self) -> dict:
+        model = DotFileModel(
+            alias=self.alias,
+            path=self.path,
+            main=self.main,
+            identifier=self.identifier,
+            backups=self.backups
+        )
+        return model.model_dump()
 
-    def from_db(self, data):
-        alias = data['alias']
-        main = data['main']
-        path = data['path']
-        backups = data['backups']
-        identifier = data['identifier']
-        self.__init__(path, alias=alias, identifier=identifier, backups=backups, main=main)
+    def from_db(self, data: dict) -> None:
+        model = DotFileModel.model_validate(data)
+        self.__init__(
+            path=model.path,
+            alias=model.alias,
+            identifier=model.identifier,
+            backups=model.backups,
+            main=model.main
+        )
 
-    def __str__(self):
-        # return str(self.to_db())
+    def __str__(self) -> str:
         msg = f"{self.alias} @{self.identifier}\n"
         msg += f"{self.path} -> {self.main}\n"
         for b in self.backups:
-            msg += f"\t@{b['identifier']} done at {b['datetime']}\n"
-            msg += f"\t-> {b['backup_path']}\n"
+            msg += f"\t@{b.identifier} done at {b.datetime}\n"
+            msg += f"\t-> {b.backup_path}\n"
         return msg
