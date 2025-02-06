@@ -56,7 +56,7 @@ def set_config(dotfiles_dir="dotfiles"):
     config.project_path = get_project_path()
     config.dotfiles_dir = dotfiles_dir
     config.backup_dir = Path(config.dotfiles_dir).joinpath('old').as_posix()
-    config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta.json').as_posix()
+    config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta_2.json').as_posix()
     config.identifier = get_computer_name()
     Path(config.dotfiles_dir).mkdir(parents=True, exist_ok=True)
     logger.info(f"Created directory for {config.dotfiles_dir = }")

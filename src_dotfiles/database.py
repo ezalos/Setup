@@ -20,6 +20,12 @@ logger = LoggerFactory.getLogger(__name__)
 
 
 class Dependencies:
+    """Manages the collection of dotfiles and their metadata.
+    
+    This class handles loading and saving the metadata file, and provides
+    access to individual dotfiles. It maintains both the raw metadata (through
+    Pydantic models) and the operational DotFile instances.
+    """
     def __init__(self):
         self.test: bool = False
         logger.debug(f"{config.depedencies_path = }")
@@ -57,27 +63,38 @@ class Dependencies:
                 return MetaDataDotFiles()
             return MetaDataDotFiles.model_validate_json(data)
 
+    def create_dotfile(self, path: str, alias: Optional[str] = None) -> DotFile:
+        """Create a new DotFile instance with appropriate model
+
+        Args:
+            path (str): Path where the dotfile should exist in the system
+            alias (Optional[str]): Custom alias for the dotfile. Default: filename from path
+
+        Returns:
+            DotFile: New DotFile instance
+        """
+        model = DotFileModel(
+            path=path,
+            alias=alias if alias is not None else Path(path).name,
+            main=Path(config.dotfiles_dir).joinpath(
+                alias if alias is not None else Path(path).name
+            ).as_posix(),
+            identifier=config.identifier,
+            backups=[]
+        )
+        return DotFile(model)
+
     def load_all(self) -> List[DotFile]:
-        """Converts the raw_db data in usable objects
+        """Converts the metadata into usable DotFile objects
 
         Returns:
             List[DotFile]: List of DotFile objects
         """
-        data = []
-        for dotfile_model in self.metadata.dotfiles:
-            dot = DotFile(dotfile_model.path)
-            dot.from_db(dotfile_model.model_dump())
-            logger.debug(f"Loaded {dot.path}")
-            data.append(dot)
-        return data
+        return [DotFile(model) for model in self.metadata.dotfiles]
 
     def save_all(self) -> None:
-        """Converts dotfile objects to raw_db data and saves them"""
-        self.metadata.dotfiles = []
-        for d in self.data:
-            logger.debug(f"Adding {d.alias = } {d.path = } to future backup")
-            model = DotFileModel.model_validate(d.to_db())
-            self.metadata.dotfiles.append(model)
+        """Saves all dotfile data to the metadata file"""
+        self.metadata.dotfiles = [d.data for d in self.data]
         
         db_path = self.get_db_path()
         logger.info(f"Saving to {db_path}")
@@ -94,7 +111,7 @@ class Dependencies:
         Returns:
             Optional[DotFile]: The found DotFile or None if not found
         """
-        selection = [d for d in self.data if d.alias == alias]
+        selection = [d for d in self.data if d.data.alias == alias]
         if len(selection) == 1:
             return selection[0]
         elif len(selection) > 1:

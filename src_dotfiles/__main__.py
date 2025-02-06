@@ -38,33 +38,31 @@ class ManageDotfiles:
         Raises:
             NotImplementedError: If force=True and trying to add different path for existing alias
         """
-        new_dot_file = DotFile(path, alias=alias)
-        if not alias:
-            alias = new_dot_file.alias
+        new_dot_file = self.db.create_dotfile(path, alias)
 
-        current_dot_file = self.db.select_by_alias(alias)
+        current_dot_file = self.db.select_by_alias(new_dot_file.data.alias)
         if not current_dot_file:
-            logger.info(f"Alias {alias} does not exist in the system")
+            logger.info(f"Alias {new_dot_file.data.alias} does not exist in the system")
             new_dot_file.add_file()
             self.db.data.append(new_dot_file)
             self.db.save_all()
-            return new_dot_file.alias
+            return new_dot_file.data.alias
         else:       
             if current_dot_file and not force:
-                logger.warning(f"Alias {alias} already exists in the system, and force is not set")
+                logger.warning(f"Alias {new_dot_file.data.alias} already exists in the system, and force is not set")
                 return None
-            logger.info(f"Alias {current_dot_file.alias} already exists in the system, and force is set")
-            if current_dot_file.path == new_dot_file.path:
+            logger.info(f"Alias {current_dot_file.data.alias} already exists in the system, and force is set")
+            if current_dot_file.data.path == new_dot_file.data.path:
                 logger.debug("Argument path is the same as the one in the system")
                 # Path resolution is way more complex than this :/
                 new_dot_file.backup()
                 new_dot_file.deploy()
                 self.db.data.append(new_dot_file)
                 self.db.save_all()
-                return new_dot_file.alias
+                return new_dot_file.data.alias
             else:
                 logger.error("Argument path is different from the one in the system")
-                logger.error(f"{current_dot_file.path} != {new_dot_file.path}")
+                logger.error(f"{current_dot_file.data.path} != {new_dot_file.data.path}")
                 raise NotImplementedError
 
     def deploy(self, alias: Optional[str] = None) -> None:
