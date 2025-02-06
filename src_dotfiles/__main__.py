@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import fire
 from src_dotfiles.database import Dependencies
 from src_dotfiles.config import config
