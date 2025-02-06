@@ -4,6 +4,7 @@ import re
 from getpass import getuser
 from pathlib import Path
 import os
+from src_dotfiles.models import DevicesData
 
 LoggerFactory.setup_LoggerFactory()
 logger = LoggerFactory.getLogger(__name__)
@@ -58,6 +59,14 @@ def set_config(dotfiles_dir="dotfiles"):
     config.backup_dir = Path(config.dotfiles_dir).joinpath('old').as_posix()
     config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta_2.json').as_posix()
     config.identifier = get_computer_name()
+    
+    # Create device data for current system
+    config.device_data = DevicesData(
+        identifier=config.identifier,
+        home_path=config.home,
+        dotfiles_dir_path=config.dotfiles_dir
+    )
+    
     Path(config.dotfiles_dir).mkdir(parents=True, exist_ok=True)
     logger.info(f"Created directory for {config.dotfiles_dir = }")
     Path(config.backup_dir).mkdir(parents=True, exist_ok=True)

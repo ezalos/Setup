@@ -5,6 +5,9 @@ import shutil
 import os
 import time
 from ezpy_logs.LoggerFactory import LoggerFactory
+from src_dotfiles.__main__ import ManageDotfiles
+from src_dotfiles.database import Dependencies
+from src_dotfiles.models import DevicesData, DotFileModel
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
@@ -27,7 +30,6 @@ def setup_test_environment():
 		"TEST_DATA_TMP": TEST_DATA_TMP
 	}
 
-from src_dotfiles.__main__ import ManageDotfiles
 
 def verify_dotfile_is_added(alias, path):
 	dotfile = ManageDotfiles().db.select_by_alias(alias)
@@ -241,3 +243,75 @@ def test_backup_metadata_is_correct(setup_test_environment):
     assert len(backup.datetime) > 0  # Has a timestamp
     assert Path(backup.backup_path).exists()
     assert Path(backup.backup_path).read_text() == test_content
+
+# -------------------------------- Device Tests ------------------------------- #
+
+@pytest.mark.run(order=13)
+def test_device_data_is_stored(setup_test_environment):
+    """Test that device data is stored in metadata."""
+    # GIVEN a fresh database
+    manager = ManageDotfiles()
+    
+    # THEN the current device should be in metadata
+    assert config.identifier in manager.db.metadata.devices
+    device = manager.db.metadata.devices[config.identifier]
+    assert device.identifier == config.identifier
+    assert device.home_path == config.home
+    assert device.dotfiles_dir_path == config.dotfiles_dir
+
+@pytest.mark.run(order=14)
+def test_deploy_to_different_device(setup_test_environment):
+    """Test deploying a dotfile to a different device."""
+    # GIVEN a dotfile from one device
+    original_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_c")
+    manager = ManageDotfiles()
+    dotfile = manager.db.select_by_alias("c_dotfile")
+    
+    # WHEN translating to a new device
+    new_device = DevicesData(
+        identifier="test_device",
+        home_path="/home/test_user",
+        dotfiles_dir_path="test_dotfiles_new"
+    )
+    manager.db.metadata.devices["test_device"] = new_device
+    
+    translated = dotfile.translate_to_device(config.device_data, new_device)
+    
+    # THEN paths should be correctly translated
+    assert translated.data.identifier == "test_device"
+    assert translated.data.path.startswith("/home/test_user")
+    assert "test_dotfiles_new" in translated.data.main
+    assert len(translated.data.backups) == 0  # Backups don't transfer between devices
+
+@pytest.mark.run(order=15)
+def test_load_from_different_device(setup_test_environment):
+    """Test loading dotfiles from a different device."""
+    # GIVEN a database with a dotfile from another device
+    manager = ManageDotfiles()
+    other_device = DevicesData(
+        identifier="other_device",
+        home_path="/Users/other",
+        dotfiles_dir_path="other_dotfiles"
+    )
+    manager.db.metadata.devices["other_device"] = other_device
+    
+    other_dotfile = DotFileModel(
+        alias="other_dotfile",
+        path="/Users/other/.otherrc",
+        main="other_dotfiles/.otherrc",
+        identifier="other_device",
+        backups=[]
+    )
+    manager.db.metadata.dotfiles.append(other_dotfile)
+    manager.db.save_all()
+    
+    # WHEN loading all dotfiles
+    new_manager = ManageDotfiles()
+    
+    # THEN the dotfile should be translated to current device
+    translated = new_manager.db.select_by_alias("other_dotfile")
+    assert translated is not None
+    assert translated.data.identifier == config.identifier
+    assert translated.data.path.startswith(config.home)
+    assert translated.data.main.startswith(config.dotfiles_dir)
+    assert len(translated.data.backups) == 0

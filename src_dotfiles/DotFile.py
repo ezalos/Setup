@@ -6,6 +6,7 @@ from src_dotfiles.config import config
 from pathlib import Path
 from ezpy_logs.LoggerFactory import LoggerFactory
 from src_dotfiles.models import DotFileModel, BackupMetadata
+from src_dotfiles.models import DevicesData
 
 logger = LoggerFactory.getLogger(__name__)
 
@@ -121,6 +122,50 @@ class DotFile:
         if os.path.exists(self.data.path):
             shutil.copy(self.data.path, self.data.main)
             logger.info(f'{self.data.main} has been added as main for {self.data.path}')
+
+    def translate_to_device(self, original_device: DevicesData, target_device: DevicesData) -> "DotFile":
+        """Create a new DotFile instance with paths translated for the target device.
+        
+        Args:
+            original_device: Device data where the paths are currently based
+            target_device: Device data where we want to translate paths to
+            
+        Returns:
+            New DotFile instance with translated paths for target device
+        """
+        logger.debug(f"Translating paths from {original_device.identifier} to {target_device.identifier}")
+        logger.debug(f"Original path: {self.data.path}")
+        logger.debug(f"Original main: {self.data.main}")
+
+        # Translate system path (e.g., /home/user/.zshrc -> /Users/user/.zshrc)
+        new_path = self.data.path
+        if original_device.home_path in new_path:
+            new_path = new_path.replace(original_device.home_path, target_device.home_path, 1)
+        else:
+            # If path doesn't contain original home, assume it's relative to home
+            new_path = str(Path(target_device.home_path) / self.data.path)
+        logger.debug(f"Translated path: {new_path}")
+
+        # Translate main path (e.g., dotfiles/.zshrc -> test_dotfiles/.zshrc)
+        new_main = self.data.main
+        if original_device.dotfiles_dir_path in new_main:
+            new_main = new_main.replace(
+                original_device.dotfiles_dir_path,
+                target_device.dotfiles_dir_path,
+                1
+            )
+        logger.debug(f"Translated main: {new_main}")
+
+        # Create new model with translated paths
+        new_model = DotFileModel(
+            alias=self.data.alias,
+            path=new_path,
+            main=new_main,
+            identifier=target_device.identifier,
+            backups=[]  # Reset backups as they're device-specific
+        )
+        
+        return DotFile(new_model)
 
     def __str__(self) -> str:
         msg = f"{self.data.alias} @{self.data.identifier}\n"

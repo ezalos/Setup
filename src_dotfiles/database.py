@@ -27,13 +27,34 @@ class Dependencies:
     Pydantic models) and the operational DotFile instances.
     """
     def __init__(self):
+        """Initialize the Dependencies manager.
+        
+        Loads metadata from file if it exists, otherwise creates empty metadata.
+        Then loads all dotfiles and translates them to current device if needed.
+        """
         self.test: bool = False
+        self.data: List[DotFile] = []  # Initialize data as empty list first
         logger.debug(f"{config.depedencies_path = }")
         logger.debug(f"{config.dotfiles_dir = }")
         self.path: str = config.depedencies_path
         self.path_test: str = config.dotfiles_dir + "test_" + "meta.json"
-        self.metadata: MetaDataDotFiles = self.load()
-        self.data: List[DotFile] = self.load_all()
+        self.db_path = self.get_db_path()
+        logger.debug(f"{self.db_path = }")
+
+        if self.db_path.exists():
+            with open(self.db_path, "r") as f:
+                self.metadata = MetaDataDotFiles.model_validate_json(f.read())
+        else:
+            self.metadata = MetaDataDotFiles(
+                dotfiles=[],
+                devices={
+                    config.identifier: config.device_data
+                }
+            )
+            self.save_all()
+
+        # Load and translate dotfiles after metadata is initialized
+        self.data = self.load_all()
 
     def get_db_path(self) -> Path:
         """Get the path to the database file
@@ -85,17 +106,42 @@ class Dependencies:
         return DotFile(model)
 
     def load_all(self) -> List[DotFile]:
-        """Converts the metadata into usable DotFile objects
-
+        """Converts the metadata into usable DotFile objects.
+        
+        If a dotfile is from a different device, translates its paths to current device.
+        
         Returns:
             List[DotFile]: List of DotFile objects
         """
-        return [DotFile(model) for model in self.metadata.dotfiles]
+        dotfiles = []
+        for model in self.metadata.dotfiles:
+            if model.identifier != config.identifier:
+                # Get device data for translation
+                if model.identifier not in self.metadata.devices:
+                    logger.warning(f"Device {model.identifier} not found in metadata, skipping {model.alias}")
+                    continue
+                    
+                original_device = self.metadata.devices[model.identifier]
+                translated = DotFile(model).translate_to_device(original_device, config.device_data)
+                dotfiles.append(translated)
+                # Update the metadata to include the translated dotfile
+                self.metadata.dotfiles.append(translated.data)
+            else:
+                dotfiles.append(DotFile(model))
+        return dotfiles
 
     def save_all(self) -> None:
         """Saves all dotfile data to the metadata file"""
-        self.metadata.dotfiles = [d.data for d in self.data]
+        # Get all existing dotfiles that aren't in self.data
+        existing_dotfiles = [d for d in self.metadata.dotfiles if not any(sd.data.alias == d.alias for sd in self.data)]
         
+        # Add current dotfiles to the list
+        self.metadata.dotfiles = existing_dotfiles + [d.data for d in self.data]
+        
+        # Ensure current device is in metadata
+        if config.identifier not in self.metadata.devices:
+            self.metadata.devices[config.identifier] = config.device_data
+            
         db_path = self.get_db_path()
         logger.info(f"Saving to {db_path}")
         db_path.parent.mkdir(parents=True, exist_ok=True)
