@@ -57,6 +57,7 @@ else
     export WHICH_COMPUTER="Unknown"
 fi
 
+export PATH_SETUP_DIR="$HOME/Setup"
 
 # ---------------------------------------------------------------------------- #
 #                                    Plugins                                   #
@@ -177,13 +178,39 @@ alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/remote/extract.sh"
 alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
 alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
 
+
+# Setup repo management
+function sync_setup() {
+    local current_dir=$(pwd)
+    cd "$PATH_SETUP_DIR"
+    
+    # Check for remote changes
+    echo "\n🔍 Checking remote status..."
+    git fetch
+    git status -sb
+    
+    # Check for local changes
+    echo "\n📁 Adding dotfiles..."
+    git add dotfiles
+    
+    # Show status
+    echo "\n📊 Current status:"
+    git status
+    
+    # Generate commit message
+    echo "\n✏️  Suggested commit command:"
+    echo "git commit -m \"dot: syncing dotfiles device [$WHICH_COMPUTER]\""
+    echo "   To get back to the original directory:"
+    echo "cd $current_dir"
+}
+
+
+
 # ---------------------------------------------------------------------------- #
 #                                     PATH                                     #
 # ---------------------------------------------------------------------------- #
 
-export PATH=$HOME/Setup/bin:$PATH
-
-# ---------------------------------------------------------------------------- #
+export PATH=$PATH_SETUP_DIR/bin:$PATH
 export PATH=/usr/local/cuda-12.2/bin:$PATH
 
 # ---------------------------------------------------------------------------- #
@@ -232,6 +259,5 @@ if [[ $WHICH_COMPUTER == "MacBook" ]]; then
 export CLICOLOR=1
 # Set colors to match iTerm2 Terminal Colors
 export TERM=xterm-256color
-fi
-
 . "$HOME/.local/bin/env"
+fi
