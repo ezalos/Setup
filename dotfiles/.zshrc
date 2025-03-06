@@ -44,6 +44,17 @@ else
    export EDITOR='nvim'
 fi
 
+# Set up SSH agent and add key
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" > /dev/null 2>&1
+fi
+# Add the key if it exists
+if [ -f ~/.ssh/gthb ]; then
+	ssh-add ~/.ssh/gthb > /dev/null 2>&1
+else
+	echo "⚠️  Warning: SSH key ~/.ssh/gthb not found"
+fi
+
 # Set computer identifier
 if [[ `uname -n` = "ezalos-TM1704" ]]; then
     export WHICH_COMPUTER="TheBeast"
@@ -180,29 +191,56 @@ alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
 
 
 # Setup repo management
-function sync_setup() {
+function setup_sync_up() {
     local current_dir=$(pwd)
-    cd "$PATH_SETUP_DIR"
+    local commit_msg="$1"
     
-    # Check for remote changes
-    echo "\n🔍 Checking remote status..."
-    git fetch
-    git status -sb
+    cd "$PATH_SETUP_DIR" || { echo "❌ Failed to change to setup directory"; return 1; }
     
-    # Check for local changes
+    echo "\n🔍 Fetching updates..."
+    git fetch || { echo "❌ Failed to fetch updates"; cd "$current_dir"; return 1; }
+    
     echo "\n📁 Adding dotfiles..."
-    git add dotfiles
+    git add dotfiles || { echo "❌ Failed to add dotfiles"; cd "$current_dir"; return 1; }
     
-    # Show status
     echo "\n📊 Current status:"
     git status
     
-    # Generate commit message
-    echo "\n✏️  Suggested commit command:"
-    echo "git commit -m \"dot: syncing dotfiles device [$WHICH_COMPUTER]\""
-    echo "   To get back to the original directory:"
-    echo "cd $current_dir"
+    echo "\n❓ Proceed with commit and push? (y/N)"
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        local full_msg="dot: ${commit_msg:-syncing dotfiles} from device [$WHICH_COMPUTER]"
+        git commit -m "$full_msg" || { echo "❌ Failed to commit"; cd "$current_dir"; return 1; }
+        
+        echo "\n⬆️  Pushing changes..."
+        git push || { echo "❌ Failed to push changes"; cd "$current_dir"; return 1; }
+        
+        echo "\n✅ Successfully synced up!"
+    else
+        echo "\n⚠️  Sync cancelled"
+    fi
+    
+    cd "$current_dir"
 }
+
+function setup_sync_down() {
+    local current_dir=$(pwd)
+    
+    cd "$PATH_SETUP_DIR" || { echo "❌ Failed to change to setup directory"; return 1; }
+    
+    echo "\n⬇️  Pulling updates..."
+    if git pull; then
+        echo "\n✅ Successfully pulled updates"
+        cd "$current_dir"
+        echo "\n🔄 Reloading shell configuration..."
+        source "$HOME/.zshrc"
+    else
+        echo "❌ Failed to pull updates"
+        cd "$current_dir"
+        return 1
+    fi
+}
+
 
 
 
@@ -232,6 +270,7 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     export PATH="$PATH:/home/ezalos/.local/bin"
 elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
     export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+    export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 fi
 
 # source ~/.autoenv/activate.sh
@@ -253,11 +292,22 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 . "$HOME/.cargo/env"
 fi
 
+
 if [[ $WHICH_COMPUTER == "MacBook" ]]; then
+
 # From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
 # Set CLICOLOR if you want Ansi Colors in iTerm2 
 export CLICOLOR=1
 # Set colors to match iTerm2 Terminal Colors
 export TERM=xterm-256color
 . "$HOME/.local/bin/env"
+
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/ezalos/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+
 fi
+
+
