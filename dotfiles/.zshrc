@@ -44,17 +44,6 @@ else
    export EDITOR='nvim'
 fi
 
-# Set up SSH agent and add key
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)" > /dev/null 2>&1
-fi
-# Add the key if it exists
-if [ -f ~/.ssh/gthb ]; then
-	ssh-add ~/.ssh/gthb > /dev/null 2>&1
-else
-	echo "⚠️  Warning: SSH key ~/.ssh/gthb not found"
-fi
-
 # Set computer identifier
 if [[ `uname -n` = "ezalos-TM1704" ]]; then
     export WHICH_COMPUTER="TheBeast"
@@ -69,6 +58,28 @@ else
 fi
 
 export PATH_SETUP_DIR="$HOME/Setup"
+
+# ---------------------------------------------------------------------------- #
+#                                   SSH INIT                                   #
+# ---------------------------------------------------------------------------- #
+
+# Set up SSH agent and add key
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" > /dev/null 2>&1
+fi
+
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+SSH_KEY_PATH="$HOME/.ssh/id_ed_ghub"
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+SSH_KEY_PATH="$HOME/.ssh/gthb"
+fi
+
+# Add the key if it exists
+if [ -n "$SSH_KEY_PATH" ] && [ -f "$SSH_KEY_PATH" ]; then
+	ssh-add "$SSH_KEY_PATH" > /dev/null 2>&1
+else
+	echo "⚠️  Warning: SSH key $SSH_KEY_PATH not found"
+fi
 
 # ---------------------------------------------------------------------------- #
 #                                    Plugins                                   #
