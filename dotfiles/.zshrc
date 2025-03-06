@@ -169,7 +169,11 @@ EOF
 alias mkenv='mkenv_pip'
 
 # General aliases
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 alias copy='xclip -sel c'
+elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+alias copy='pbcopy'
+fi
 alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
 alias gcl="git clone"
 alias ec="$EDITOR $HOME/.zshrc"
