@@ -53,6 +53,8 @@ elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
     export WHICH_COMPUTER="MacBook"
+elif [[ `uname -n` = "Louiss-MacBook-Pro-2.local" ]]; then
+    export WHICH_COMPUTER="MacBook"
 else
     export WHICH_COMPUTER="Unknown"
 fi
