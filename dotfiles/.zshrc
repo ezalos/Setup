@@ -280,7 +280,7 @@ export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH
 
 # Machine-specific aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-    export PATH="$PATH:$HOME/.AppImage/"
+    export PATH="$PATH:$HOME/.AppImage"
     # Created by `pipx` on 2024-07-15 15:54:12
     export PATH="$PATH:/home/ezalos/.local/bin"
 elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
@@ -305,6 +305,7 @@ eval "$(direnv hook zsh)"
 
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 . "$HOME/.cargo/env"
+export PATH="$PATH:/usr/lib/dart/bin"
 fi
 
 
