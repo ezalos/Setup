@@ -53,10 +53,10 @@ elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
     export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` = "Louiss-MacBook-Pro-2.local" ]]; then
-    export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
     export WHICH_COMPUTER="MacBook"
+elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]]; then
+    export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
 else
     export WHICH_COMPUTER="Unknown"
 fi
@@ -76,7 +76,9 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/id_ed_ghub"
 elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/gthb"
-fi
+elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+SSH_KEY_PATH="$HOME/.ssh/ghub_ezalos"
+`fi
 
 # Add the key if it exists
 if [ -n "$SSH_KEY_PATH" ] && [ -f "$SSH_KEY_PATH" ]; then
@@ -140,7 +142,7 @@ EOF
     # python3 -m pip install --upgrade pip
     if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
         python -m venv venv && direnv allow
-    elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+    elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
         python3 -m venv venv && direnv allow
     fi
 }
@@ -175,7 +177,7 @@ alias mkenv='mkenv_pip'
 # General aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 alias copy='xclip -sel c'
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 alias copy='pbcopy'
 fi
 alias indent="python3 ~/42/Python_Indentation/Indent.py -f"
@@ -190,7 +192,7 @@ alias bt="batcat --paging=never --style=plain "
 # Machine-specific aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     # ...
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
     # ...
 fi
 
@@ -287,14 +289,14 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     export PATH="$PATH:$HOME/.AppImage"
     # Created by `pipx` on 2024-07-15 15:54:12
     export PATH="$PATH:/home/ezalos/.local/bin"
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
+elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
     export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
     export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 fi
 
 # source ~/.autoenv/activate.sh
-if [[ $WHICH_COMPUTER == "MacBook" ]]; then
-    PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+    PATH="/opt/homebrew/opt/``grep``/libexec/gnubin:$PATH"
     source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 elif [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
@@ -303,7 +305,7 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
+`
 eval "$(direnv hook zsh)"
 
 
@@ -313,7 +315,7 @@ export PATH="$PATH:/usr/lib/dart/bin"
 fi
 
 
-if [[ $WHICH_COMPUTER == "MacBook" ]]; then
+if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
 # From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
 # Set CLICOLOR if you want Ansi Colors in iTerm2 
