@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
 	tmux \
 	direnv \
 	neovim \
+	bat \
 	software-properties-common \
 	&& rm -rf /var/lib/apt/lists/*
 

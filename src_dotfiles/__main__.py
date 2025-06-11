@@ -68,7 +68,8 @@ class ManageDotfiles:
         """Deploy dotfiles to the system.
 
         Args:
-            alias (Optional[str]): Alias of the dotfile to deploy. If not provided, will deploy all dotfiles.
+            alias (Optional[str]):  Alias of the dotfile to deploy. 
+                                    If not provided, will deploy all dotfiles.
         """
         if alias == None:
             logger.info("Deploying all dotfiles")

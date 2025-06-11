@@ -78,7 +78,7 @@ elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/gthb"
 elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/ghub_ezalos"
-`fi
+fi
 
 # Add the key if it exists
 if [ -n "$SSH_KEY_PATH" ] && [ -f "$SSH_KEY_PATH" ]; then
@@ -90,7 +90,6 @@ fi
 # ---------------------------------------------------------------------------- #
 #                                    Plugins                                   #
 # ---------------------------------------------------------------------------- #
-
 
 source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.oh-my-zsh/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
@@ -275,6 +274,7 @@ export PATH=/usr/local/cuda-12.2/bin:$PATH
 # ---------------------------------------------------------------------------- #
 #                                   GPU Cuda                                   #
 # ---------------------------------------------------------------------------- #
+
 export LD_LIBRARY_PATH=/usr/lib/cuda/lib64:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda-12.2/bin:$PATH
@@ -305,31 +305,26 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-`
 eval "$(direnv hook zsh)"
 
-
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-. "$HOME/.cargo/env"
-export PATH="$PATH:/usr/lib/dart/bin"
+    . "$HOME/.cargo/env"
+    export PATH="$PATH:/usr/lib/dart/bin"
 fi
 
-
 if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+    # From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
+    # Set CLICOLOR if you want Ansi Colors in iTerm2 
+    export CLICOLOR=1
+    # Set colors to match iTerm2 Terminal Colors
+    export TERM=xterm-256color
+    . "$HOME/.local/bin/env"
 
-# From: https://superuser.com/questions/399594/color-scheme-not-applied-in-iterm2
-# Set CLICOLOR if you want Ansi Colors in iTerm2 
-export CLICOLOR=1
-# Set colors to match iTerm2 Terminal Colors
-export TERM=xterm-256color
-. "$HOME/.local/bin/env"
-
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/ezalos/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
-
+    # The following lines have been added by Docker Desktop to enable Docker CLI completions.
+    fpath=(/Users/ezalos/.docker/completions $fpath)
+    autoload -Uz compinit
+    compinit
+    # End of Docker CLI completions
 fi
 
 
