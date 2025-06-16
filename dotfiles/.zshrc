@@ -366,15 +366,25 @@ if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
 
-    export PYTHONPATH="${PYTHONPATH}:${HOME}/monorepo/src"
+    pythonpaths_monorepo_lib_src=$(find /home/ldevelle/monorepo/libraries -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
+    export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
 fi
 
 if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
-
     function rsync_monorepo {
         rsync -ravh \
-            --exclude={'env','.python-version','.venv','venv','.git/*','*.pyc','__pycache__','.pytest_cache','.ipynb_checkpoint','untracked_files/data/*'} \
+            --exclude='.envrc' \
+            --exclude='env' \
+            --exclude='.python-version' \
+            --exclude='.venv' \
+            --exclude='venv' \
+            --exclude='.git/*' \
+            --exclude='*.pyc' \
+            --exclude='__pycache__' \
+            --exclude='.pytest_cache' \
+            --exclude='.ipynb_checkpoint' \
+            --exclude='untracked_files/data/*' \
             $HOME/monorepo/ \
             $1:monorepo/
     }
