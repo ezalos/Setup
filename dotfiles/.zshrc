@@ -92,7 +92,8 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/id_ed_ghub"
 elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
 SSH_KEY_PATH="$HOME/.ssh/gthb"
-elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+# elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+elif [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
 SSH_KEY_PATH="$HOME/.ssh/ghub_ezalos"
 fi
 
