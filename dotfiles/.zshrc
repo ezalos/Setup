@@ -73,6 +73,8 @@ elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-louis.home" ]]; then
     export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
+elif [[ `uname -n` =~ ^rnd ]]; then
+    export WHICH_COMPUTER="rnd_Heuritech" # Remote Heuritech machine
 else
     export WHICH_COMPUTER="Unknown"
 fi
@@ -344,7 +346,7 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
 fi
 
 # Heuritech specific
-if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
 
     # Pyenv
     export PYENV_ROOT="$HOME/.pyenv"
@@ -352,7 +354,13 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
     eval "$(pyenv init - zsh)"
     eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"``
+    eval "$(pyenv virtualenv-init -)"
+
+    export PYTHONPATH="${PYTHONPATH}:${HOME}/monorepo/src"
+fi
+
+if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+
 
     function rsync_monorepo {
         rsync -ravh \
@@ -368,6 +376,5 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
         alias pyenv86="arch -x86_64 pyenv"
     fi
 
-    export PYTHONPATH="${PYTHONPATH}:${HOME}/monorepo/src"
 
 fi
