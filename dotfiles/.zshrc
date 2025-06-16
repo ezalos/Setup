@@ -75,6 +75,8 @@ elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-
     export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
 elif [[ `uname -n` =~ ^rnd ]]; then
     export WHICH_COMPUTER="rnd_Heuritech" # Remote Heuritech machine
+elif [[ `uname -n` = "smic" ]]; then
+    export WHICH_COMPUTER="smic_Heuritech" # Remote Heuritech machine
 else
     export WHICH_COMPUTER="Unknown"
 fi
