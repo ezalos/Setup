@@ -19,7 +19,7 @@ COLOR_RESET="\e[0m"
 # ---------------------------------------------------------------------------- #
 DOCKER_USERNAME="ezalos"
 IMAGE_NAME="work.gpu"
-DOCKERFILE_PATH="Dockerfile"
+DOCKERFILE_PATH="Dockerfile.cuda112"
 
 # Version handling
 IMAGE_VERSION=${1:-latest}

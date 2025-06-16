@@ -55,7 +55,7 @@ elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
     export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]]; then
+elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-louis.home" ]]; then
     export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
 else
     export WHICH_COMPUTER="Unknown"
@@ -269,6 +269,7 @@ function setup_sync_down() {
 # ---------------------------------------------------------------------------- #
 
 export PATH=$PATH_SETUP_DIR/bin:$PATH
+export PATH=$PATH_SETUP_DIR/usr/bin:$PATH
 export PATH=/usr/local/cuda-12.2/bin:$PATH
 
 # ---------------------------------------------------------------------------- #
@@ -294,13 +295,16 @@ elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heurit
     export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 fi
 
+# echo "DEBUG: LINE 297"
 # source ~/.autoenv/activate.sh
 if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-    PATH="/opt/homebrew/opt/``grep``/libexec/gnubin:$PATH"
+    PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
     source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 elif [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
 fi
+# echo "DEBUG: LINE 305`"
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -327,4 +331,31 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
     # End of Docker CLI completions
 fi
 
+# Heuritech specific
+if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
+    # Pyenv
+    export PYENV_ROOT="$HOME/.pyenv"
+    [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init - zsh)"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"``
+
+    function rsync_monorepo {
+        rsync -ravh \
+            --exclude={'env','.python-version','.venv','venv','.git/*','*.pyc','__pycache__','.pytest_cache','.ipynb_checkpoint','untracked_files/data/*'} \
+            $HOME/monorepo/ \
+            $1:monorepo/
+    }
+    # export -f rsync_monorepo
+
+    # rosetta terminal setup
+    if [ $(arch) = "i386" ]; then
+        alias brew86="/usr/local/bin/brew"
+        alias pyenv86="arch -x86_64 pyenv"
+    fi
+
+    export PYTHONPATH="${PYTHONPATH}:${HOME}/monorepo/src"
+
+fi

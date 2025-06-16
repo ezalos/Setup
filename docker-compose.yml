@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   work.gpu:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.cuda112
     image: ezalos/work.gpu:${DOCKER_TAG:-latest}
     container_name: work.gpu
     deploy:
@@ -14,5 +16,6 @@ services:
               capabilities: [gpu]
     volumes:
       - /:/mnt/host
+      - $HOME:$HOME
     tty: true
     stdin_open: true 
