@@ -1,3 +1,16 @@
+# ---------------------------------------------------------------------------- #
+#                                     PATH                                     #
+# ---------------------------------------------------------------------------- #
+
+export PATH_SETUP_DIR="$HOME/Setup"
+
+if [[ -d "$PATH_SETUP_DIR/bin" ]]; then
+    export PATH=$PATH_SETUP_DIR/bin:$PATH
+fi
+if [[ -d "$PATH_SETUP_DIR/usr/bin" ]]; then
+    export PATH=$PATH_SETUP_DIR/usr/bin:$PATH
+fi
+
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv export zsh)"
 
@@ -60,8 +73,6 @@ elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-
 else
     export WHICH_COMPUTER="Unknown"
 fi
-
-export PATH_SETUP_DIR="$HOME/Setup"
 
 # ---------------------------------------------------------------------------- #
 #                                   SSH INIT                                   #
@@ -268,8 +279,6 @@ function setup_sync_down() {
 #                                     PATH                                     #
 # ---------------------------------------------------------------------------- #
 
-export PATH=$PATH_SETUP_DIR/bin:$PATH
-export PATH=$PATH_SETUP_DIR/usr/bin:$PATH
 export PATH=/usr/local/cuda-12.2/bin:$PATH
 
 # ---------------------------------------------------------------------------- #
