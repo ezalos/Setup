@@ -366,7 +366,7 @@ if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
 
-    pythonpaths_monorepo_lib_src=$(find /home/ldevelle/monorepo/libraries -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
+    pythonpaths_monorepo_lib_src=$(find $HOME/monorepo/libraries -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
     export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
 fi
 
