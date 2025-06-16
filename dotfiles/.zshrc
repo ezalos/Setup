@@ -10,6 +10,9 @@ fi
 if [[ -d "$PATH_SETUP_DIR/usr/bin" ]]; then
     export PATH=$PATH_SETUP_DIR/usr/bin:$PATH
 fi
+if [[ -d "$HOME/.local/bin" ]]; then
+    export PATH=$HOME/.local/bin:$PATH
+fi
 
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv export zsh)"
