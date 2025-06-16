@@ -354,7 +354,7 @@ if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
     # Pyenv
     export PYENV_ROOT="$HOME/.pyenv"
     [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init - zsh)"
+    # eval "$(pyenv init - zsh)"
     eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
