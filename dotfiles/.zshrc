@@ -195,6 +195,13 @@ alias mkenv='mkenv_pip'
 # General aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 alias copy='xclip -sel c'
+elif [[ $WHICH_COMPUTER == "smic_Heuritech" ]]; then
+alias copy='xclip -sel c'
+elif [[ $WHICH_COMPUTER == "rnd_Heuritech" ]]; then
+alias copy='xclip -sel c'
+elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
+alias copy='pbcopy'
+fi
 elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 alias copy='pbcopy'
 fi
