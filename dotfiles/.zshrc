@@ -222,10 +222,10 @@ elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heurit
 fi
 
 # Docker cleanup aliases
-alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
-alias docker_kill_all='docker kill $(docker ps -a -q)'
+alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
+alias docker_kill_all='docker kill $(docker ps -a -q)'
 
 # Icono project aliases
 ICONO_DIRECTORY="/home/ezalos/42/icono-web"
@@ -387,6 +387,22 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
             --exclude='untracked_files/data/*' \
             $HOME/monorepo/ \
             $1:monorepo/
+    }
+    function b_rsync_monorepo {
+        rsync -ravh \
+            --exclude='.envrc' \
+            --exclude='env' \
+            --exclude='.python-version' \
+            --exclude='.venv' \
+            --exclude='venv' \
+            --exclude='.git/*' \
+            --exclude='*.pyc' \
+            --exclude='__pycache__' \
+            --exclude='.pytest_cache' \
+            --exclude='.ipynb_checkpoint' \
+            --exclude='untracked_files/data/*' \
+            $1:monorepo/ \
+            $HOME/monorepo/ 
     }
     # export -f rsync_monorepo
 
