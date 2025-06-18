@@ -385,7 +385,6 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
     function rsync_monorepo {
         rsync -ravh \
-            --exclude='.envrc' \
             --exclude='env' \
             --exclude='.python-version' \
             --exclude='.venv' \
@@ -401,7 +400,6 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
     }
     function b_rsync_monorepo {
         rsync -ravh \
-            --exclude='.envrc' \
             --exclude='env' \
             --exclude='.python-version' \
             --exclude='.venv' \
