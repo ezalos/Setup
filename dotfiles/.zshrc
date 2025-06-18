@@ -368,6 +368,17 @@ if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
 
     pythonpaths_monorepo_lib_src=$(find $HOME/monorepo/libraries -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
     export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
+
+    export AWS_PROFILE="euprod"
+    export AWS_REGION="eu-west-1"
+
+    export THESAURUS_ROUTE_BASE=https://thesaurus-api.heuritech.com/api
+    export OPSTER_MODULES_ROUTE_BASE=https://opster-api.heuritech.com/modules
+    export MODULES_ROUTE_BASE=https://modules-api.heuritech.com
+    export CATALOG_ROUTE_BASE=https://catalog-api.heuritech.com
+    export INDUS_ROUTE_BASE=https://indus-api.heuritech.com
+    export DATASET_ROUTE_BASE=https://dataset-api.heuritech.com
+    export LABELING_ROUTE_BASE=https://labeling-api.heuritech.com
 fi
 
 if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
