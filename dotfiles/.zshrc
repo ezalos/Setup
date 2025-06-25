@@ -383,6 +383,15 @@ fi
 
 if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
+    function rnd_free_space {
+        echo "Cleaning up old files in /srv/data/datasets/octopus_images/crop/..."
+        find /srv/data/datasets/octopus_images/crop/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
+        echo "Cleaning up old files in /srv/data/datasets/octopus_images/..."
+        find /srv/data/datasets/octopus_images/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
+        echo "Cleanup completed!"
+    }
+
+
     function rsync_monorepo {
         rsync -ravh \
             --exclude='env' \
