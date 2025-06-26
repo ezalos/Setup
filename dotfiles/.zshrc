@@ -379,10 +379,7 @@ if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
     export INDUS_ROUTE_BASE=https://indus-api.heuritech.com
     export DATASET_ROUTE_BASE=https://dataset-api.heuritech.com
     export LABELING_ROUTE_BASE=https://labeling-api.heuritech.com
-fi
-
-if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-
+    
     function rnd_free_space {
         echo "Cleaning up old files in /srv/data/datasets/octopus_images/crop/..."
         find /srv/data/datasets/octopus_images/crop/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
@@ -390,7 +387,9 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
         find /srv/data/datasets/octopus_images/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
         echo "Cleanup completed!"
     }
+fi
 
+if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 
     function rsync_monorepo {
         rsync -ravh \
