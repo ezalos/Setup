@@ -4,7 +4,7 @@
 APPIMAGE_DIR="$HOME/.AppImage"
 
 # Find the most recent cursor AppImage file
-LATEST_CURSOR=$(ls -t "$APPIMAGE_DIR"/cursor-* 2>/dev/null | head -n1)
+LATEST_CURSOR=$(ls -t "$APPIMAGE_DIR"/[cC]ursor-* 2>/dev/null | head -n1)
 
 if [ -z "$LATEST_CURSOR" ]; then
     echo "Error: No cursor AppImage found in $APPIMAGE_DIR"
