@@ -183,9 +183,13 @@ function mkenv_uv() {
 #!$(which bash)
 
 # source ./${PWD##*/}/bin/activate
-source .venv/bin/activate
+source venv/bin/activate
 
 unset PS1
+
+export "VIRTUAL_ENV=$(pwd)venv"
+
+
 EOF
     # uv venv ${PWD##*/} && direnv allow
     uv venv && direnv allow
