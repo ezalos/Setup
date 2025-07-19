@@ -187,13 +187,13 @@ function mkenv_uv() {
 
 
 export VIRTUAL_ENV="$(pwd)/$DIR_FOR_VENV"
-source "$VIRTUAL_ENV/bin/activate"
+source "\$VIRTUAL_ENV/bin/activate"
 
 unset PS1
 
 EOF
     # uv venv ${PWD##*/} && direnv allow
-    uv venv && direnv allow
+    uv venv && direnv allow && uv init
 }
 alias mkenv='mkenv_pip'
 
