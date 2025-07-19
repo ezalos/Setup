@@ -179,16 +179,17 @@ EOF
 }
 
 function mkenv_uv() {
+    DIR_FOR_VENV=".venv"
     cat > .envrc << EOF
 #!$(which bash)
 
 # source ./${PWD##*/}/bin/activate
-source venv/bin/activate
+
+
+export VIRTUAL_ENV="$(pwd)/$DIR_FOR_VENV"
+source "$VIRTUAL_ENV/bin/activate"
 
 unset PS1
-
-export "VIRTUAL_ENV=$(pwd)venv"
-
 
 EOF
     # uv venv ${PWD##*/} && direnv allow
