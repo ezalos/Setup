@@ -11,6 +11,15 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.config/neofetch/config.conf",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/neofetch/config.conf",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/.neofetch_TheBeast.ezalos_2025-08-11_16:50:20.269037",
+                            "datetime": "2025-08-11_16:50:20.269037"
+                        }
+                    ]
                 }
             }
         },
@@ -24,6 +33,10 @@
                 },
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.zshrc",
+                    "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.zshrc",
                     "backups": []
                 }
             }
@@ -39,6 +52,10 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.vimrc",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.vimrc",
+                    "backups": []
                 }
             }
         },
@@ -52,6 +69,10 @@
                 },
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.config/nvim/init.vim",
+                    "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/nvim/init.vim",
                     "backups": []
                 }
             }
@@ -67,6 +88,10 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.bashrc",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.bashrc",
+                    "backups": []
                 }
             }
         },
@@ -81,6 +106,15 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.config/terminator/config",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/terminator/config",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/terminator_TheBeast.ezalos_2025-08-11_16:50:20.271123",
+                            "datetime": "2025-08-11_16:50:20.271123"
+                        }
+                    ]
                 }
             }
         },
@@ -94,6 +128,10 @@
                 },
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.p10k.zsh",
+                    "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.p10k.zsh",
                     "backups": []
                 }
             }
@@ -109,6 +147,10 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.gdbinit",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.gdbinit",
+                    "backups": []
                 }
             }
         },
@@ -122,6 +164,10 @@
                 },
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.jupyter/jupyter_notebook_config.py",
                     "backups": []
                 }
             }
@@ -137,6 +183,10 @@
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
                     "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
                 }
             }
         },
@@ -150,6 +200,10 @@
                 },
                 "MacBook.Pro.de.Louis.local.louis": {
                     "deploy_path": "/Users/louis/.tmux.conf",
+                    "backups": []
+                },
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.tmux.conf",
                     "backups": []
                 }
             }
