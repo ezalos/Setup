@@ -334,7 +334,7 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
 elif [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
 fi
-# echo "DEBUG: LINE 305`"
+# echo "DEBUG: LINE 305"
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -403,7 +403,9 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
             --exclude='env' \
             --exclude='.python-version' \
             --exclude='.venv' \
+            --exclude='**/.venv' \
             --exclude='venv' \
+            --exclude='**/venv' \
             --exclude='.git/*' \
             --exclude='*.pyc' \
             --exclude='__pycache__' \
@@ -418,7 +420,9 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
             --exclude='env' \
             --exclude='.python-version' \
             --exclude='.venv' \
+            --exclude='**/.venv' \
             --exclude='venv' \
+            --exclude='**/venv' \
             --exclude='.git/*' \
             --exclude='*.pyc' \
             --exclude='__pycache__' \
