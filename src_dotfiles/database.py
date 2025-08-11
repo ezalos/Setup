@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from ezpy_logs.LoggerFactory import LoggerFactory
 from typing import List, Optional
-from src_dotfiles.models import DotFileModel, MetaDataDotFiles
+from src_dotfiles.models import DotFileModel, MetaDataDotFiles, DeployedDotFile
 from src_dotfiles.DotFile import DotFile
 
 logger = LoggerFactory.getLogger(__name__)
@@ -42,11 +42,13 @@ class Dependencies:
         logger.debug(f"{self.db_path = }")
 
         if self.db_path.exists():
+            logger.debug(f"Loading metadata from {self.db_path}")
             with open(self.db_path, "r") as f:
                 self.metadata = MetaDataDotFiles.model_validate_json(f.read())
         else:
+            logger.debug(f"Creating new metadata")
             self.metadata = MetaDataDotFiles(
-                dotfiles=[],
+                dotfiles={},
                 devices={
                     config.identifier: config.device_data
                 }
@@ -94,16 +96,37 @@ class Dependencies:
         Returns:
             DotFile: New DotFile instance
         """
-        model = DotFileModel(
-            path=path,
-            alias=alias if alias is not None else Path(path).name,
-            main=Path(config.dotfiles_dir).joinpath(
-                alias if alias is not None else Path(path).name
-            ).as_posix(),
-            identifier=config.identifier,
-            backups=[]
+        if alias is None:
+            alias = Path(path).name
+        
+        identifier=config.identifier
+        main=Path(config.dotfiles_dir).joinpath(alias).as_posix()
+
+
+        if alias in self.metadata.dotfiles.keys():
+            dot_file_model = self.metadata.dotfiles[alias]
+        else: 
+            dot_file_model = DotFileModel(
+                alias=alias,
+                main=main,
+                deploy={
+                    identifier: DeployedDotFile(
+                        deploy_path=path,
+                        backups=[]
+                    )
+                }
+            )
+        
+        if identifier in dot_file_model.deploy.keys():
+            old_backups = dot_file_model.deploy[identifier].backups
+        else:
+            old_backups = []
+
+        dot_file_model.deploy[identifier] = DeployedDotFile(
+            deploy_path=path,
+            backups=old_backups
         )
-        return DotFile(model)
+        return DotFile(dot_file_model, identifier)
 
     def load_all(self) -> List[DotFile]:
         """Converts the metadata into usable DotFile objects.
@@ -114,31 +137,48 @@ class Dependencies:
             List[DotFile]: List of DotFile objects
         """
         dotfiles = []
-        for model in self.metadata.dotfiles:
-            if model.identifier != config.identifier:
+        for alias, model in self.metadata.dotfiles.items():
+            if config.identifier not in model.deploy.keys():
                 # Get device data for translation
-                if model.identifier not in self.metadata.devices:
-                    logger.warning(f"Device {model.identifier} not found in metadata, skipping {model.alias}")
+                known_devices_in_model = [i for i in model.deploy.keys() if i in self.metadata.devices.keys()]
+
+                if len(known_devices_in_model) == 0:
+                    logger.warning(f"All the devices from model {model.deploy.keys() = } not found in metadata, skipping {model.alias = }")
                     continue
+                else:
+                    model_identifier = known_devices_in_model[0]
                     
-                original_device = self.metadata.devices[model.identifier]
+                original_device = self.metadata.devices[model_identifier]
                 translated = DotFile(model).translate_to_device(original_device, config.device_data)
                 dotfiles.append(translated)
-                # Update the metadata to include the translated dotfile
-                self.metadata.dotfiles.append(translated.data)
             else:
-                dotfiles.append(DotFile(model))
+                dotfiles.append(DotFile(model, config.identifier))
+        self.update_dotfiles(dotfiles)
         return dotfiles
+
+    def update_dotfiles(self, dotfiles: List[DotFile]) -> None:
+        for dotfile in dotfiles:
+            identifier = dotfile.identifier
+            db_dotfile_model = self.metadata.dotfiles.get(dotfile.data.alias)
+            if db_dotfile_model is None:
+                self.metadata.dotfiles[dotfile.data.alias] = dotfile.data
+                continue
+            db_deploy = db_dotfile_model.deploy.get(identifier)
+            if db_deploy is None:
+                db_dotfile_model.deploy[identifier] = dotfile.data.deploy[identifier]
+                self.metadata.dotfiles[dotfile.data.alias] = db_dotfile_model
+                continue
+            db_backups = db_deploy.backups
+            for db_backup in db_backups:
+                if db_backup not in dotfile.data.deploy[identifier].backups:
+                    dotfile.data.deploy[identifier].backups.append(db_backup)
+            db_dotfile_model.deploy[identifier] = dotfile.data.deploy[identifier]
+            self.metadata.dotfiles[dotfile.data.alias] = db_dotfile_model
 
     def save_all(self) -> None:
         """Saves all dotfile data to the metadata file"""
-        # Get all existing dotfiles that aren't in self.data
-        existing_dotfiles = [d for d in self.metadata.dotfiles if not any(sd.data.alias == d.alias for sd in self.data)]
+        self.update_dotfiles(self.data)
         
-        # Add current dotfiles to the list
-        self.metadata.dotfiles = existing_dotfiles + [d.data for d in self.data]
-        
-        # Ensure current device is in metadata
         if config.identifier not in self.metadata.devices:
             self.metadata.devices[config.identifier] = config.device_data
             

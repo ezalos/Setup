@@ -1,0 +1,195 @@
+{
+    "dotfiles": {
+        ".neofetch": {
+            "alias": ".neofetch",
+            "main": "dotfiles/.neofetch",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.config/neofetch/config.conf",
+                    "backups": []
+                }
+            }
+        },
+        ".zshrc": {
+            "alias": ".zshrc",
+            "main": "dotfiles/.zshrc",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.zshrc",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.zshrc",
+                    "backups": []
+                }
+            }
+        },
+        ".vimrc": {
+            "alias": ".vimrc",
+            "main": "dotfiles/.vimrc",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.vimrc",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.vimrc",
+                    "backups": []
+                }
+            }
+        },
+        "init.vim": {
+            "alias": "init.vim",
+            "main": "dotfiles/init.vim",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.config/nvim/init.vim",
+                    "backups": []
+                }
+            }
+        },
+        ".bashrc": {
+            "alias": ".bashrc",
+            "main": "dotfiles/.bashrc",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.bashrc",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.bashrc",
+                    "backups": []
+                }
+            }
+        },
+        "terminator": {
+            "alias": "terminator",
+            "main": "dotfiles/terminator",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/terminator/config",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.config/terminator/config",
+                    "backups": []
+                }
+            }
+        },
+        ".p10k.zsh": {
+            "alias": ".p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.p10k.zsh",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.p10k.zsh",
+                    "backups": []
+                }
+            }
+        },
+        ".gdbinit": {
+            "alias": ".gdbinit",
+            "main": "dotfiles/.gdbinit",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.gdbinit",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.gdbinit",
+                    "backups": []
+                }
+            }
+        },
+        "jupyter_notebook_config.py": {
+            "alias": "jupyter_notebook_config.py",
+            "main": "dotfiles/jupyter_notebook_config.py",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                }
+            }
+        },
+        "warp": {
+            "alias": "warp",
+            "main": "dotfiles/warp",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
+                }
+            }
+        },
+        ".tmux.conf": {
+            "alias": ".tmux.conf",
+            "main": "dotfiles/.tmux.conf",
+            "deploy": {
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.tmux.conf",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.tmux.conf",
+                    "backups": []
+                }
+            }
+        }
+    },
+    "devices": {
+        "ezalos.TM1704.ezalos": {
+            "identifier": "ezalos.TM1704.ezalos",
+            "home_path": "/home/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "Louiss.MBP.ezalos": {
+            "identifier": "Louiss.MBP.ezalos",
+            "home_path": "/Users/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "TheBeast.ezalos": {
+            "identifier": "TheBeast.ezalos",
+            "home_path": "/home/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "Louiss.MBP.lan.ezalos": {
+            "identifier": "Louiss.MBP.lan.ezalos",
+            "home_path": "/Users/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "MacBook.Pro.de.Louis.local.louis": {
+            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "home_path": "/Users/louis",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "rnd3.ldevelle": {
+            "identifier": "rnd3.ldevelle",
+            "home_path": "/srv/data/home/ldevelle",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "louiss.macbook.pro.3.home.ezalos": {
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "home_path": "/Users/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        }
+    }
+}

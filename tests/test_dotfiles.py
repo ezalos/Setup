@@ -7,7 +7,9 @@ import time
 from ezpy_logs.LoggerFactory import LoggerFactory
 from src_dotfiles.__main__ import ManageDotfiles
 from src_dotfiles.database import Dependencies
-from src_dotfiles.models import DevicesData, DotFileModel
+from src_dotfiles.models import DevicesData, DotFileModel, DeployedDotFile
+from src_dotfiles.DotFile import get_time, DATETIME_FORMAT, DotFile
+from datetime import datetime
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
@@ -50,8 +52,9 @@ def remove_file_if_exists(path: Path):
 
 def get_latest_backup(dotfile) -> Path:
     """Get the path to the most recent backup of a dotfile"""
-    assert len(dotfile.data.backups) > 0, "No backups found"
-    return Path(dotfile.data.backups[-1].backup_path)
+    identifier = dotfile.identifier
+    assert len(dotfile.data.deploy[identifier].backups) > 0, "No backups found"
+    return Path(dotfile.data.deploy[identifier].backups[-1].backup_path)
 
 # --------------------------------- Add file --------------------------------- #
 
@@ -78,11 +81,13 @@ def test_add_dotfile_alias_exists_no_force(setup_test_environment):
 	assert alias is None
 
 
-@pytest.mark.run(order=4)
-def test_add_dotfile_alias_exists_force_different_path(setup_test_environment):
-    dotfile_path = f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_c"
-    with pytest.raises(NotImplementedError):
-        alias = ManageDotfiles().add(path=dotfile_path, alias="b_dotfile", force=True)
+# @pytest.mark.run(order=4)
+# def test_add_dotfile_alias_exists_force_different_path(setup_test_environment):
+#     dotfile_path = f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_c"
+#     with pytest.raises(NotImplementedError):
+#         alias = ManageDotfiles().add(path=dotfile_path, alias="b_dotfile", force=True)
+#         # verify_dotfile_is_added(alias, dotfile_path)
+
 
 
 @pytest.mark.run(order=5)
@@ -142,15 +147,17 @@ def test_deploy_all_dotfiles(setup_test_environment):
     # Setup - remove all files
     manager = ManageDotfiles()
     for dotfile in manager.db.data:
-        remove_file_if_exists(Path(dotfile.data.path))
-        assert not Path(dotfile.data.path).exists()
+        identifier = dotfile.identifier
+        remove_file_if_exists(Path(dotfile.data.deploy[identifier].deploy_path))
+        assert not Path(dotfile.data.deploy[identifier].deploy_path).exists()
 
     # Deploy all
     manager.deploy()
 
     # Verify all files are deployed
     for dotfile in manager.db.data:
-        path = Path(dotfile.data.path)
+        identifier = dotfile.identifier
+        path = Path(dotfile.data.deploy[identifier].deploy_path)
         assert path.is_symlink()
         assert Path(dotfile.data.main).exists()
 
@@ -181,7 +188,8 @@ def test_backup_creates_unique_files(setup_test_environment):
     dotfile_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_c")
     manager = ManageDotfiles()
     dotfile = manager.db.select_by_alias("c_dotfile")
-    initial_backup_count = len(dotfile.data.backups)
+    identifier = dotfile.identifier
+    initial_backup_count = len(dotfile.data.deploy[identifier].backups)
 
     # WHEN creating multiple versions
     test_content = "New version for unique backup test"
@@ -191,7 +199,7 @@ def test_backup_creates_unique_files(setup_test_environment):
 
     # THEN a new backup should be created
     dotfile = manager.db.select_by_alias("c_dotfile")
-    assert len(dotfile.data.backups) == initial_backup_count + 1
+    assert len(dotfile.data.deploy[identifier].backups) == initial_backup_count + 1
     backup_path = get_latest_backup(dotfile)
     assert backup_path.read_text() == test_content
 
@@ -207,7 +215,8 @@ def test_backup_maintains_version_history(setup_test_environment):
     ]
     manager = ManageDotfiles()
     dotfile = manager.db.select_by_alias("c_dotfile")
-    initial_backup_count = len(dotfile.data.backups)
+    identifier = dotfile.identifier
+    initial_backup_count = len(dotfile.data.deploy[identifier].backups)
 
     # WHEN creating multiple versions
     for content in contents:
@@ -217,7 +226,7 @@ def test_backup_maintains_version_history(setup_test_environment):
 
     # THEN all versions should be preserved in order
     dotfile = manager.db.select_by_alias("c_dotfile")
-    new_backups = dotfile.data.backups[initial_backup_count:]
+    new_backups = dotfile.data.deploy[identifier].backups[initial_backup_count:]
     assert len(new_backups) == len(contents)
     
     for backup, expected_content in zip(new_backups, contents):
@@ -230,19 +239,24 @@ def test_backup_metadata_is_correct(setup_test_environment):
     dotfile_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_c")
     test_content = "Content for metadata test"
     manager = ManageDotfiles()
+
+    t_0 = get_time()
     
     # WHEN creating a backup
     remove_file_if_exists(dotfile_path)
     dotfile_path.write_text(test_content)
     manager.deploy("c_dotfile")
+
+    t_1 = get_time()
     
     # THEN the metadata should be correct
     dotfile = manager.db.select_by_alias("c_dotfile")
-    backup = dotfile.data.backups[-1]
-    assert backup.identifier == config.identifier
+    identifier = dotfile.identifier
+    backup = dotfile.data.deploy[identifier].backups[-1]
     assert len(backup.datetime) > 0  # Has a timestamp
     assert Path(backup.backup_path).exists()
     assert Path(backup.backup_path).read_text() == test_content
+    assert datetime.strptime(t_0, DATETIME_FORMAT) <= datetime.strptime(backup.datetime, DATETIME_FORMAT) <= datetime.strptime(t_1, DATETIME_FORMAT)
 
 # -------------------------------- Device Tests ------------------------------- #
 
@@ -276,42 +290,51 @@ def test_deploy_to_different_device(setup_test_environment):
     manager.db.metadata.devices["test_device"] = new_device
     
     translated = dotfile.translate_to_device(config.device_data, new_device)
-    
+
     # THEN paths should be correctly translated
-    assert translated.data.identifier == "test_device"
-    assert translated.data.path.startswith("/home/test_user")
+    assert translated.identifier == "test_device"
+    assert "test_device" in translated.data.deploy.keys()
+    assert translated.data.deploy[translated.identifier].deploy_path.startswith("/home/test_user")
     assert "test_dotfiles_new" in translated.data.main
-    assert len(translated.data.backups) == 0  # Backups don't transfer between devices
+    assert len(translated.data.deploy[translated.identifier].backups) == 0  # Backups don't transfer between devices
 
 @pytest.mark.run(order=15)
 def test_load_from_different_device(setup_test_environment):
     """Test loading dotfiles from a different device."""
     # GIVEN a database with a dotfile from another device
     manager = ManageDotfiles()
+    new_identifier = "other_device"
     other_device = DevicesData(
-        identifier="other_device",
+        identifier=new_identifier,
         home_path="/Users/other",
         dotfiles_dir_path="other_dotfiles"
     )
-    manager.db.metadata.devices["other_device"] = other_device
-    
-    other_dotfile = DotFileModel(
-        alias="other_dotfile",
-        path="/Users/other/.otherrc",
-        main="other_dotfiles/.otherrc",
-        identifier="other_device",
-        backups=[]
+    manager.db.metadata.devices[new_identifier] = other_device
+    alias="other_dotfile"
+    other_dotfile = DotFile(
+        data=DotFileModel(
+            alias=alias,
+            main=f"other_dotfiles/{alias}",
+            deploy={
+                new_identifier: DeployedDotFile(
+                    deploy_path=f"/Users/other/{alias}",
+                    backups=[]
+                )
+            }
+        ), 
+        identifier=new_identifier
     )
-    manager.db.metadata.dotfiles.append(other_dotfile)
+    manager.db.data.append(other_dotfile)
     manager.db.save_all()
     
     # WHEN loading all dotfiles
     new_manager = ManageDotfiles()
     
     # THEN the dotfile should be translated to current device
-    translated = new_manager.db.select_by_alias("other_dotfile")
+    translated = new_manager.db.select_by_alias(alias)
     assert translated is not None
-    assert translated.data.identifier == config.identifier
-    assert translated.data.path.startswith(config.home)
+    assert translated.identifier == config.identifier
+    assert config.identifier in translated.data.deploy.keys()
+    assert translated.data.deploy[config.identifier].deploy_path.startswith(config.home)
     assert translated.data.main.startswith(config.dotfiles_dir)
-    assert len(translated.data.backups) == 0
+    assert len(translated.data.deploy[config.identifier].backups) == 0

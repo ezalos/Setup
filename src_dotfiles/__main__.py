@@ -3,7 +3,6 @@
 import fire
 from src_dotfiles.database import Dependencies
 from src_dotfiles.config import config
-from src_dotfiles.DotFile import DotFile
 from ezpy_logs.LoggerFactory import LoggerFactory
 from typing import Optional
 
@@ -37,6 +36,8 @@ class ManageDotfiles:
         Raises:
             NotImplementedError: If force=True and trying to add different path for existing alias
         """
+        logger.debug(f"{path = } {alias = } {force = }")
+        
         new_dot_file = self.db.create_dotfile(path, alias)
 
         current_dot_file = self.db.select_by_alias(new_dot_file.data.alias)
@@ -51,7 +52,9 @@ class ManageDotfiles:
                 logger.warning(f"Alias {new_dot_file.data.alias} already exists in the system, and force is not set")
                 return None
             logger.info(f"Alias {current_dot_file.data.alias} already exists in the system, and force is set")
-            if current_dot_file.data.path == new_dot_file.data.path:
+            logger.debug(f"{current_dot_file.data = }")
+            logger.debug(f"{new_dot_file.data = }")
+            if current_dot_file.data.deploy[new_dot_file.identifier].deploy_path == new_dot_file.data.deploy[new_dot_file.identifier].deploy_path:
                 logger.debug("Argument path is the same as the one in the system")
                 # Path resolution is way more complex than this :/
                 new_dot_file.backup()
@@ -61,7 +64,7 @@ class ManageDotfiles:
                 return new_dot_file.data.alias
             else:
                 logger.error("Argument path is different from the one in the system")
-                logger.error(f"{current_dot_file.data.path} != {new_dot_file.data.path}")
+                logger.error(f"{current_dot_file.data.deploy[current_dot_file.identifier].deploy_path} != {new_dot_file.data.deploy[new_dot_file.identifier].deploy_path}")
                 raise NotImplementedError
 
     def deploy(self, alias: Optional[str] = None) -> None:
