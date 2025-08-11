@@ -69,6 +69,8 @@ elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
     export WHICH_COMPUTER="MacBook"
+elif [[ `uname -n` =~ ^louiss-macbook-pro-[0-9]+\.home$ ]]; then
+    export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
     export WHICH_COMPUTER="MacBook"
 elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-louis.home" ]]; then

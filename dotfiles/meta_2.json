@@ -2,209 +2,394 @@
     "dotfiles": [
         {
             "alias": "mac.zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/Users/ezalos/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
-            "backups": [
-                {
-                    "backup_path": "/Users/louis/Setup/dotfiles/old/mac.zshrc_MacBook.Pro.de.Louis.local.louis_2025-06-10_21:35:16.079838",
-                    "identifier": "MacBook.Pro.de.Louis.local.louis",
-                    "datetime": "2025-06-10_21:35:16.079838"
-                },
-                {
-                    "backup_path": "/Users/louis/Setup/dotfiles/old/mac.zshrc_MacBook.Pro.de.Louis.local.louis_2025-06-10_21:38:40.161525",
-                    "identifier": "MacBook.Pro.de.Louis.local.louis",
-                    "datetime": "2025-06-10_21:38:40.161525"
-                }
-            ]
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
         },
         {
             "alias": "mac.p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "mac.vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/Users/ezalos/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".neofetch",
-            "path": "/Users/louis/.config/neofetch/config.conf",
+            "path": "/Users/ezalos/.config/neofetch/config.conf",
             "main": "dotfiles/.neofetch",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/Users/ezalos/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/Users/ezalos/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "init.vim",
-            "path": "/Users/louis/.config/nvim/init.vim",
+            "path": "/Users/ezalos/.config/nvim/init.vim",
             "main": "dotfiles/init.vim",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".bashrc",
-            "path": "/Users/louis/.bashrc",
+            "path": "/Users/ezalos/.bashrc",
             "main": "dotfiles/.bashrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "terminator",
-            "path": "/Users/louis/.config/terminator/config",
+            "path": "/Users/ezalos/.config/terminator/config",
             "main": "dotfiles/terminator",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".gdbinit",
-            "path": "/Users/louis/.gdbinit",
+            "path": "/Users/ezalos/.gdbinit",
             "main": "dotfiles/.gdbinit",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "jupyter_notebook_config.py",
-            "path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+            "path": "/Users/ezalos/.jupyter/jupyter_notebook_config.py",
             "main": "dotfiles/jupyter_notebook_config.py",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "warp",
-            "path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
+            "path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
             "main": "dotfiles/warp",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".tmux.conf",
-            "path": "/Users/louis/.tmux.conf",
+            "path": "/Users/ezalos/.tmux.conf",
             "main": "dotfiles/.tmux.conf",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "mac.zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/Users/ezalos/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "mac.p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "mac.vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/Users/ezalos/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".neofetch",
-            "path": "/Users/louis/.config/neofetch/config.conf",
+            "path": "/Users/ezalos/.config/neofetch/config.conf",
             "main": "dotfiles/.neofetch",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/Users/ezalos/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/Users/ezalos/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "init.vim",
-            "path": "/Users/louis/.config/nvim/init.vim",
+            "path": "/Users/ezalos/.config/nvim/init.vim",
             "main": "dotfiles/init.vim",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".bashrc",
-            "path": "/Users/louis/.bashrc",
+            "path": "/Users/ezalos/.bashrc",
             "main": "dotfiles/.bashrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "terminator",
-            "path": "/Users/louis/.config/terminator/config",
+            "path": "/Users/ezalos/.config/terminator/config",
             "main": "dotfiles/terminator",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".gdbinit",
-            "path": "/Users/louis/.gdbinit",
+            "path": "/Users/ezalos/.gdbinit",
             "main": "dotfiles/.gdbinit",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "jupyter_notebook_config.py",
-            "path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+            "path": "/Users/ezalos/.jupyter/jupyter_notebook_config.py",
             "main": "dotfiles/jupyter_notebook_config.py",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": "warp",
-            "path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
+            "path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
             "main": "dotfiles/warp",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         },
         {
             "alias": ".tmux.conf",
-            "path": "/Users/louis/.tmux.conf",
+            "path": "/Users/ezalos/.tmux.conf",
             "main": "dotfiles/.tmux.conf",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.zshrc",
+            "path": "/Users/ezalos/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.vimrc",
+            "path": "/Users/ezalos/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".neofetch",
+            "path": "/Users/ezalos/.config/neofetch/config.conf",
+            "main": "dotfiles/.neofetch",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".zshrc",
+            "path": "/Users/ezalos/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".vimrc",
+            "path": "/Users/ezalos/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "init.vim",
+            "path": "/Users/ezalos/.config/nvim/init.vim",
+            "main": "dotfiles/init.vim",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".bashrc",
+            "path": "/Users/ezalos/.bashrc",
+            "main": "dotfiles/.bashrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "terminator",
+            "path": "/Users/ezalos/.config/terminator/config",
+            "main": "dotfiles/terminator",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".gdbinit",
+            "path": "/Users/ezalos/.gdbinit",
+            "main": "dotfiles/.gdbinit",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "jupyter_notebook_config.py",
+            "path": "/Users/ezalos/.jupyter/jupyter_notebook_config.py",
+            "main": "dotfiles/jupyter_notebook_config.py",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "warp",
+            "path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
+            "main": "dotfiles/warp",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".tmux.conf",
+            "path": "/Users/ezalos/.tmux.conf",
+            "main": "dotfiles/.tmux.conf",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.zshrc",
+            "path": "/Users/ezalos/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "mac.vimrc",
+            "path": "/Users/ezalos/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".neofetch",
+            "path": "/Users/ezalos/.config/neofetch/config.conf",
+            "main": "dotfiles/.neofetch",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".zshrc",
+            "path": "/Users/ezalos/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".vimrc",
+            "path": "/Users/ezalos/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "init.vim",
+            "path": "/Users/ezalos/.config/nvim/init.vim",
+            "main": "dotfiles/init.vim",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".bashrc",
+            "path": "/Users/ezalos/.bashrc",
+            "main": "dotfiles/.bashrc",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "terminator",
+            "path": "/Users/ezalos/.config/terminator/config",
+            "main": "dotfiles/terminator",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".p10k.zsh",
+            "path": "/Users/ezalos/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".gdbinit",
+            "path": "/Users/ezalos/.gdbinit",
+            "main": "dotfiles/.gdbinit",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "jupyter_notebook_config.py",
+            "path": "/Users/ezalos/.jupyter/jupyter_notebook_config.py",
+            "main": "dotfiles/jupyter_notebook_config.py",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": "warp",
+            "path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
+            "main": "dotfiles/warp",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "backups": []
+        },
+        {
+            "alias": ".tmux.conf",
+            "path": "/Users/ezalos/.tmux.conf",
+            "main": "dotfiles/.tmux.conf",
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
             "backups": []
         }
     ],
@@ -232,6 +417,11 @@
         "MacBook.Pro.de.Louis.local.louis": {
             "identifier": "MacBook.Pro.de.Louis.local.louis",
             "home_path": "/Users/louis",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "louiss.macbook.pro.3.home.ezalos": {
+            "identifier": "louiss.macbook.pro.3.home.ezalos",
+            "home_path": "/Users/ezalos",
             "dotfiles_dir_path": "dotfiles"
         }
     }
