@@ -8,6 +8,8 @@ test_dotfiles
 __pycache__
 data/test_data
 
+/usr
+
 *.pyc
 *.pyo
 

@@ -2,209 +2,418 @@
     "dotfiles": [
         {
             "alias": "mac.zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": [
                 {
-                    "backup_path": "/Users/louis/Setup/dotfiles/old/mac.zshrc_MacBook.Pro.de.Louis.local.louis_2025-06-10_21:35:16.079838",
-                    "identifier": "MacBook.Pro.de.Louis.local.louis",
-                    "datetime": "2025-06-10_21:35:16.079838"
-                },
-                {
-                    "backup_path": "/Users/louis/Setup/dotfiles/old/mac.zshrc_MacBook.Pro.de.Louis.local.louis_2025-06-10_21:38:40.161525",
-                    "identifier": "MacBook.Pro.de.Louis.local.louis",
-                    "datetime": "2025-06-10_21:38:40.161525"
+                    "backup_path": "/srv/data/home/ldevelle/Setup/dotfiles/old/mac.zshrc_rnd3.ldevelle_2025-06-16_15:13:38.515554",
+                    "identifier": "rnd3.ldevelle",
+                    "datetime": "2025-06-16_15:13:38.515554"
                 }
             ]
         },
         {
             "alias": "mac.p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "mac.vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".neofetch",
-            "path": "/Users/louis/.config/neofetch/config.conf",
+            "path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
             "main": "dotfiles/.neofetch",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "init.vim",
-            "path": "/Users/louis/.config/nvim/init.vim",
+            "path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
             "main": "dotfiles/init.vim",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".bashrc",
-            "path": "/Users/louis/.bashrc",
+            "path": "/srv/data/home/ldevelle/.bashrc",
             "main": "dotfiles/.bashrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
-            "backups": []
+            "identifier": "rnd3.ldevelle",
+            "backups": [
+                {
+                    "backup_path": "/srv/data/home/ldevelle/Setup/dotfiles/old/.bashrc_rnd3.ldevelle_2025-06-16_15:13:38.517424",
+                    "identifier": "rnd3.ldevelle",
+                    "datetime": "2025-06-16_15:13:38.517424"
+                }
+            ]
         },
         {
             "alias": "terminator",
-            "path": "/Users/louis/.config/terminator/config",
+            "path": "/srv/data/home/ldevelle/.config/terminator/config",
             "main": "dotfiles/terminator",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".gdbinit",
-            "path": "/Users/louis/.gdbinit",
+            "path": "/srv/data/home/ldevelle/.gdbinit",
             "main": "dotfiles/.gdbinit",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "jupyter_notebook_config.py",
-            "path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+            "path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
             "main": "dotfiles/jupyter_notebook_config.py",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "warp",
-            "path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
+            "path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
             "main": "dotfiles/warp",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".tmux.conf",
-            "path": "/Users/louis/.tmux.conf",
+            "path": "/srv/data/home/ldevelle/.tmux.conf",
             "main": "dotfiles/.tmux.conf",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "mac.zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "mac.p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "mac.vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".neofetch",
-            "path": "/Users/louis/.config/neofetch/config.conf",
+            "path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
             "main": "dotfiles/.neofetch",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".zshrc",
-            "path": "/Users/louis/.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
             "main": "dotfiles/.zshrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".vimrc",
-            "path": "/Users/louis/.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
             "main": "dotfiles/.vimrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "init.vim",
-            "path": "/Users/louis/.config/nvim/init.vim",
+            "path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
             "main": "dotfiles/init.vim",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".bashrc",
-            "path": "/Users/louis/.bashrc",
+            "path": "/srv/data/home/ldevelle/.bashrc",
             "main": "dotfiles/.bashrc",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "terminator",
-            "path": "/Users/louis/.config/terminator/config",
+            "path": "/srv/data/home/ldevelle/.config/terminator/config",
             "main": "dotfiles/terminator",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".p10k.zsh",
-            "path": "/Users/louis/.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
             "main": "dotfiles/.p10k.zsh",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".gdbinit",
-            "path": "/Users/louis/.gdbinit",
+            "path": "/srv/data/home/ldevelle/.gdbinit",
             "main": "dotfiles/.gdbinit",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "jupyter_notebook_config.py",
-            "path": "/Users/louis/.jupyter/jupyter_notebook_config.py",
+            "path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
             "main": "dotfiles/jupyter_notebook_config.py",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": "warp",
-            "path": "/Users/louis/.warp/launch_configurations/launch_config.yaml",
+            "path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
             "main": "dotfiles/warp",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         },
         {
             "alias": ".tmux.conf",
-            "path": "/Users/louis/.tmux.conf",
+            "path": "/srv/data/home/ldevelle/.tmux.conf",
             "main": "dotfiles/.tmux.conf",
-            "identifier": "MacBook.Pro.de.Louis.local.louis",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "mac.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": [
+                {
+                    "backup_path": "/srv/data/home/ldevelle/Setup/dotfiles/old/mac.zshrc_rnd3.ldevelle_2025-06-16_15:13:38.515554",
+                    "identifier": "rnd3.ldevelle",
+                    "datetime": "2025-06-16_15:13:38.515554"
+                }
+            ]
+        },
+        {
+            "alias": "mac.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "mac.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".neofetch",
+            "path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
+            "main": "dotfiles/.neofetch",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "init.vim",
+            "path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
+            "main": "dotfiles/init.vim",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".bashrc",
+            "path": "/srv/data/home/ldevelle/.bashrc",
+            "main": "dotfiles/.bashrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": [
+                {
+                    "backup_path": "/srv/data/home/ldevelle/Setup/dotfiles/old/.bashrc_rnd3.ldevelle_2025-06-16_15:13:38.517424",
+                    "identifier": "rnd3.ldevelle",
+                    "datetime": "2025-06-16_15:13:38.517424"
+                }
+            ]
+        },
+        {
+            "alias": "terminator",
+            "path": "/srv/data/home/ldevelle/.config/terminator/config",
+            "main": "dotfiles/terminator",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".gdbinit",
+            "path": "/srv/data/home/ldevelle/.gdbinit",
+            "main": "dotfiles/.gdbinit",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "jupyter_notebook_config.py",
+            "path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
+            "main": "dotfiles/jupyter_notebook_config.py",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "warp",
+            "path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
+            "main": "dotfiles/warp",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".tmux.conf",
+            "path": "/srv/data/home/ldevelle/.tmux.conf",
+            "main": "dotfiles/.tmux.conf",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "mac.zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "mac.p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "mac.vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".neofetch",
+            "path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
+            "main": "dotfiles/.neofetch",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".zshrc",
+            "path": "/srv/data/home/ldevelle/.zshrc",
+            "main": "dotfiles/.zshrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".vimrc",
+            "path": "/srv/data/home/ldevelle/.vimrc",
+            "main": "dotfiles/.vimrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "init.vim",
+            "path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
+            "main": "dotfiles/init.vim",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".bashrc",
+            "path": "/srv/data/home/ldevelle/.bashrc",
+            "main": "dotfiles/.bashrc",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "terminator",
+            "path": "/srv/data/home/ldevelle/.config/terminator/config",
+            "main": "dotfiles/terminator",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".p10k.zsh",
+            "path": "/srv/data/home/ldevelle/.p10k.zsh",
+            "main": "dotfiles/.p10k.zsh",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".gdbinit",
+            "path": "/srv/data/home/ldevelle/.gdbinit",
+            "main": "dotfiles/.gdbinit",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "jupyter_notebook_config.py",
+            "path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
+            "main": "dotfiles/jupyter_notebook_config.py",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": "warp",
+            "path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
+            "main": "dotfiles/warp",
+            "identifier": "rnd3.ldevelle",
+            "backups": []
+        },
+        {
+            "alias": ".tmux.conf",
+            "path": "/srv/data/home/ldevelle/.tmux.conf",
+            "main": "dotfiles/.tmux.conf",
+            "identifier": "rnd3.ldevelle",
             "backups": []
         }
     ],
@@ -232,6 +441,11 @@
         "MacBook.Pro.de.Louis.local.louis": {
             "identifier": "MacBook.Pro.de.Louis.local.louis",
             "home_path": "/Users/louis",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "rnd3.ldevelle": {
+            "identifier": "rnd3.ldevelle",
+            "home_path": "/srv/data/home/ldevelle",
             "dotfiles_dir_path": "dotfiles"
         }
     }
