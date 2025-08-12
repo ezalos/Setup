@@ -28,6 +28,9 @@ fi
 
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv hook zsh)"
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -223,8 +226,6 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
     path_prepend "/opt/homebrew/opt/grep/libexec/gnubin"
 fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     . "$HOME/.cargo/env"
