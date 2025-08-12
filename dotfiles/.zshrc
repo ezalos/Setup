@@ -49,14 +49,18 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(
   git
   zsh-autosuggestions
-  zsh-syntax-highlighting
   history-substring-search
+  zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
 HISTCONTROL=ignorespace
 export LANG=en_US.UTF-8
 
 #  BINDKEYS
+# Unbind up/down arrow keys mapped by powerlevel10k so they keep default history navigation.
+bindkey -r '^[[A'
+bindkey -r '^[[B'
+# Map Shift-Up/Shift-Down to history substring search instead.
 bindkey '^[[1;2A' history-substring-search-up
 bindkey '^[[1;2B' history-substring-search-down
 
@@ -220,7 +224,7 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     . "$HOME/.cargo/env"
