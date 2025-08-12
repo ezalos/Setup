@@ -10,7 +10,7 @@ path_append()  { for d in "$@"; do [[ -d $d ]] && path+=($d);     done }
 typeset -gU path
 
 # Sensible zsh options ------------------------------------------------ #
-setopt autocd pushd_ignore_dups share_history hist_ignore_space
+setopt autocd pushd_ignore_dups share_history hist_ignore_space inc_append_history 
 # zmodload zsh/zprof
 
 # Initial PATH bootstrap
@@ -147,15 +147,15 @@ setup_ssh
 #                                     Conda                                    #
 # ---------------------------------------------------------------------------- #
 
-export PATH=$PATH:/home/ezalos/miniconda3/bin
-# Lazy-load conda to speed up shell startup
-lazy_conda() {
-  unset -f lazy_conda
-  eval "$(/home/ezalos/miniconda3/bin/conda shell.zsh hook 2> /dev/null)"
-}
-add-zsh-hook precmd lazy_conda
-# <<< conda initialize <<<
-
+if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+    export PATH=$PATH:/home/ezalos/miniconda3/bin
+	# Lazy-load conda to speed up shell startup
+	lazy_conda() {
+		unset -f lazy_conda
+		eval "$(/home/ezalos/miniconda3/bin/conda shell.zsh hook 2> /dev/null)"
+	}
+	add-zsh-hook precmd lazy_conda
+fi
 
 # ---------------------------------------------------------------------------- #
 #                                     ALIAS                                    #
