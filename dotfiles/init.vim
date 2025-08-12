@@ -30,64 +30,25 @@ au BufNewFile, BufRead *.js, *.html, *.css
 "Flag unnecessery whitespaces
 au BufRead, BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
-
 set encoding=utf-8
 
-
-"setup vim-plug {{{
-
-  "Note: install vim-plug if not present
-  if empty(glob('~/.config/nvim/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall
-  endif
-
-  "Note: Skip initialization for vim-tiny or vim-small.
-  if !1 | finish | endif
-  if has('vim_starting')
-    set nocompatible               " Be iMproved
-    " Required:
-    call plug#begin()
-  endif
-
-"}}}
-
-"You'll need to install plug vim first
-"curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-"    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-"Auto install vim-plug
+" Setup vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" Skip initialization for vim-tiny or vim-small
+if !1 | finish | endif
 
-" call plug#begin()
+if has('vim_starting')
+  set nocompatible               " Be iMproved
+  call plug#begin('~/.vim/plugged')
+endif
 
 "Live compilations errors for c and other languages
 Plug 'vim-syntastic/syntastic'
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_c_include_dirs = [ '../includes', 'includes', 'libft/includes' ]
-"Remove Pylint checker
-let g:syntastic_python_checkers = ['python']
-"let g:syntastic_loc_list_height = 5
-
-" Syntastic responsive size
-" see :h syntastic-loclist-callback
-function! SyntasticCheckHook(errors)
-	if !empty(a:errors)
-		let g:syntastic_loc_list_height = min([len(a:errors), 10])
-	endif
-endfunction
 
 "a universal set of defaults that everyone can agree on.
 Plug 'tpope/vim-sensible'
@@ -99,8 +60,6 @@ Plug 'ctrlpvim/ctrlp.vim'
 
 "Virtual env compability with syntastic
 Plug 'jmcantrell/vim-virtualenv'
-
-
 
 "Improved C syntax color
 Plug 'justinmk/vim-syntax-extra'
@@ -169,7 +128,7 @@ set foldlevel=99
 "Enable folding with the spacebar
 nnoremap <space> za
 
-"Python folding donne right
+"Python folding done right
 Plug 'tmhedberg/SimpylFold'
 
 "Python auto-indent
@@ -183,7 +142,7 @@ Plug 'vim-scripts/indentpython.vim'
 "map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 "check your syntax on each save 
-Plug 'vim-syntastic/syntastic'
+"Plug 'vim-syntastic/syntastic'  " Already defined above
 
 "PEP 8 checking 
 Plug 'nvie/vim-flake8'
@@ -206,12 +165,39 @@ let python_highlight_all=1
 
 call plug#end()
 
+" Syntastic configuration (after plugins are loaded)
+" Only configure statusline if syntastic is available
+function! SetupSyntasticStatusline()
+  if exists('g:loaded_syntastic_plugin')
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+  endif
+endfunction
 
+" Call the setup function after VimEnter to ensure plugins are loaded
+autocmd VimEnter * call SetupSyntasticStatusline()
 
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+let g:syntastic_c_include_dirs = [ '../includes', 'includes', 'libft/includes' ]
+"Remove Pylint checker
+let g:syntastic_python_checkers = ['python']
+"let g:syntastic_loc_list_height = 5
+
+" Syntastic responsive size
+" see :h syntastic-loclist-callback
+function! SyntasticCheckHook(errors)
+	if !empty(a:errors)
+		let g:syntastic_loc_list_height = min([len(a:errors), 10])
+	endif
+endfunction
 
 set t_Co=256
 set cursorline
-colorscheme onehalfdark
+" colorscheme onehalfdark  " Uncomment after running :PlugInstall
 
 let g:rainbow_active = 1
 let g:airline_theme='onehalfdark'
@@ -233,6 +219,15 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+
+" ========================================
+" SETUP INSTRUCTIONS:
+" ========================================
+" 1. Start Vim normally - it should now work without errors
+" 2. Run :PlugInstall to install all plugins
+" 3. After installation completes, uncomment the colorscheme line above
+" 4. Restart Vim to see the full theme and all features
+" ========================================
 
 
 
