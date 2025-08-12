@@ -3,16 +3,18 @@
 # ---------------------------------------------------------------------------- #
 
 export PATH_SETUP_DIR="$HOME/Setup"
+# Helper utilities ---------------------------------------------------- #
+# Functions to safely add directories to $PATH (duplicates removed)
+path_prepend() { for d in "$@"; do [[ -d $d ]] && path=($d $path); done }
+path_append()  { for d in "$@"; do [[ -d $d ]] && path+=($d);     done }
+typeset -gU path
 
-if [[ -d "$PATH_SETUP_DIR/bin" ]]; then
-    export PATH=$PATH_SETUP_DIR/bin:$PATH
-fi
-if [[ -d "$PATH_SETUP_DIR/usr/bin" ]]; then
-    export PATH=$PATH_SETUP_DIR/usr/bin:$PATH
-fi
-if [[ -d "$HOME/.local/bin" ]]; then
-    export PATH=$HOME/.local/bin:$PATH
-fi
+# Sensible zsh options ------------------------------------------------ #
+setopt autocd pushd_ignore_dups share_history hist_ignore_space
+# zmodload zsh/zprof
+
+# Initial PATH bootstrap
+path_prepend "$PATH_SETUP_DIR/bin" "$PATH_SETUP_DIR/usr/bin" "$HOME/.local/bin"
 
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv export zsh)"
@@ -26,7 +28,6 @@ fi
 
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv hook zsh)"
-
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -34,8 +35,8 @@ emulate zsh -c "$(direnv hook zsh)"
 #                                                     +:+ +:+         +:+      #
 #    By: ezalos <ezalos@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/27 23:02:39 by ezalos            #+#    #+#              #
-#    Updated: 2021/05/13 09:38:20 by ezalos           ###   ########.fr        #
+#                                                      #+#    #+#              #
+#    Created: 2021/03/27 23:02:39 by ezalos           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,9 +46,20 @@ emulate zsh -c "$(direnv hook zsh)"
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="powerlevel10k/powerlevel10k"
+plugins=(
+  git
+  zsh-autosuggestions
+  history-substring-search
+  zsh-syntax-highlighting
+)
 source $ZSH/oh-my-zsh.sh
 HISTCONTROL=ignorespace
 export LANG=en_US.UTF-8
+
+#  BINDKEYS
+bindkey '^[[1;2A' history-substring-search-up
+bindkey '^[[1;2B' history-substring-search-down
+
 
 # ---------------------------------------------------------------------------- #
 #                                     Init                                     #
@@ -60,68 +72,75 @@ else
    export EDITOR='nvim'
 fi
 
-# Set computer identifier
-if [[ `uname -n` = "ezalos-TM1704" ]]; then
-    export WHICH_COMPUTER="TheBeast"
-elif [[ `uname -n` = "TheBeast" ]]; then
-    export WHICH_COMPUTER="TheBeast"
-elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
-    export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
-    export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` =~ ^louiss-macbook-pro-[0-9]+\.home$ ]]; then
-    export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
-    export WHICH_COMPUTER="MacBook"
-elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-louis.home" ]]; then
-    export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
-elif [[ `uname -n` =~ ^rnd ]]; then
-    export WHICH_COMPUTER="rnd_Heuritech" # Remote Heuritech machine
-elif [[ `uname -n` = "smic" ]]; then
-    export WHICH_COMPUTER="smic_Heuritech" # Remote Heuritech machine
-else
-    export WHICH_COMPUTER="Unknown"
+
+# ---------------------------------------------------------------------------- #
+#                                 Environment file                             #
+# ---------------------------------------------------------------------------- #
+SETUP_ENV_FILE="$PATH_SETUP_DIR/.setup_env"
+
+# Load persisted WHICH_COMPUTER if present
+if [[ -f "$SETUP_ENV_FILE" ]]; then
+    # shellcheck source=/dev/null
+    source "$SETUP_ENV_FILE"
 fi
+
+# Set computer identifier
+if [[ -z "${WHICH_COMPUTER:-}" ]]; then
+    if [[ `uname -n` = "ezalos-TM1704" ]]; then
+        export WHICH_COMPUTER="TheBeast"
+    elif [[ `uname -n` = "TheBeast" ]]; then
+        export WHICH_COMPUTER="TheBeast"
+    elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
+        export WHICH_COMPUTER="MacBook"
+    elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
+        export WHICH_COMPUTER="MacBook"
+    elif [[ `uname -n` =~ ^louiss-macbook-pro-[0-9]+\.home$ ]]; then
+        export WHICH_COMPUTER="MacBook"
+    elif [[ `uname -n` =~ ^Louiss-MacBook-Pro-[0-9]+\.local$ ]]; then
+        export WHICH_COMPUTER="MacBook"
+    elif [[ `uname -n` = "MacBook-Pro-de-Louis.local" ]] || [[ `uname -n` = "mbp-de-louis.home" ]]; then
+        export WHICH_COMPUTER="MacBook_Heuritech" # Macbook from Heuritech
+    elif [[ `uname -n` =~ ^rnd ]]; then
+        export WHICH_COMPUTER="rnd_Heuritech" # Remote Heuritech machine
+    elif [[ `uname -n` = "smic" ]]; then
+        export WHICH_COMPUTER="smic_Heuritech" # Remote Heuritech machine
+    else
+        export WHICH_COMPUTER="Unknown"
+    fi
+
+    export WHICH_COMPUTER
+
+    # Persist only if recognised
+    if [[ $WHICH_COMPUTER != "Unknown" ]]; then
+        if [[ ! -f "$SETUP_ENV_FILE" ]] || ! grep -q '^export WHICH_COMPUTER=' "$SETUP_ENV_FILE"; then
+            echo "export WHICH_COMPUTER=\"$WHICH_COMPUTER\"" >> "$SETUP_ENV_FILE"
+        fi
+    fi
+fi
+
 
 # ---------------------------------------------------------------------------- #
 #                                   SSH INIT                                   #
 # ---------------------------------------------------------------------------- #
+# One-shot SSH agent/key setup ----------------------------------------------- #
+setup_ssh() {
+  (( ${+SSH_AUTH_SOCK} )) || eval "$(ssh-agent -s)" >/dev/null 2>&1
 
-# Set up SSH agent and add key
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)" > /dev/null 2>&1
-fi
+  local key=""
+  case "$WHICH_COMPUTER" in
+      TheBeast)       key="$HOME/.ssh/id_ed_ghub" ;;
+      MacBook)        key="$HOME/.ssh/gthb" ;;
+      *_Heuritech)    key="$HOME/.ssh/ghub_ezalos" ;;
+  esac
 
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-SSH_KEY_PATH="$HOME/.ssh/id_ed_ghub"
-elif [[ $WHICH_COMPUTER == "MacBook" ]]; then
-SSH_KEY_PATH="$HOME/.ssh/gthb"
-# elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-elif [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
-SSH_KEY_PATH="$HOME/.ssh/ghub_ezalos"
-fi
+  if [[ -n $key && -f $key ]]; then
+      ssh-add "$key" >/dev/null 2>&1
+  else
+      echo >&2 "⚠️  SSH key $key not found"
+  fi
+}
 
-# Add the key if it exists
-if [ -n "$SSH_KEY_PATH" ] && [ -f "$SSH_KEY_PATH" ]; then
-	ssh-add "$SSH_KEY_PATH" > /dev/null 2>&1
-else
-	echo "⚠️  Warning: SSH key $SSH_KEY_PATH not found"
-fi
-
-# ---------------------------------------------------------------------------- #
-#                                    Plugins                                   #
-# ---------------------------------------------------------------------------- #
-
-source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.oh-my-zsh/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-plugins=(git)
-
-#  BINDKEY
-
-bindkey '^[[1;2A' history-substring-search-up
-bindkey '^[[1;2B' history-substring-search-down
+setup_ssh
 
 
 # ---------------------------------------------------------------------------- #
@@ -129,85 +148,26 @@ bindkey '^[[1;2B' history-substring-search-down
 # ---------------------------------------------------------------------------- #
 
 export PATH=$PATH:/home/ezalos/miniconda3/bin
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/ezalos/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/ezalos/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/ezalos/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/ezalos/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
+# Lazy-load conda to speed up shell startup
+lazy_conda() {
+  unset -f lazy_conda
+  eval "$(/home/ezalos/miniconda3/bin/conda shell.zsh hook 2> /dev/null)"
+}
+add-zsh-hook precmd lazy_conda
 # <<< conda initialize <<<
-
 
 
 # ---------------------------------------------------------------------------- #
 #                                     ALIAS                                    #
 # ---------------------------------------------------------------------------- #
 
-# Environment management aliases
-function mkenv_pip() {
-    cat > .envrc << EOF
-#!$(which bash)
-
-source ./venv/bin/activate
-
-unset PS1
-EOF
-    # python3 -m pip install --upgrade pip
-    if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-        python -m venv venv && direnv allow
-    elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-        python3 -m venv venv && direnv allow
-    fi
-}
-
-function mkenv_conda() {
-    cat > .envrc << EOF
-#!$(which bash)
-
-eval "\$(conda shell.bash hook)"
-
-conda activate ${PWD##*/}
-
-unset PS1
-EOF
-    conda create -n ${PWD##*/} python=3.10 -y && direnv allow
-}
-
-function mkenv_uv() {
-    DIR_FOR_VENV=".venv"
-    cat > .envrc << EOF
-#!$(which bash)
-
-# source ./${PWD##*/}/bin/activate
-
-
-export VIRTUAL_ENV="$(pwd)/$DIR_FOR_VENV"
-source "\$VIRTUAL_ENV/bin/activate"
-
-unset PS1
-
-EOF
-    # uv venv ${PWD##*/} && direnv allow
-    uv venv && direnv allow && uv init
-}
-alias mkenv='mkenv_pip'
+# Helper scripts
+[[ -f "$PATH_SETUP_DIR/scripts/setup_helpers.sh" ]] && source "$PATH_SETUP_DIR/scripts/setup_helpers.sh"
+[[ -f "$PATH_SETUP_DIR/scripts/heuritech_env.sh" ]] && source "$PATH_SETUP_DIR/scripts/heuritech_env.sh"
 
 # General aliases
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+if [[ $WHICH_COMPUTER == "TheBeast" ]] || [[ $WHICH_COMPUTER == "smic_Heuritech" ]] || [[ $WHICH_COMPUTER == "rnd_Heuritech" ]]; then
 alias copy='xclip -sel c'
-elif [[ $WHICH_COMPUTER == "smic_Heuritech" ]]; then
-alias copy='xclip -sel c'
-elif [[ $WHICH_COMPUTER == "rnd_Heuritech" ]]; then
-alias copy='xclip -sel c'
-elif [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-alias copy='pbcopy'
 elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
 alias copy='pbcopy'
 fi
@@ -220,128 +180,47 @@ alias neo="neofetch --separator '\t'"
 alias iscuda="python3 -c 'import sys; print(f\"{sys.version = }\"); import torch; print(f\"{torch. __version__ = }\"); print(f\"{torch.cuda.is_available() = }\"); print(f\"{torch.cuda.device_count() = }\")'"
 alias bt="batcat --paging=never --style=plain "
 
-
-# Machine-specific aliases
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-    # ...
-elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-    # ...
-fi
-
 # Docker cleanup aliases
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
 alias docker_kill_all='docker kill $(docker ps -a -q)'
 
-# Icono project aliases
-ICONO_DIRECTORY="/home/ezalos/42/icono-web"
-alias ic_dl="bash $ICONO_DIRECTORY/scripts/monitor/remote/download.sh"
-alias ic_dt="bash $ICONO_DIRECTORY/scripts/monitor/remote/detailer.sh"
-alias ic_ex="bash $ICONO_DIRECTORY/scripts/monitor/remote/extract.sh"
-alias ic_em="bash $ICONO_DIRECTORY/scripts/monitor/embed.sh"
-alias ic="bash $ICONO_DIRECTORY/scripts/monitor/all.sh"
-
-
-# Setup repo management
-function setup_sync_up() {
-    local current_dir=$(pwd)
-    local commit_msg="$1"
-    
-    cd "$PATH_SETUP_DIR" || { echo "❌ Failed to change to setup directory"; return 1; }
-    
-    echo "\n🔍 Fetching updates..."
-    git fetch || { echo "❌ Failed to fetch updates"; cd "$current_dir"; return 1; }
-    
-    echo "\n📁 Adding dotfiles..."
-    git add dotfiles || { echo "❌ Failed to add dotfiles"; cd "$current_dir"; return 1; }
-    
-    echo "\n📊 Current status:"
-    git status
-    
-    echo "\n❓ Proceed with commit and push? (y/N)"
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        local full_msg="dot: ${commit_msg:-syncing dotfiles} from device [$WHICH_COMPUTER]"
-        git commit -m "$full_msg" || { echo "❌ Failed to commit"; cd "$current_dir"; return 1; }
-        
-        echo "\n⬆️  Pushing changes..."
-        git push || { echo "❌ Failed to push changes"; cd "$current_dir"; return 1; }
-        
-        echo "\n✅ Successfully synced up!"
-    else
-        echo "\n⚠️  Sync cancelled"
-    fi
-    
-    cd "$current_dir"
-}
-
-function setup_sync_down() {
-    local current_dir=$(pwd)
-    
-    cd "$PATH_SETUP_DIR" || { echo "❌ Failed to change to setup directory"; return 1; }
-    
-    echo "\n⬇️  Pulling updates..."
-    if git pull; then
-        echo "\n✅ Successfully pulled updates"
-        cd "$current_dir"
-        echo "\n🔄 Reloading shell configuration..."
-        source "$HOME/.zshrc"
-    else
-        echo "❌ Failed to pull updates"
-        cd "$current_dir"
-        return 1
-    fi
-}
-
-
-
-
 # ---------------------------------------------------------------------------- #
 #                                     PATH                                     #
 # ---------------------------------------------------------------------------- #
 
-export PATH=/usr/local/cuda-12.2/bin:$PATH
-export PATH="$HOME/.local/bin:$PATH"
+path_prepend "/usr/local/cuda-12.2/bin"
 
 # ---------------------------------------------------------------------------- #
 #                                   GPU Cuda                                   #
 # ---------------------------------------------------------------------------- #
 
-export LD_LIBRARY_PATH=/usr/lib/cuda/lib64:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/lib/cuda/include:$LD_LIBRARY_PATH
-export PATH=/usr/local/cuda-12.2/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH
+# Append CUDA library paths if available
+for cuda_lib in /usr/lib/cuda/lib64 /usr/lib/cuda/include /usr/local/cuda-12.2/lib64; do
+  [[ -d $cuda_lib ]] && export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$cuda_lib"
+done
 
 # ---------------------------------------------------------------------------- #
 #                                     START                                    #
 # ---------------------------------------------------------------------------- #
 
-# Machine-specific aliases
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-    export PATH="$PATH:$HOME/.AppImage"
-    # Created by `pipx` on 2024-07-15 15:54:12
-    export PATH="$PATH:/home/ezalos/.local/bin"
-elif [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-    export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-    export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
-fi
+# Machine-specific PATH tweaks
+case $WHICH_COMPUTER in
+  TheBeast)
+    path_append "$HOME/.AppImage" "/home/ezalos/.local/bin" ;;
+  MacBook|MacBook_Heuritech)
+    path_prepend "/opt/homebrew/opt/libpq/bin"
+	path_prepend "/opt/homebrew/opt/coreutils/libexec/gnubin"
+    path_append  "/Applications/Docker.app/Contents/Resources/bin" ;;
+esac
 
-# echo "DEBUG: LINE 297"
-# source ~/.autoenv/activate.sh
 if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-    PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
-    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-elif [[ $WHICH_COMPUTER == "TheBeast" ]]; then
-    source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme
+    path_prepend "/opt/homebrew/opt/grep/libexec/gnubin"
 fi
-# echo "DEBUG: LINE 305"
-
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-eval "$(direnv hook zsh)"
 
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     . "$HOME/.cargo/env"
@@ -363,83 +242,14 @@ if [[ $WHICH_COMPUTER == "MacBook" ]] || [[ $WHICH_COMPUTER == "MacBook_Heuritec
     # End of Docker CLI completions
 fi
 
-# Heuritech specific
-if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
-
-    # Pyenv
-    export PYENV_ROOT="$HOME/.pyenv"
-    [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-    # eval "$(pyenv init - zsh)"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
-
-    pythonpaths_monorepo_lib_src=$(find $HOME/monorepo/libraries -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
-    export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
-
-    export AWS_PROFILE="euprod"
-    export AWS_REGION="eu-west-1"
-
-    export THESAURUS_ROUTE_BASE=https://thesaurus-api.heuritech.com/api
-    export OPSTER_MODULES_ROUTE_BASE=https://opster-api.heuritech.com/modules
-    export MODULES_ROUTE_BASE=https://modules-api.heuritech.com
-    export CATALOG_ROUTE_BASE=https://catalog-api.heuritech.com
-    export INDUS_ROUTE_BASE=https://indus-api.heuritech.com
-    export DATASET_ROUTE_BASE=https://dataset-api.heuritech.com
-    export LABELING_ROUTE_BASE=https://labeling-api.heuritech.com
-    
-    function rnd_free_space {
-        echo "Cleaning up old files in /srv/data/datasets/octopus_images/crop/..."
-        find /srv/data/datasets/octopus_images/crop/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
-        echo "Cleaning up old files in /srv/data/datasets/octopus_images/..."
-        find /srv/data/datasets/octopus_images/. -maxdepth 1 -type f -ctime +3 -print0 | xargs -0 rm -v
-        echo "Cleanup completed!"
-    }
-fi
 
 if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
-
-    function rsync_monorepo {
-        rsync -ravh \
-            --exclude='env' \
-            --exclude='.python-version' \
-            --exclude='.venv' \
-            --exclude='**/.venv' \
-            --exclude='venv' \
-            --exclude='**/venv' \
-            --exclude='.git/*' \
-            --exclude='*.pyc' \
-            --exclude='__pycache__' \
-            --exclude='.pytest_cache' \
-            --exclude='.ipynb_checkpoint' \
-            --exclude='untracked_files/data/*' \
-            $HOME/monorepo/ \
-            $1:monorepo/
-    }
-    function b_rsync_monorepo {
-        rsync -ravh \
-            --exclude='env' \
-            --exclude='.python-version' \
-            --exclude='.venv' \
-            --exclude='**/.venv' \
-            --exclude='venv' \
-            --exclude='**/venv' \
-            --exclude='.git/*' \
-            --exclude='*.pyc' \
-            --exclude='__pycache__' \
-            --exclude='.pytest_cache' \
-            --exclude='.ipynb_checkpoint' \
-            --exclude='untracked_files/data/*' \
-            $1:monorepo/ \
-            $HOME/monorepo/ 
-    }
-    # export -f rsync_monorepo
-
     # rosetta terminal setup
     if [ $(arch) = "i386" ]; then
         alias brew86="/usr/local/bin/brew"
         alias pyenv86="arch -x86_64 pyenv"
     fi
-
-
 fi
+
+export PATH=${(j.:.)path}
+# zprof

@@ -2,6 +2,8 @@ nvim-osx64
 *.pyc
 venv
 
+.DS_Store
+.setup_env
 .venv
 .pytest_cache
 test_dotfiles
