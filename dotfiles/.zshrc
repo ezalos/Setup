@@ -49,8 +49,8 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(
   git
   zsh-autosuggestions
-  history-substring-search
   zsh-syntax-highlighting
+  history-substring-search
 )
 source $ZSH/oh-my-zsh.sh
 HISTCONTROL=ignorespace
