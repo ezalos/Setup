@@ -1735,13 +1735,5 @@ function prompt_my_cpu_temp() {
       p10k segment -s COOL -f green -t "${cpu_temp}"$'\uE339' -i $'\uE350'
     fi
   fi
-
-  if (( cpu_temp >= 80 )); then
-    p10k segment -s HOT  -f red    -t "${cpu_temp}"$'\uE339' -i $'\uF737'
-  elif (( cpu_temp >= 60 )); then
-    p10k segment -s WARM -f yellow -t "${cpu_temp}"$'\uE339' -i $'\uE350'
-  else
-    p10k segment -s COOL -f green -t "${cpu_temp}"$'\uE339' -i $'\uE350'
-  fi
 }
 
