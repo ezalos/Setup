@@ -48,26 +48,22 @@ emulate zsh -c "$(direnv hook zsh)"
 # ---------------------------------------------------------------------------- #
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
+
+source $ZSH/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+
 ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(
   git
   zsh-autosuggestions
-  history-substring-search
   zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
 HISTCONTROL=ignorespace
 export LANG=en_US.UTF-8
 
-#  BINDKEYS
-# Unbind up/down arrow keys mapped by powerlevel10k so they keep default history navigation.
-bindkey -r '^[[A'
-bindkey -r '^[[B'
-# Map Shift-Up/Shift-Down to history substring search instead.
+# BINDKEYS
 bindkey '^[[1;2A' history-substring-search-up
 bindkey '^[[1;2B' history-substring-search-down
-
-
 # ---------------------------------------------------------------------------- #
 #                                     Init                                     #
 # ---------------------------------------------------------------------------- #
