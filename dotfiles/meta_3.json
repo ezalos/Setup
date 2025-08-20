@@ -24,6 +24,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.config/neofetch/config.conf",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
+                    "backups": []
                 }
             }
         },
@@ -45,6 +49,10 @@
                 },
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.zshrc",
+                    "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.zshrc",
                     "backups": []
                 }
             }
@@ -68,6 +76,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.vimrc",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.vimrc",
+                    "backups": []
                 }
             }
         },
@@ -90,6 +102,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.config/nvim/init.vim",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
+                    "backups": []
                 }
             }
         },
@@ -111,6 +127,10 @@
                 },
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.bashrc",
+                    "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.bashrc",
                     "backups": []
                 }
             }
@@ -139,6 +159,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.config/terminator/config",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/terminator/config",
+                    "backups": []
                 }
             }
         },
@@ -160,6 +184,10 @@
                 },
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.p10k.zsh",
+                    "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.p10k.zsh",
                     "backups": []
                 }
             }
@@ -183,6 +211,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.gdbinit",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.gdbinit",
+                    "backups": []
                 }
             }
         },
@@ -204,6 +236,10 @@
                 },
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
                     "backups": []
                 }
             }
@@ -227,6 +263,10 @@
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.warp/launch_configurations/launch_config.yaml",
                     "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
                 }
             }
         },
@@ -248,6 +288,10 @@
                 },
                 "louiss.macbook.pro.3.home.ezalos": {
                     "deploy_path": "/Users/ezalos/.tmux.conf",
+                    "backups": []
+                },
+                "rnd2.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.tmux.conf",
                     "backups": []
                 }
             }
@@ -287,6 +331,11 @@
         "louiss.macbook.pro.3.home.ezalos": {
             "identifier": "louiss.macbook.pro.3.home.ezalos",
             "home_path": "/Users/ezalos",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "rnd2.ldevelle": {
+            "identifier": "rnd2.ldevelle",
+            "home_path": "/srv/data/home/ldevelle",
             "dotfiles_dir_path": "dotfiles"
         }
     }
