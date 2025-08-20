@@ -143,8 +143,12 @@ function mkenv_uv() {
     cat > .envrc << EOF
 #!$(command -v bash)
 
-export VIRTUAL_ENV="\$(pwd)/$DIR_FOR_VENV"
-source "\$VIRTUAL_ENV/bin/activate"
+if [ -f "$DIR_FOR_VENV/bin/activate" ]; then
+    source "$DIR_FOR_VENV/bin/activate"
+    export VIRTUAL_ENV="\$(pwd)/$DIR_FOR_VENV"
+else
+    echo "Warning: $DIR_FOR_VENV/bin/activate not found. Did you run 'uv venv'?"
+fi
 
 unset PS1
 EOF
