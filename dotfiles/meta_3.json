@@ -32,6 +32,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.config/neofetch/config.conf",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
+                    "backups": []
                 }
             }
         },
@@ -61,6 +65,10 @@
                 },
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.zshrc",
+                    "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.zshrc",
                     "backups": []
                 }
             }
@@ -92,6 +100,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.vimrc",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.vimrc",
+                    "backups": []
                 }
             }
         },
@@ -122,6 +134,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.config/nvim/init.vim",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
+                    "backups": []
                 }
             }
         },
@@ -151,6 +167,10 @@
                 },
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.bashrc",
+                    "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.bashrc",
                     "backups": []
                 }
             }
@@ -187,6 +207,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.config/terminator/config",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/terminator/config",
+                    "backups": []
                 }
             }
         },
@@ -216,6 +240,10 @@
                 },
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.p10k.zsh",
+                    "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.p10k.zsh",
                     "backups": []
                 }
             }
@@ -247,6 +275,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.gdbinit",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.gdbinit",
+                    "backups": []
                 }
             }
         },
@@ -276,6 +308,10 @@
                 },
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
                     "backups": []
                 }
             }
@@ -307,6 +343,10 @@
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
                     "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
                 }
             }
         },
@@ -336,6 +376,10 @@
                 },
                 "smic.ldevelle": {
                     "deploy_path": "/home/ldevelle/.tmux.conf",
+                    "backups": []
+                },
+                "rnd1.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.tmux.conf",
                     "backups": []
                 }
             }
@@ -385,6 +429,11 @@
         "smic.ldevelle": {
             "identifier": "smic.ldevelle",
             "home_path": "/home/ldevelle",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "rnd1.ldevelle": {
+            "identifier": "rnd1.ldevelle",
+            "home_path": "/srv/data/home/ldevelle",
             "dotfiles_dir_path": "dotfiles"
         }
     }
