@@ -137,15 +137,7 @@ unset __conda_setup
 
 . "$HOME/.local/bin/env"
 
-source /workspace/.bash_completions/visionlibs.sh
-
-source '/workspace/.bash_completions/visionlibs.sh'
-
-
-
-
-
-
-
-
+if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then
+    source /workspace/.bash_completions/visionlibs.sh
+fi
 
