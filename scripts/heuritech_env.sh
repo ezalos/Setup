@@ -23,9 +23,9 @@
 #   eval "$(pyenv virtualenv-init -)"
 # }
 
-# Add monorepo libraries to PYTHONPATH
-pythonpaths_monorepo_lib_src=$(find "$HOME/monorepo/libraries" -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
-export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
+# # Add monorepo libraries to PYTHONPATH
+# pythonpaths_monorepo_lib_src=$(find "$HOME/monorepo/libraries" -maxdepth 2 -name "src" -type d | tr '\n' ':' | sed 's/:$//')
+# export PYTHONPATH="${PYTHONPATH}:${pythonpaths_monorepo_lib_src}"
 
 # AWS & service endpoints
 export AWS_PROFILE="euprod"
