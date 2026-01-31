@@ -252,5 +252,5 @@ if [[ $WHICH_COMPUTER == "MacBook_Heuritech" ]]; then
     fi
 fi
 
+# This is zsh-specific syntax for rebuilding the PATH environment variable from an array.
 export PATH=${(j.:.)path}
-# zprof
