@@ -134,18 +134,10 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-
 . "$HOME/.local/bin/env"
 
-source /workspace/.bash_completions/visionlibs.sh
 
-source '/workspace/.bash_completions/visionlibs.sh'
-
-
-
-
-
-
-
-
+if [ "$WHICH_COMPUTER" = "smic_Heuritech" ] || [ "$WHICH_COMPUTER" = "rnd_Heuritech" ]; then
+    source '/workspace/.bash_completions/visionlibs.sh'
+fi
 
