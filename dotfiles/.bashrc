@@ -134,7 +134,6 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-
 . "$HOME/.local/bin/env"
 
 if [[ $WHICH_COMPUTER =~ _Heuritech$ ]]; then

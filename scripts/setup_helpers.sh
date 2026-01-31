@@ -75,6 +75,7 @@ function rsync_monorepo() {
         --exclude='env' \
         --exclude='.python-version' \
         --exclude='.venv' \
+        --exclude='.osgrep/lancedb' \
         --exclude='**/.venv' \
         --exclude='venv' \
         --exclude='**/venv' \
@@ -95,6 +96,7 @@ function b_rsync_monorepo() {
         --exclude='env' \
         --exclude='.python-version' \
         --exclude='.venv' \
+        --exclude='.osgrep/lancedb' \
         --exclude='**/.venv' \
         --exclude='venv' \
         --exclude='**/venv' \
