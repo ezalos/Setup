@@ -69,10 +69,13 @@ function rnd_free_space() {
 
 # -------------------------------------------------------------- rsync helpers ----
 function rsync_monorepo() {
+    local target_dir="${2:-monorepo}"
+    local remote_dir="${3:-monorepo}"
     rsync -ravh \
         --exclude='env' \
         --exclude='.python-version' \
         --exclude='.venv' \
+        --exclude='.osgrep/lancedb' \
         --exclude='**/.venv' \
         --exclude='venv' \
         --exclude='**/venv' \
@@ -82,15 +85,18 @@ function rsync_monorepo() {
         --exclude='.pytest_cache' \
         --exclude='.ipynb_checkpoint' \
         --exclude='untracked_files/data/*' \
-        "$HOME/monorepo/" \
-        "$1:monorepo/"
+        "$HOME/$target_dir/" \
+        "$1:$remote_dir/"
 }
 
 function b_rsync_monorepo() {
+    local target_dir="${2:-monorepo}"
+    local remote_dir="${3:-monorepo}"
     rsync -ravh \
         --exclude='env' \
         --exclude='.python-version' \
         --exclude='.venv' \
+        --exclude='.osgrep/lancedb' \
         --exclude='**/.venv' \
         --exclude='venv' \
         --exclude='**/venv' \
@@ -100,8 +106,8 @@ function b_rsync_monorepo() {
         --exclude='.pytest_cache' \
         --exclude='.ipynb_checkpoint' \
         --exclude='untracked_files/data/*' \
-        "$1:monorepo/" \
-        "$HOME/monorepo/"
+        "$1:$remote_dir/" \
+        "$HOME/$target_dir/"
 }
 
 # ------------------------------------------------------------ mkenv helpers ----
