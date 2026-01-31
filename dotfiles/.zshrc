@@ -2,11 +2,19 @@
 #                                     PATH                                     #
 # ---------------------------------------------------------------------------- #
 
+
+# Check if CURSOR_AGENT is set and return early if it is
+if [[ -n "$CURSOR_AGENT" ]]; then
+    export WHICH_COMPUTER="CURSOR_AGENT"
+fi
+
+
+
 export PATH_SETUP_DIR="$HOME/Setup"
 # Helper utilities ---------------------------------------------------- #
 # Functions to safely add directories to $PATH (duplicates removed)
 path_prepend() { for d in "$@"; do [[ -d $d ]] && path=($d $path); done }
-path_append()  { for d in "$@"; do [[ -d $d ]] && path+=($d);     done }
+path_append()  { for d in "$@"; do [[ -d $d ]] && path=($path $d); done }
 typeset -gU path
 
 # Sensible zsh options ------------------------------------------------ #
@@ -16,6 +24,9 @@ setopt autocd pushd_ignore_dups share_history hist_ignore_space inc_append_histo
 # Initial PATH bootstrap
 path_prepend "$PATH_SETUP_DIR/bin" "$PATH_SETUP_DIR/usr/bin" "$HOME/.local/bin"
 
+if [[ "$WHICH_COMPUTER" == "CURSOR_AGENT" ]]; then
+export ZSH_THEME=""
+else
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv export zsh)"
 
@@ -29,8 +40,11 @@ fi
 # From: https://github.com/romkatv/powerlevel10k/issues/702#issuecomment-626222730
 emulate zsh -c "$(direnv hook zsh)"
 
+ZSH_THEME="powerlevel10k/powerlevel10k"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
+
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -51,7 +65,6 @@ export ZSH=$HOME/.oh-my-zsh
 
 source $ZSH/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(
   git
   zsh-autosuggestions
@@ -211,10 +224,11 @@ done
 # Machine-specific PATH tweaks
 case $WHICH_COMPUTER in
   TheBeast)
-    path_append "$HOME/.AppImage" "/home/ezalos/.local/bin" ;;
+    path_append "$HOME/.AppImage"
+    path_append "/home/ezalos/.local/bin" ;;
   MacBook|MacBook_Heuritech)
     path_prepend "/opt/homebrew/opt/libpq/bin"
-	path_prepend "/opt/homebrew/opt/coreutils/libexec/gnubin"
+    path_prepend "/opt/homebrew/opt/coreutils/libexec/gnubin"
     path_append  "/Applications/Docker.app/Contents/Resources/bin" ;;
 esac
 
@@ -225,6 +239,8 @@ fi
 
 if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
     . "$HOME/.cargo/env"
+    export PYTHON_INSTALLED="/usr/bin/python3"
+    export SYSTEM_PYTHON="/usr/bin/python3"
     export PATH="$PATH:/usr/lib/dart/bin"
 fi
 
@@ -254,3 +270,8 @@ fi
 
 # This is zsh-specific syntax for rebuilding the PATH environment variable from an array.
 export PATH=${(j.:.)path}
+# zprof
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
