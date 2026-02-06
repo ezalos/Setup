@@ -131,6 +131,15 @@
                             "datetime": "2026-02-06_17:04:32.067642"
                         }
                     ]
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.config/nvim",
+                    "backups": [
+                        {
+                            "backup_path": "/Users/louis/Setup/dotfiles/old/config_nvim_MacBook.Pro.de.Louis.local.louis_2026-02-06_17:17:18.566795",
+                            "datetime": "2026-02-06_17:17:18.566795"
+                        }
+                    ]
                 }
             }
         },
