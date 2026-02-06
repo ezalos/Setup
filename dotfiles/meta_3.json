@@ -158,6 +158,15 @@
                             "datetime": "2026-02-06_17:22:45.753789"
                         }
                     ]
+                },
+                "rnd3.ldevelle": {
+                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim",
+                    "backups": [
+                        {
+                            "backup_path": "/srv/data/home/ldevelle/Setup/dotfiles/old/config_nvim_rnd3.ldevelle_2026-02-06_17:23:30.294154",
+                            "datetime": "2026-02-06_17:23:30.294154"
+                        }
+                    ]
                 }
             }
         },
