@@ -119,41 +119,18 @@
                 }
             }
         },
-        "init.vim": {
-            "alias": "init.vim",
-            "main": "dotfiles/init.vim",
+        "config_nvim": {
+            "alias": "config_nvim",
+            "main": "dotfiles/config_nvim",
             "deploy": {
-                "rnd3.ldevelle": {
-                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "MacBook.Pro.de.Louis.local.louis": {
-                    "deploy_path": "/Users/louis/.config/nvim/init.vim",
-                    "backups": []
-                },
                 "TheBeast.ezalos": {
-                    "deploy_path": "/home/ezalos/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "louiss.macbook.pro.3.home.ezalos": {
-                    "deploy_path": "/Users/ezalos/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "rnd2.ldevelle": {
-                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "smic.ldevelle": {
-                    "deploy_path": "/home/ldevelle/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "rnd1.ldevelle": {
-                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
-                    "backups": []
-                },
-                "rnd4.ldevelle": {
-                    "deploy_path": "/srv/data/home/ldevelle/.config/nvim/init.vim",
-                    "backups": []
+                    "deploy_path": "/home/ezalos/.config/nvim",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/config_nvim_TheBeast.ezalos_2026-02-06_17:04:32.067642",
+                            "datetime": "2026-02-06_17:04:32.067642"
+                        }
+                    ]
                 }
             }
         },

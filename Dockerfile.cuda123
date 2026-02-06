@@ -13,16 +13,15 @@ RUN apt-get update && apt-get install -y \
 	python3-pip \
 	tmux \
 	direnv \
-	neovim \
 	bat \
 	software-properties-common \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Install neovim from PPA
-# RUN add-apt-repository ppa:neovim-ppa/unstable \
-# 	&& apt-get update \
-# 	&& apt-get install -y neovim \
-# 	&& rm -rf /var/lib/apt/lists/*
+# Install neovim 0.10.x from GitHub releases (apt version is too old for lazy.nvim)
+RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-linux-x86_64.tar.gz \
+	&& tar xzf nvim-linux-x86_64.tar.gz -C /opt \
+	&& rm nvim-linux-x86_64.tar.gz \
+	&& ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 
 # Install uv
 # Download the latest installer
@@ -48,6 +47,9 @@ RUN git clone https://github.com/ezalos/Setup.git \
 	&& cd Setup \
 	&& uv sync \
 	&& uv run python -m src_dotfiles deploy
+
+# Install nvim plugins headlessly
+RUN nvim --headless "+Lazy! sync" +qa
 
 # Set zsh as default shell
 RUN chsh -s $(which zsh)

@@ -70,7 +70,10 @@ class DotFile:
         try:
             if os.path.exists(self.data.deploy[self.identifier].deploy_path):
                 logger.debug(f'Deleting {self.data.deploy[self.identifier].deploy_path}')
-                os.remove(self.data.deploy[self.identifier].deploy_path)
+                if os.path.isdir(self.data.deploy[self.identifier].deploy_path) and not os.path.islink(self.data.deploy[self.identifier].deploy_path):
+                    shutil.rmtree(self.data.deploy[self.identifier].deploy_path)
+                else:
+                    os.remove(self.data.deploy[self.identifier].deploy_path)
         except Exception as e:
             logger.debug(f"Could not remove {self.data.deploy[self.identifier].deploy_path}: {str(e)}")
 
@@ -100,7 +103,11 @@ class DotFile:
         logger.debug(f"{self.data.deploy[self.identifier].deploy_path = }")
         logger.debug(f"{backup_path = }")
         
-        shutil.copy(self.data.deploy[self.identifier].deploy_path, backup_path)
+        deploy_path = self.data.deploy[self.identifier].deploy_path
+        if os.path.isdir(deploy_path) and not os.path.islink(deploy_path):
+            shutil.copytree(deploy_path, backup_path)
+        else:
+            shutil.copy(deploy_path, backup_path)
         logger.info(f"Backed up as {backup_path}")
         
         self.data.deploy[self.identifier].backups.append(BackupMetadata(
