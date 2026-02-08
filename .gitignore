@@ -16,4 +16,5 @@ data/test_data
 *.pyo
 
 .envrc
+.secrets.sh
 .logs

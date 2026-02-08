@@ -171,6 +171,15 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
 		eval "$(/home/ezalos/miniconda3/bin/conda shell.zsh hook 2> /dev/null)"
 	}
 	add-zsh-hook precmd lazy_conda
+
+	# Machine-local secrets (tokens, keys) — never committed
+	[[ -f "$PATH_SETUP_DIR/.secrets.sh" ]] && source "$PATH_SETUP_DIR/.secrets.sh"
+
+	# OpenClaw aliases
+	alias oc-cli='docker compose -f ~/openclaw/docker-compose.yml -f ~/openclaw/docker-compose.extra.yml run --rm openclaw-cli'
+	alias oc-restart='docker compose -f ~/openclaw/docker-compose.yml -f ~/openclaw/docker-compose.extra.yml restart openclaw-gateway'
+	alias oc-reload='docker compose -f ~/openclaw/docker-compose.yml -f ~/openclaw/docker-compose.extra.yml down && docker compose -f ~/openclaw/docker-compose.yml -f ~/openclaw/docker-compose.extra.yml up -d openclaw-gateway'
+	alias oc-logs='docker compose -f ~/openclaw/docker-compose.yml -f ~/openclaw/docker-compose.extra.yml logs -f openclaw-gateway'
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -201,6 +210,37 @@ alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=sta
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
 alias docker_kill_all='docker kill $(docker ps -a -q)'
+
+# tmux session listing with running commands and working directories
+tls() {
+  tmux list-sessions 2>/dev/null || { echo "No tmux sessions"; return 1; }
+  echo ""
+  local s
+  for s in $(tmux list-sessions -F "#{session_name}"); do
+    printf "\033[1;36m%s\033[0m\n" "$s"
+    tmux list-windows -t "$s" -F "  #{window_index}: #{pane_current_command} @ #{pane_current_path}"
+  done
+}
+
+# tmux helpers: create, attach
+tn() { tmux new-session -s "${1:-$(date +w-%m%d-%Hh%M)}"; }
+ta() {
+  if [[ -n "$1" ]]; then
+    tmux attach-session -t "$1"
+  else
+    tmux attach-session
+  fi
+}
+
+# tab-completion for ta: complete with tmux session names
+_ta() {
+  local sessions=(${(f)"$(tmux list-sessions -F '#{session_name}' 2>/dev/null)"})
+  _describe 'tmux session' sessions
+}
+compdef _ta ta
+
+# WezTerm without tmux (overrides default_prog)
+alias wez='wezterm start -- /bin/zsh &'
 
 # ---------------------------------------------------------------------------- #
 #                                     PATH                                     #
