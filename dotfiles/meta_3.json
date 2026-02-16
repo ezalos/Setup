@@ -464,6 +464,36 @@
                     ]
                 }
             }
+        },
+        "claude_md": {
+            "alias": "claude_md",
+            "main": "dotfiles/claude_md",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/CLAUDE.md",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/claude_md_TheBeast.ezalos_2026-02-16_12:45:35.375015",
+                            "datetime": "2026-02-16_12:45:35.375015"
+                        }
+                    ]
+                }
+            }
+        },
+        "claude_settings": {
+            "alias": "claude_settings",
+            "main": "dotfiles/claude_settings",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/settings.json",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/claude_settings_TheBeast.ezalos_2026-02-16_12:45:38.623793",
+                            "datetime": "2026-02-16_12:45:38.623793"
+                        }
+                    ]
+                }
+            }
         }
     },
     "devices": {

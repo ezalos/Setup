@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(keybindings-help)",
+      "Bash(fc-list:*)",
+      "Bash(fc-cache:*)",
+      "Bash(fc-match:*)",
+      "Bash(wc:*)",
+      "Bash(tree:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run python:*)"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(rm)"
+    ],
+    "defaultMode": "default"
+  },
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/statusline.py"
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "claude-supermemory@supermemory-plugins": false,
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "compound-engineering@every-marketplace": true,
+    "code-simplifier@claude-plugins-official": true,
+    "safety-net@cc-marketplace": true
+  }
+}

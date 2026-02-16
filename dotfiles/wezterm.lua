@@ -30,7 +30,21 @@ config.window_padding = {
 config.scrollback_lines = 10000
 
 -- Auto-tmux: each WezTerm window opens its own tmux session (w-MMDD-HHhMM)
+-- Strips Cursor IDE AppImage paths from LD_LIBRARY_PATH before starting tmux,
+-- because the tmux server inherits the environment of whoever started it first.
+-- Cursor's bundled glibc breaks rustup's argv[0] detection (and possibly other tools).
 config.default_prog = { '/bin/zsh', '-c', [[
+  # Sanitize LD_LIBRARY_PATH: strip Cursor AppImage mount paths
+  if [ -n "$LD_LIBRARY_PATH" ]; then
+    cleaned=$(printf '%s' "$LD_LIBRARY_PATH" | tr ':' '\n' | grep -v '^$' | grep -v '\.mount_cursor' | paste -sd ':')
+    [ -n "$cleaned" ] && export LD_LIBRARY_PATH="$cleaned" || unset LD_LIBRARY_PATH
+  fi
+
+  # If tmux server already exists, clean its global environment too
+  if tmux has-session 2>/dev/null; then
+    tmux set-environment -gu LD_LIBRARY_PATH 2>/dev/null
+  fi
+
   sn="w-$(date +%m%d-%Hh%M)"
   if tmux has-session -t "$sn" 2>/dev/null; then
     i=2

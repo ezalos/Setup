@@ -108,9 +108,10 @@ return {
     end,
   },
 
-  -- LSP
+  -- LSP (pinned to v2.5.0 to avoid Nvim 0.10 deprecation warning; unpin after upgrading to Nvim 0.11)
   {
     "neovim/nvim-lspconfig",
+    tag = "v2.5.0",
     event = "BufRead",
     dependencies = {
       "hrsh7th/nvim-cmp",
