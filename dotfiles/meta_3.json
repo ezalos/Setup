@@ -40,6 +40,10 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.config/neofetch/config.conf",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/neofetch/config.conf",
+                    "backups": []
                 }
             }
         },
@@ -78,6 +82,15 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.zshrc",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.zshrc",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/.zshrc_TinyButMighty.ezalos_2026-02-21_15:22:07.756260",
+                            "datetime": "2026-02-21_15:22:07.756260"
+                        }
+                    ]
                 }
             }
         },
@@ -115,6 +128,10 @@
                 },
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.vimrc",
+                    "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.vimrc",
                     "backups": []
                 }
             }
@@ -176,6 +193,10 @@
                             "datetime": "2026-02-06_17:23:58.318363"
                         }
                     ]
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/nvim",
+                    "backups": []
                 }
             }
         },
@@ -214,6 +235,15 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.bashrc",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.bashrc",
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/.bashrc_TinyButMighty.ezalos_2026-02-21_15:22:07.760054",
+                            "datetime": "2026-02-21_15:22:07.760054"
+                        }
+                    ]
                 }
             }
         },
@@ -257,6 +287,10 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.config/terminator/config",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/terminator/config",
+                    "backups": []
                 }
             }
         },
@@ -294,6 +328,10 @@
                 },
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.p10k.zsh",
+                    "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.p10k.zsh",
                     "backups": []
                 }
             }
@@ -333,6 +371,10 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.gdbinit",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.gdbinit",
+                    "backups": []
                 }
             }
         },
@@ -370,6 +412,10 @@
                 },
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.jupyter/jupyter_notebook_config.py",
+                    "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.jupyter/jupyter_notebook_config.py",
                     "backups": []
                 }
             }
@@ -409,6 +455,10 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.warp/launch_configurations/launch_config.yaml",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.warp/launch_configurations/launch_config.yaml",
+                    "backups": []
                 }
             }
         },
@@ -447,6 +497,10 @@
                 "rnd4.ldevelle": {
                     "deploy_path": "/srv/data/home/ldevelle/.tmux.conf",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.tmux.conf",
+                    "backups": []
                 }
             }
         },
@@ -462,6 +516,10 @@
                             "datetime": "2026-02-07_19:51:14.741666"
                         }
                     ]
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.config/wezterm/wezterm.lua",
+                    "backups": []
                 }
             }
         },
@@ -477,6 +535,10 @@
                             "datetime": "2026-02-16_12:45:35.375015"
                         }
                     ]
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/CLAUDE.md",
+                    "backups": []
                 }
             }
         },
@@ -492,6 +554,10 @@
                             "datetime": "2026-02-16_12:45:38.623793"
                         }
                     ]
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/settings.json",
+                    "backups": []
                 }
             }
         },
@@ -565,6 +631,11 @@
         "rnd4.ldevelle": {
             "identifier": "rnd4.ldevelle",
             "home_path": "/srv/data/home/ldevelle",
+            "dotfiles_dir_path": "dotfiles"
+        },
+        "TinyButMighty.ezalos": {
+            "identifier": "TinyButMighty.ezalos",
+            "home_path": "/home/ezalos",
             "dotfiles_dir_path": "dotfiles"
         }
     }

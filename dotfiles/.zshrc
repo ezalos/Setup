@@ -106,6 +106,8 @@ if [[ -z "${WHICH_COMPUTER:-}" ]]; then
         export WHICH_COMPUTER="TheBeast"
     elif [[ `uname -n` = "TheBeast" ]]; then
         export WHICH_COMPUTER="TheBeast"
+    elif [[ `uname -n` = "TinyButMighty" ]]; then
+        export WHICH_COMPUTER="TinyButMighty"
     elif [[ `uname -n` = "Louiss-MBP.lan" ]]; then
         export WHICH_COMPUTER="MacBook"
     elif [[ `uname -n` = "Louiss-MacBook-Pro.local" ]]; then
@@ -145,6 +147,7 @@ setup_ssh() {
   local key=""
   case "$WHICH_COMPUTER" in
       TheBeast)       key="$HOME/.ssh/id_ed_ghub" ;;
+      TinyButMighty)  key="$HOME/.ssh/id_ed_ghub" ;;
       MacBook)        key="$HOME/.ssh/gthb" ;;
       *_Heuritech)    key="$HOME/.ssh/ghub_ezalos" ;;
   esac
