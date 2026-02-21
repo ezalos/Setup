@@ -74,3 +74,113 @@ async def health():
         status="ok",
         model_loaded=getattr(app.state, "model_loaded", False),
     )
+
+
+def _do_transcribe(
+    model,
+    file_path: str,
+    language: str | None,
+    diarize: bool,
+    min_speakers: int,
+    max_speakers: int,
+) -> dict:
+    """Run whisperx transcription pipeline. Called in executor to avoid blocking."""
+    audio = whisperx.load_audio(file_path)
+    result = model.transcribe(audio, batch_size=BATCH_SIZE, language=language)
+    detected_lang = result.get("language", language or "unknown")
+
+    # Alignment for better word-level timestamps
+    try:
+        model_a, metadata = whisperx.load_align_model(
+            language_code=detected_lang, device=DEVICE
+        )
+        result = whisperx.align(
+            result["segments"],
+            model_a,
+            metadata,
+            audio,
+            DEVICE,
+            return_char_alignments=False,
+        )
+        del model_a, metadata
+    except Exception:
+        # Alignment may fail for unsupported languages; fall back to unaligned
+        pass
+
+    # Optional diarization
+    if diarize and HF_TOKEN:
+        try:
+            from whisperx.diarize import DiarizationPipeline
+
+            diarize_model = DiarizationPipeline(
+                token=HF_TOKEN, device=DEVICE
+            )
+            diarize_segments = diarize_model(
+                audio,
+                min_speakers=min_speakers,
+                max_speakers=max_speakers,
+            )
+            result = whisperx.assign_word_speakers(diarize_segments, result)
+            del diarize_model, diarize_segments
+        except Exception:
+            # Diarization can fail; fall back to undiarized result
+            pass
+
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    # Build plain text from segments
+    segments = result.get("segments", [])
+    full_text = " ".join(seg.get("text", "").strip() for seg in segments)
+
+    return {"text": full_text, "language": detected_lang}
+
+
+@app.post("/transcribe", response_model=TranscribeResponse)
+async def transcribe(
+    file: UploadFile = File(...),
+    language: str | None = Query(
+        default=None,
+        description="Language code (e.g. 'fr', 'en'). Auto-detect if omitted.",
+    ),
+    diarize: bool = Query(
+        default=False,
+        description="Enable speaker diarization.",
+    ),
+    min_speakers: int = Query(
+        default=2,
+        description="Minimum number of speakers (only used if diarize=true).",
+    ),
+    max_speakers: int = Query(
+        default=2,
+        description="Maximum number of speakers (only used if diarize=true).",
+    ),
+):
+    """Transcribe an uploaded audio file and return plain text."""
+    suffix = os.path.splitext(file.filename or "audio.wav")[1] or ".wav"
+    tmp_path = os.path.join(UPLOAD_DIR, f"{os.urandom(8).hex()}{suffix}")
+    try:
+        with open(tmp_path, "wb") as f:
+            while chunk := await file.read(1024 * 1024):
+                f.write(chunk)
+
+        async with _gpu_lock:
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None,
+                lambda: _do_transcribe(
+                    app.state.model,
+                    tmp_path,
+                    language,
+                    diarize,
+                    min_speakers,
+                    max_speakers,
+                ),
+            )
+        return TranscribeResponse(**result)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
