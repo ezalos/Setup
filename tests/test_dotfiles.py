@@ -419,3 +419,83 @@ def test_migration_from_meta3(setup_test_environment):
     # Clean up: remove the meta_3.json we created, restore dotfiles.json as primary
     if meta3_path.exists():
         meta3_path.unlink()
+
+# -------------------------- Only Devices Tests -------------------------- #
+
+@pytest.mark.run(order=20)
+def test_only_devices_skip(setup_test_environment):
+    """Dotfile with only_devices excluding current device is skipped."""
+    import json
+
+    # GIVEN a dotfile restricted to a different device
+    manager = ManageDotfiles()
+    manager.db.metadata.dotfiles["restricted_file"] = DotFileModel(
+        alias="restricted_file",
+        main="test_dotfiles/restricted_file",
+        deploy={
+            "other_device.user": DeployedDotFile(
+                deploy_path="/home/other/restricted_file",
+                backups=[]
+            )
+        },
+        only_devices=["other_device.user"]
+    )
+    manager.db.metadata.devices["other_device.user"] = DevicesData(
+        identifier="other_device.user",
+        home_path="/home/other",
+        dotfiles_dir_path="test_dotfiles"
+    )
+    manager.db.save_all()
+
+    # WHEN loading all dotfiles on current device
+    new_manager = ManageDotfiles()
+
+    # THEN the restricted dotfile should not appear
+    aliases = [d.data.alias for d in new_manager.db.data]
+    assert "restricted_file" not in aliases
+
+    # Clean up
+    del new_manager.db.metadata.dotfiles["restricted_file"]
+    new_manager.db.save_all()
+
+
+@pytest.mark.run(order=21)
+def test_only_devices_deploy(setup_test_environment):
+    """Dotfile with only_devices including current device deploys normally."""
+    dotfile_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_dotfile_restricted")
+    dotfile_path.write_text("restricted content")
+
+    # GIVEN a dotfile restricted to include the current device
+    manager = ManageDotfiles()
+    manager.db.metadata.dotfiles["restricted_current"] = DotFileModel(
+        alias="restricted_current",
+        main="test_dotfiles/restricted_current",
+        deploy={
+            config.identifier: DeployedDotFile(
+                deploy_path=str(dotfile_path),
+                backups=[]
+            )
+        },
+        only_devices=[config.identifier]
+    )
+    # Create the main file so deploy can symlink to it
+    main_path = Path(config.project_path) / "test_dotfiles" / "restricted_current"
+    main_path.write_text("restricted main content")
+    manager.db.save_all()
+
+    # WHEN loading all dotfiles
+    new_manager = ManageDotfiles()
+
+    # THEN the dotfile should appear
+    aliases = [d.data.alias for d in new_manager.db.data]
+    assert "restricted_current" in aliases
+
+    # Clean up
+    del new_manager.db.metadata.dotfiles["restricted_current"]
+    new_manager.db.save_all()
+    if main_path.exists():
+        main_path.unlink()
+    if dotfile_path.is_symlink():
+        os.unlink(str(dotfile_path))
+    elif dotfile_path.exists():
+        dotfile_path.unlink()

@@ -148,6 +148,10 @@ class Dependencies:
         """
         dotfiles = []
         for alias, model in self.metadata.dotfiles.items():
+            # Skip dotfiles restricted to other devices
+            if model.only_devices is not None and config.identifier not in model.only_devices:
+                logger.debug(f"Skipping {alias}: only_devices={model.only_devices}, current={config.identifier}")
+                continue
             if config.identifier not in model.deploy.keys():
                 # Get device data for translation
                 known_devices_in_model = [i for i in model.deploy.keys() if i in self.metadata.devices.keys()]
