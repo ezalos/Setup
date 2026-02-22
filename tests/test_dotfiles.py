@@ -585,3 +585,31 @@ def test_variant_fallback(setup_test_environment):
     remove_file_if_exists(dotfile_path)
     remove_file_if_exists(main_path)
     remove_file_if_exists(variant_path)
+
+
+@pytest.mark.run(order=24)
+def test_translate_preserves_only_devices_and_variants(setup_test_environment):
+    """Test that translate_to_device preserves only_devices and variants."""
+    model = DotFileModel(
+        alias="translate_test",
+        main="test_dotfiles/translate_test",
+        deploy={
+            config.identifier: DeployedDotFile(
+                deploy_path=f"{config.home}/.translate_test",
+                backups=[]
+            )
+        },
+        only_devices=[config.identifier, "target_device"],
+        variants={config.identifier: "test_dotfiles/translate_test.current"}
+    )
+    dotfile = DotFile(model, config.identifier)
+
+    target_device = DevicesData(
+        identifier="target_device",
+        home_path="/home/target",
+        dotfiles_dir_path="test_dotfiles_target"
+    )
+
+    translated = dotfile.translate_to_device(config.device_data, target_device)
+    assert translated.data.only_devices == [config.identifier, "target_device"]
+    assert translated.data.variants == {config.identifier: "test_dotfiles/translate_test.current"}

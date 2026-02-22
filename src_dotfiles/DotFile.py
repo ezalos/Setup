@@ -180,7 +180,9 @@ class DotFile:
                     deploy_path=new_path,
                     backups=[]
                 )
-            }
+            },
+            only_devices=self.data.only_devices,
+            variants=self.data.variants,
         )
         
         return DotFile(new_model, target_device.identifier)
