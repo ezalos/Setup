@@ -499,3 +499,89 @@ def test_only_devices_deploy(setup_test_environment):
         os.unlink(str(dotfile_path))
     elif dotfile_path.exists():
         dotfile_path.unlink()
+
+# ----------------------------- Variant Deploy Tests ----------------------------- #
+
+@pytest.mark.run(order=22)
+def test_variant_deploy(setup_test_environment):
+    """Variant for current device is used as symlink target instead of main."""
+    # GIVEN a dotfile with a variant for the current device
+    dotfile_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_variant_file")
+    dotfile_path.write_text("will be replaced by symlink")
+
+    main_path = Path(config.project_path) / "test_dotfiles" / "variant_test"
+    main_path.write_text("default content")
+
+    variant_path = Path(config.project_path) / "test_dotfiles" / "variant_test.MyDevice"
+    variant_path.write_text("variant content")
+
+    model = DotFileModel(
+        alias="variant_test",
+        main="test_dotfiles/variant_test",
+        deploy={
+            config.identifier: DeployedDotFile(
+                deploy_path=str(dotfile_path),
+                backups=[]
+            )
+        },
+        variants={config.identifier: "test_dotfiles/variant_test.MyDevice"}
+    )
+    dotfile = DotFile(model, config.identifier)
+
+    # WHEN deploying
+    remove_file_if_exists(dotfile_path)
+    dotfile.deploy()
+
+    # THEN the symlink should point to the variant, not main
+    assert dotfile_path.is_symlink()
+    target = os.readlink(str(dotfile_path))
+    assert target.endswith("variant_test.MyDevice")
+    assert dotfile_path.read_text() == "variant content"
+
+    # Clean up
+    remove_file_if_exists(dotfile_path)
+    remove_file_if_exists(main_path)
+    remove_file_if_exists(variant_path)
+
+
+@pytest.mark.run(order=23)
+def test_variant_fallback(setup_test_environment):
+    """When variant exists for another device, current device gets main."""
+    # GIVEN a dotfile with a variant for a DIFFERENT device
+    dotfile_path = Path(f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_variant_fallback")
+    dotfile_path.write_text("will be replaced by symlink")
+
+    main_path = Path(config.project_path) / "test_dotfiles" / "variant_fallback"
+    main_path.write_text("default content")
+
+    variant_path = Path(config.project_path) / "test_dotfiles" / "variant_fallback.OtherDevice"
+    variant_path.write_text("other device content")
+
+    model = DotFileModel(
+        alias="variant_fallback",
+        main="test_dotfiles/variant_fallback",
+        deploy={
+            config.identifier: DeployedDotFile(
+                deploy_path=str(dotfile_path),
+                backups=[]
+            )
+        },
+        variants={"OtherDevice.user": "test_dotfiles/variant_fallback.OtherDevice"}
+    )
+    dotfile = DotFile(model, config.identifier)
+
+    # WHEN deploying
+    remove_file_if_exists(dotfile_path)
+    dotfile.deploy()
+
+    # THEN the symlink should point to main (not the variant)
+    assert dotfile_path.is_symlink()
+    target = os.readlink(str(dotfile_path))
+    assert target.endswith("variant_fallback")
+    assert not target.endswith("variant_fallback.OtherDevice")
+    assert dotfile_path.read_text() == "default content"
+
+    # Clean up
+    remove_file_if_exists(dotfile_path)
+    remove_file_if_exists(main_path)
+    remove_file_if_exists(variant_path)

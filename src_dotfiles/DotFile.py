@@ -81,9 +81,15 @@ class DotFile:
             logger.info(f'{dirs} does not exist: creating it')
             os.makedirs(dirs)
 
-        main = Path(config.project_path).joinpath(self.data.main).as_posix()
-        logger.info(f"Symlink created {self.data.deploy[self.identifier].deploy_path} -> {main}")
-        os.symlink(main, self.data.deploy[self.identifier].deploy_path)
+        # Resolve variant: use device-specific file if one exists, otherwise main
+        source = self.data.main
+        if self.data.variants and self.identifier in self.data.variants:
+            source = self.data.variants[self.identifier]
+            logger.info(f"Using variant for {self.identifier}: {source}")
+
+        target = Path(config.project_path).joinpath(source).as_posix()
+        logger.info(f"Symlink created {self.data.deploy[self.identifier].deploy_path} -> {target}")
+        os.symlink(target, self.data.deploy[self.identifier].deploy_path)
 
     def backup(self) -> None:
         """Create a backup of the current file if it exists and is not a symlink."""
