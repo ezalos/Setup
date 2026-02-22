@@ -96,26 +96,27 @@ class Dependencies:
                 return MetaDataDotFiles()
             return MetaDataDotFiles.model_validate_json(data)
 
-    def create_dotfile(self, path: str, alias: Optional[str] = None) -> DotFile:
+    def create_dotfile(self, path: str, alias: Optional[str] = None, only_device: Optional[str] = None) -> DotFile:
         """Create a new DotFile instance with appropriate model
 
         Args:
             path (str): Path where the dotfile should exist in the system
             alias (Optional[str]): Custom alias for the dotfile. Default: filename from path
+            only_device (Optional[str]): If set, restrict this dotfile to the given device identifier.
 
         Returns:
             DotFile: New DotFile instance
         """
         if alias is None:
             alias = Path(path).name
-        
+
         identifier=config.identifier
         main=Path(config.dotfiles_dir).joinpath(alias).as_posix()
 
 
         if alias in self.metadata.dotfiles.keys():
             dot_file_model = self.metadata.dotfiles[alias]
-        else: 
+        else:
             dot_file_model = DotFileModel(
                 alias=alias,
                 main=main,
@@ -124,7 +125,8 @@ class Dependencies:
                         deploy_path=path,
                         backups=[]
                     )
-                }
+                },
+                only_devices=[only_device] if only_device else None,
             )
         
         if identifier in dot_file_model.deploy.keys():

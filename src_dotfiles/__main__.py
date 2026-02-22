@@ -22,23 +22,24 @@ class ManageDotfiles:
     def __init__(self):
         self.db = Dependencies()
 
-    def add(self, path: str, alias: Optional[str] = None, force: bool = False) -> Optional[str]:
+    def add(self, path: str, alias: Optional[str] = None, force: bool = False, only_device: Optional[str] = None) -> Optional[str]:
         """Add a new dotfile to be managed by the system.
 
         Args:
             path (str): Path to the dotfile to add
             alias (Optional[str]): Custom alias for the dotfile. If not provided, will be generated from filename.
             force (bool): Whether to force add if alias already exists.
+            only_device (Optional[str]): If set, restrict this dotfile to the given device identifier.
 
         Returns:
             Optional[str]: Alias of the added dotfile if successful, None if failed
-            
+
         Raises:
             NotImplementedError: If force=True and trying to add different path for existing alias
         """
-        logger.debug(f"{path = } {alias = } {force = }")
-        
-        new_dot_file = self.db.create_dotfile(path, alias)
+        logger.debug(f"{path = } {alias = } {force = } {only_device = }")
+
+        new_dot_file = self.db.create_dotfile(path, alias, only_device=only_device)
 
         current_dot_file = self.db.select_by_alias(new_dot_file.data.alias)
         if not current_dot_file:

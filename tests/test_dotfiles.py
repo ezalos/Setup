@@ -613,3 +613,34 @@ def test_translate_preserves_only_devices_and_variants(setup_test_environment):
     translated = dotfile.translate_to_device(config.device_data, target_device)
     assert translated.data.only_devices == [config.identifier, "target_device"]
     assert translated.data.variants == {config.identifier: "test_dotfiles/translate_test.current"}
+
+
+# ----------------------------- CLI Add --only-device Tests ----------------------------- #
+
+@pytest.mark.run(order=25)
+def test_add_with_only_device(setup_test_environment):
+    """Test that --only-device flag sets only_devices on the dotfile."""
+    dotfile_path = f"{setup_test_environment['TEST_DATA_TMP'].as_posix()}/test_only_device_add"
+    Path(dotfile_path).write_text("only device content")
+
+    # Create the main file first (simulating it already exists)
+    main_path = Path(config.project_path) / "test_dotfiles" / "only_device_add"
+    main_path.write_text("only device content")
+
+    manager = ManageDotfiles()
+    alias = manager.add(path=dotfile_path, alias="only_device_add", only_device=config.identifier)
+    assert alias == "only_device_add"
+
+    # Verify only_devices is set
+    new_manager = ManageDotfiles()
+    dotfile = new_manager.db.select_by_alias("only_device_add")
+    assert dotfile is not None
+    assert dotfile.data.only_devices == [config.identifier]
+
+    # Clean up
+    if Path(dotfile_path).is_symlink():
+        os.unlink(dotfile_path)
+    elif Path(dotfile_path).exists():
+        Path(dotfile_path).unlink()
+    if main_path.exists():
+        main_path.unlink()
