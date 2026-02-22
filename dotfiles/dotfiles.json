@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "dotfiles": {
         ".neofetch": {
             "alias": ".neofetch",
@@ -45,7 +46,9 @@
                     "deploy_path": "/home/ezalos/.config/neofetch/config.conf",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".zshrc": {
             "alias": ".zshrc",
@@ -92,7 +95,9 @@
                         }
                     ]
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".vimrc": {
             "alias": ".vimrc",
@@ -134,7 +139,9 @@
                     "deploy_path": "/home/ezalos/.vimrc",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "config_nvim": {
             "alias": "config_nvim",
@@ -198,7 +205,9 @@
                     "deploy_path": "/home/ezalos/.config/nvim",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".bashrc": {
             "alias": ".bashrc",
@@ -245,7 +254,9 @@
                         }
                     ]
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "terminator": {
             "alias": "terminator",
@@ -292,7 +303,9 @@
                     "deploy_path": "/home/ezalos/.config/terminator/config",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".p10k.zsh": {
             "alias": ".p10k.zsh",
@@ -334,7 +347,9 @@
                     "deploy_path": "/home/ezalos/.p10k.zsh",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".gdbinit": {
             "alias": ".gdbinit",
@@ -376,7 +391,9 @@
                     "deploy_path": "/home/ezalos/.gdbinit",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "jupyter_notebook_config.py": {
             "alias": "jupyter_notebook_config.py",
@@ -418,7 +435,9 @@
                     "deploy_path": "/home/ezalos/.jupyter/jupyter_notebook_config.py",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "warp": {
             "alias": "warp",
@@ -460,7 +479,9 @@
                     "deploy_path": "/home/ezalos/.warp/launch_configurations/launch_config.yaml",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         ".tmux.conf": {
             "alias": ".tmux.conf",
@@ -502,7 +523,9 @@
                     "deploy_path": "/home/ezalos/.tmux.conf",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "wezterm.lua": {
             "alias": "wezterm.lua",
@@ -521,7 +544,9 @@
                     "deploy_path": "/home/ezalos/.config/wezterm/wezterm.lua",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "claude_md": {
             "alias": "claude_md",
@@ -540,7 +565,9 @@
                     "deploy_path": "/home/ezalos/.claude/CLAUDE.md",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "claude_settings": {
             "alias": "claude_settings",
@@ -559,6 +586,10 @@
                     "deploy_path": "/home/ezalos/.claude/settings.json",
                     "backups": []
                 }
+            },
+            "only_devices": null,
+            "variants": {
+                "TinyButMighty.ezalos": "dotfiles/claude_settings.TinyButMighty"
             }
         },
         "statusline.py": {
@@ -578,17 +609,9 @@
                     "deploy_path": "/home/ezalos/.claude/statusline.py",
                     "backups": []
                 }
-            }
-        },
-        "unsafe_claude_settings": {
-            "alias": "unsafe_claude_settings",
-            "main": "dotfiles/unsafe_claude_settings",
-            "deploy": {
-                "TinyButMighty.ezalos": {
-                    "deploy_path": "/home/ezalos/Setup/dotfiles/claude_settings",
-                    "backups": []
-                }
-            }
+            },
+            "only_devices": null,
+            "variants": null
         },
         "nginx.conf": {
             "alias": "nginx.conf",
@@ -598,7 +621,11 @@
                     "deploy_path": "/etc/nginx/nginx.conf",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": [
+                "TinyButMighty.ezalos"
+            ],
+            "variants": null
         },
         "nginx_port_forward.conf": {
             "alias": "nginx_port_forward.conf",
@@ -608,7 +635,11 @@
                     "deploy_path": "/etc/nginx/sites-available/port-forward.conf",
                     "backups": []
                 }
-            }
+            },
+            "only_devices": [
+                "TinyButMighty.ezalos"
+            ],
+            "variants": null
         }
     },
     "devices": {
