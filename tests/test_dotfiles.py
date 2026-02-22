@@ -377,3 +377,45 @@ def test_metadata_version_field(setup_test_environment):
     json_str = meta.model_dump_json()
     loaded = MetaDataDotFiles.model_validate_json(json_str)
     assert loaded.version == 1
+
+# ------------------------------ Migration Tests ------------------------------ #
+
+@pytest.mark.run(order=19)
+def test_migration_from_meta3(setup_test_environment):
+    """Test that meta_3.json is auto-migrated to dotfiles.json with version 1."""
+    import json
+
+    # GIVEN a meta_3.json file exists and dotfiles.json does not
+    meta3_path = Path(config.dotfiles_dir) / "meta_3.json"
+    dotfiles_json_path = Path(config.dotfiles_dir) / "dotfiles.json"
+
+    # Remove dotfiles.json if it exists from previous test runs
+    if dotfiles_json_path.exists():
+        dotfiles_json_path.unlink()
+
+    # Write a minimal meta_3.json (old format, no version field)
+    old_data = {
+        "dotfiles": {
+            "migration_test": {
+                "alias": "migration_test",
+                "main": "test_dotfiles/migration_test",
+                "deploy": {}
+            }
+        },
+        "devices": {}
+    }
+    meta3_path.write_text(json.dumps(old_data))
+
+    # WHEN loading the database
+    manager = ManageDotfiles()
+
+    # THEN dotfiles.json should exist with version=1
+    assert dotfiles_json_path.exists()
+    with open(dotfiles_json_path) as f:
+        loaded = json.loads(f.read())
+    assert loaded["version"] == 1
+    assert "migration_test" in loaded["dotfiles"]
+
+    # Clean up: remove the meta_3.json we created, restore dotfiles.json as primary
+    if meta3_path.exists():
+        meta3_path.unlink()

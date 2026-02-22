@@ -45,6 +45,12 @@ class Dependencies:
             logger.debug(f"Loading metadata from {self.db_path}")
             with open(self.db_path, "r") as f:
                 self.metadata = MetaDataDotFiles.model_validate_json(f.read())
+        elif self._legacy_db_path().exists():
+            logger.info(f"Migrating from {self._legacy_db_path()} to {self.db_path}")
+            with open(self._legacy_db_path(), "r") as f:
+                self.metadata = MetaDataDotFiles.model_validate_json(f.read())
+            # Ensure version is set (old files won't have it, Pydantic defaults to 1)
+            self.save_all()
         else:
             logger.debug(f"Creating new metadata")
             self.metadata = MetaDataDotFiles(
@@ -66,6 +72,10 @@ class Dependencies:
         """
         dest = self.path_test if self.test else self.path
         return Path(config.project_path).joinpath(dest)
+
+    def _legacy_db_path(self) -> Path:
+        """Get the path to the legacy meta_3.json file."""
+        return Path(config.project_path).joinpath(config.legacy_meta3_path)
 
     def load(self) -> MetaDataDotFiles:
         """Loads the db in memory and validates it

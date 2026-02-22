@@ -57,7 +57,8 @@ def set_config(dotfiles_dir="dotfiles"):
     config.project_path = get_project_path()
     config.dotfiles_dir = dotfiles_dir
     config.backup_dir = Path(config.dotfiles_dir).joinpath('old').as_posix()
-    config.depedencies_path = Path(config.dotfiles_dir).joinpath('meta_3.json').as_posix()
+    config.depedencies_path = Path(config.dotfiles_dir).joinpath('dotfiles.json').as_posix()
+    config.legacy_meta3_path = Path(config.dotfiles_dir).joinpath('meta_3.json').as_posix()
     config.identifier = get_computer_name()
     
     # Create device data for current system
