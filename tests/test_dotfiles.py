@@ -7,7 +7,7 @@ import time
 from ezpy_logs.LoggerFactory import LoggerFactory
 from src_dotfiles.__main__ import ManageDotfiles
 from src_dotfiles.database import Dependencies
-from src_dotfiles.models import DevicesData, DotFileModel, DeployedDotFile
+from src_dotfiles.models import DevicesData, DotFileModel, DeployedDotFile, MetaDataDotFiles
 from src_dotfiles.DotFile import get_time, DATETIME_FORMAT, DotFile
 from datetime import datetime
 
@@ -338,3 +338,42 @@ def test_load_from_different_device(setup_test_environment):
     assert translated.data.deploy[config.identifier].deploy_path.startswith(config.home)
     assert translated.data.main.startswith(config.dotfiles_dir)
     assert len(translated.data.deploy[config.identifier].backups) == 0
+
+# ----------------------------- Variant Model Tests ----------------------------- #
+
+@pytest.mark.run(order=16)
+def test_model_new_fields_default_none(setup_test_environment):
+    """Test that new fields default to None for backward compatibility."""
+    model = DotFileModel(
+        alias="test_compat",
+        main="dotfiles/test_compat",
+        deploy={}
+    )
+    assert model.only_devices is None
+    assert model.variants is None
+
+
+@pytest.mark.run(order=17)
+def test_model_new_fields_roundtrip(setup_test_environment):
+    """Test that only_devices and variants survive JSON serialization."""
+    model = DotFileModel(
+        alias="test_variant",
+        main="dotfiles/test_variant",
+        deploy={},
+        only_devices=["TinyButMighty.ezalos"],
+        variants={"TinyButMighty.ezalos": "dotfiles/test_variant.TinyButMighty"}
+    )
+    json_str = model.model_dump_json()
+    loaded = DotFileModel.model_validate_json(json_str)
+    assert loaded.only_devices == ["TinyButMighty.ezalos"]
+    assert loaded.variants == {"TinyButMighty.ezalos": "dotfiles/test_variant.TinyButMighty"}
+
+
+@pytest.mark.run(order=18)
+def test_metadata_version_field(setup_test_environment):
+    """Test that MetaDataDotFiles has version field defaulting to 1."""
+    meta = MetaDataDotFiles()
+    assert meta.version == 1
+    json_str = meta.model_dump_json()
+    loaded = MetaDataDotFiles.model_validate_json(json_str)
+    assert loaded.version == 1

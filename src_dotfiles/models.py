@@ -39,10 +39,14 @@ class DotFileModel(BaseModel):
         alias (str): The name used to identify the dotfile (usually the filename or a unique alias).
         main (str): The path to the main version of the dotfile in the dotfiles directory.
         deploy (Dict[Identifier, DeployedDotFile]): Dictionary of deployment information for this dotfile on different systems.
+        only_devices (Optional[List[Identifier]]): If set, restrict deployment to only these devices.
+        variants (Optional[Dict[Identifier, str]]): Device-specific variant paths, mapping device identifier to an alternate dotfile path.
     """
     alias: Alias
     main: str
     deploy: Dict[Identifier, DeployedDotFile] = Field(default_factory=dict)
+    only_devices: Optional[List[Identifier]] = None
+    variants: Optional[Dict[Identifier, str]] = None
 
 class DevicesData(BaseModel):
     """
@@ -65,8 +69,10 @@ class MetaDataDotFiles(BaseModel):
     where dotfiles can be deployed.
 
     Attributes:
+        version (int): Schema version for forward-compatible migrations. Defaults to 1.
         dotfiles (Dict[str, DotFileModel]): Dictionary mapping dotfile aliases to their models.
         devices (Dict[str, DevicesData]): Mapping of system identifiers to their device configuration.
     """
+    version: int = 1
     dotfiles: Dict[Alias, DotFileModel] = Field(default_factory=dict)
     devices: Dict[Identifier, DevicesData] = Field(default_factory=dict)
