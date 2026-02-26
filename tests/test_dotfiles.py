@@ -644,3 +644,150 @@ def test_add_with_only_device(setup_test_environment):
         Path(dotfile_path).unlink()
     if main_path.exists():
         main_path.unlink()
+
+
+# ----------------------- Real meta_3.json Migration Tests ----------------------- #
+
+@pytest.mark.run(order=26)
+def test_migration_from_real_meta3(setup_test_environment):
+    """Test migration using the real dotfiles/meta_3.json with 18 dotfiles and 12 devices."""
+    import json
+
+    # GIVEN a copy of the real meta_3.json in the test dotfiles directory
+    real_meta3 = Path("dotfiles/meta_3.json")
+    assert real_meta3.exists(), "Real meta_3.json must exist for this test"
+
+    test_meta3_path = Path(config.dotfiles_dir) / "meta_3.json"
+    test_dotfiles_json = Path(config.dotfiles_dir) / "dotfiles.json"
+
+    # Remove dotfiles.json so the migration path is triggered
+    if test_dotfiles_json.exists():
+        test_dotfiles_json.unlink()
+
+    shutil.copy(real_meta3, test_meta3_path)
+
+    # WHEN loading the database (triggers migration from meta_3.json)
+    manager = ManageDotfiles()
+
+    # THEN dotfiles.json should be created with version 1
+    assert test_dotfiles_json.exists()
+    with open(test_dotfiles_json) as f:
+        loaded = json.loads(f.read())
+    assert loaded["version"] == 1
+
+    # All 18 dotfiles from meta_3.json should be present in the migrated data
+    assert len(loaded["dotfiles"]) >= 18
+
+    # All 12 original devices should be preserved
+    original_device_ids = {
+        "ezalos.TM1704.ezalos", "Louiss.MBP.ezalos", "TheBeast.ezalos",
+        "Louiss.MBP.lan.ezalos", "MacBook.Pro.de.Louis.local.louis",
+        "rnd3.ldevelle", "louiss.macbook.pro.3.home.ezalos", "rnd2.ldevelle",
+        "smic.ldevelle", "rnd1.ldevelle", "rnd4.ldevelle", "TinyButMighty.ezalos",
+    }
+    for device_id in original_device_ids:
+        assert device_id in loaded["devices"], f"Device {device_id} missing after migration"
+
+    # All dotfiles should have loaded successfully (translated to current device)
+    assert len(manager.db.data) == 18
+
+    # only_devices and variants should default to None (didn't exist in old format)
+    for alias, model in manager.db.metadata.dotfiles.items():
+        assert model.only_devices is None, f"{alias} has unexpected only_devices"
+        assert model.variants is None, f"{alias} has unexpected variants"
+
+    # Clean up
+    if test_meta3_path.exists():
+        test_meta3_path.unlink()
+
+
+@pytest.mark.run(order=27)
+def test_unknown_device_inferred(setup_test_environment):
+    """Test that a dotfile from an unknown device is recovered via path inference."""
+    import json
+
+    # GIVEN a database with a dotfile deployed to an unknown device
+    # whose deploy path has a recognizable home directory
+    manager = ManageDotfiles()
+    unknown_device_id = "mystery_box.someuser"
+    alias = "inferred_dotfile"
+
+    manager.db.metadata.dotfiles[alias] = DotFileModel(
+        alias=alias,
+        main="dotfiles/inferred_dotfile",
+        deploy={
+            unknown_device_id: DeployedDotFile(
+                deploy_path="/home/someuser/.config/inferred_dotfile",
+                backups=[]
+            )
+        }
+    )
+    # Ensure the unknown device is NOT in metadata.devices
+    if unknown_device_id in manager.db.metadata.devices:
+        del manager.db.metadata.devices[unknown_device_id]
+    manager.db.save_all()
+
+    # WHEN loading all dotfiles
+    new_manager = ManageDotfiles()
+
+    # THEN the dotfile should NOT be silently skipped
+    aliases = [d.data.alias for d in new_manager.db.data]
+    assert alias in aliases, "Dotfile with unknown device should be recovered via inference"
+
+    # The inferred device should now be in metadata.devices
+    assert unknown_device_id in new_manager.db.metadata.devices
+    inferred_device = new_manager.db.metadata.devices[unknown_device_id]
+    assert inferred_device.home_path == "/home/someuser"
+
+    # The dotfile should be translated to the current device
+    translated = new_manager.db.select_by_alias(alias)
+    assert translated is not None
+    assert translated.identifier == config.identifier
+    assert config.identifier in translated.data.deploy
+    assert translated.data.deploy[config.identifier].deploy_path.startswith(config.home)
+
+    # Clean up
+    del new_manager.db.metadata.dotfiles[alias]
+    if unknown_device_id in new_manager.db.metadata.devices:
+        del new_manager.db.metadata.devices[unknown_device_id]
+    new_manager.db.save_all()
+
+
+@pytest.mark.run(order=28)
+def test_unknown_device_unrecognizable_path(setup_test_environment):
+    """Test that a dotfile with an unrecognizable deploy path is skipped gracefully."""
+    import json
+
+    # GIVEN a dotfile deployed to an unknown device with a non-home path
+    manager = ManageDotfiles()
+    unknown_device_id = "weird_server.nobody"
+    alias = "unskippable_dotfile"
+
+    manager.db.metadata.dotfiles[alias] = DotFileModel(
+        alias=alias,
+        main="dotfiles/unskippable_dotfile",
+        deploy={
+            unknown_device_id: DeployedDotFile(
+                deploy_path="/etc/nginx/nginx.conf",
+                backups=[]
+            )
+        }
+    )
+    # Ensure the unknown device is NOT in metadata.devices
+    if unknown_device_id in manager.db.metadata.devices:
+        del manager.db.metadata.devices[unknown_device_id]
+    manager.db.save_all()
+
+    # WHEN loading all dotfiles
+    new_manager = ManageDotfiles()
+
+    # THEN the dotfile should be skipped (no crash, graceful degradation)
+    aliases = [d.data.alias for d in new_manager.db.data]
+    assert alias not in aliases, "Dotfile with unrecognizable path should be skipped"
+
+    # The unknown device should NOT be added to metadata.devices
+    assert unknown_device_id not in new_manager.db.metadata.devices
+
+    # Clean up
+    del new_manager.db.metadata.dotfiles[alias]
+    new_manager.db.save_all()

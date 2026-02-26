@@ -1,9 +1,10 @@
 from src_dotfiles.config import config
 import json
+import re
 from pathlib import Path
 from ezpy_logs.LoggerFactory import LoggerFactory
 from typing import List, Optional
-from src_dotfiles.models import DotFileModel, MetaDataDotFiles, DeployedDotFile
+from src_dotfiles.models import DotFileModel, MetaDataDotFiles, DeployedDotFile, DevicesData
 from src_dotfiles.DotFile import DotFile
 
 logger = LoggerFactory.getLogger(__name__)
@@ -140,6 +141,31 @@ class Dependencies:
         )
         return DotFile(dot_file_model, identifier)
 
+    def _infer_device_data(self, identifier: str, deploy_path: str) -> Optional[DevicesData]:
+        """Infer device metadata from identifier and a deploy path.
+
+        Extracts home_path by matching standard home directory patterns
+        in the deploy path. Returns None if no pattern matches.
+        """
+        # Standard home directory patterns (ordered by specificity)
+        patterns = [
+            r'^(/srv/data/home/[^/]+)',  # /srv/data/home/user
+            r'^(/home/[^/]+)',            # /home/user
+            r'^(/Users/[^/]+)',           # /Users/user (macOS)
+            r'^(/root)',                   # /root
+        ]
+        for pattern in patterns:
+            match = re.match(pattern, deploy_path)
+            if match:
+                home_path = match.group(1)
+                logger.info(f"Inferred device data for {identifier}: home_path={home_path}")
+                return DevicesData(
+                    identifier=identifier,
+                    home_path=home_path,
+                    dotfiles_dir_path="dotfiles"  # safe default, matches all real data
+                )
+        return None
+
     def load_all(self) -> List[DotFile]:
         """Converts the metadata into usable DotFile objects.
         
@@ -159,8 +185,17 @@ class Dependencies:
                 known_devices_in_model = [i for i in model.deploy.keys() if i in self.metadata.devices.keys()]
 
                 if len(known_devices_in_model) == 0:
-                    logger.warning(f"All the devices from model {model.deploy.keys() = } not found in metadata, skipping {model.alias = }")
-                    continue
+                    if len(model.deploy) == 0:
+                        logger.warning(f"No deploy entries for {model.alias = }, skipping")
+                        continue
+                    # Try to infer device data from deploy path
+                    any_device_id = list(model.deploy.keys())[0]
+                    inferred = self._infer_device_data(any_device_id, model.deploy[any_device_id].deploy_path)
+                    if inferred is None:
+                        logger.warning(f"Cannot infer device data for {any_device_id} from deploy path, skipping {model.alias = }")
+                        continue
+                    self.metadata.devices[any_device_id] = inferred
+                    model_identifier = any_device_id
                 else:
                     model_identifier = known_devices_in_model[0]
                     
