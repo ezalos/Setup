@@ -3,22 +3,33 @@
 Local FastAPI server wrapping [whisperx](https://github.com/m-bain/whisperX) for audio transcription.
 Designed to run on a GPU workstation and accept audio uploads from a Raspberry Pi (or any HTTP client) on the local network.
 
-## Setup
-
-Install dependencies (first time only):
+## Docker (recommended)
 
 ```bash
 cd transcription_server
-uv sync
+docker compose up -d
+```
+
+Manage the container:
+
+```bash
+docker compose logs -f          # follow logs
+docker compose restart           # restart
+docker compose down              # stop
+docker compose up -d --build     # rebuild after code changes
+```
+
+The container auto-restarts on reboot (`unless-stopped` policy).
+
+## Bare metal (alternative)
+
+```bash
+cd transcription_server
+uv sync                          # first time only
+./run.sh
 ```
 
 ## Usage
-
-Start the server:
-
-```bash
-./transcription_server/run.sh
-```
 
 The model loads at startup (~30-90 seconds). Server is ready when `/health` returns `model_loaded: true`.
 
