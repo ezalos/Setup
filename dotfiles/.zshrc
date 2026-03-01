@@ -447,11 +447,11 @@ USAGE
 tn() { tmux new-session -s "${1:-$(date +w-%m%d-%Hh%M)}"; }
 ta() {
   if [[ -n "$1" ]]; then
-    # Try switch-client first (avoids nesting when on same tmux server)
-    if tmux switch-client -t "$1" 2>/dev/null; then
+    # Try switch-client first (avoids nesting when already inside tmux)
+    if [[ -n "$TMUX" ]] && tmux switch-client -t "$1" 2>/dev/null; then
       return 0
     fi
-    # Fall back to attach-session (needed for remote/SSH or outside tmux)
+    # Fall back to attach-session (outside tmux, or switch-client failed)
     tmux attach-session -t "$1"
     # If we get here, inner tmux was detached/killed.
     # Signal outer tmux to auto-disable passthrough via pane title escape sequence.
