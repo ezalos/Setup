@@ -1,0 +1,15 @@
+# ABOUTME: Project configuration for the SFR Box NAT manager CLI tool.
+# ABOUTME: Manages port forwarding rules on the SFR Box router via its web API.
+
+[project]
+name = "nat-manager"
+version = "0.1.0"
+description = "CLI tool to manage port forwarding rules on SFR Box routers"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+]
+
+[project.scripts]
+nat = "nat:main"
