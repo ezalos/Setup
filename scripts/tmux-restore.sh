@@ -56,7 +56,7 @@ pane_created_count=0
 active_windows=()
 claude_resume_list=()
 
-while IFS=$'\t' read -r session win_idx win_name win_layout pane_idx pane_dir is_claude win_active; do
+while IFS=$'\t' read -r session win_idx win_name win_layout pane_idx pane_dir is_claude win_active claude_session_id; do
 
   # Skip all lines belonging to a session we couldn't create or already exists
   [[ "$session" == "$skip_session" ]] && continue
@@ -95,7 +95,7 @@ while IFS=$'\t' read -r session win_idx win_name win_layout pane_idx pane_dir is
     show_pane_context "$session:$win_idx.$pane_idx" "$session" "$win_idx" "$pane_idx"
 
     [[ "$win_active" == "1" ]] && active_windows+=("$session:$win_idx")
-    [[ "$is_claude" == "1" ]] && claude_resume_list+=("$session:$win_idx.$pane_idx|$pane_dir")
+    [[ "$is_claude" == "1" ]] && claude_resume_list+=("$session:$win_idx.$pane_idx|$pane_dir|${claude_session_id:-}")
 
     tmux select-layout -t "$session:$win_idx" "$win_layout" 2>/dev/null
     continue
@@ -118,7 +118,7 @@ while IFS=$'\t' read -r session win_idx win_name win_layout pane_idx pane_dir is
   tmux send-keys -t "$session:$win_idx.$pane_idx" "cd '${pane_dir}' && clear" Enter
   show_pane_context "$session:$win_idx.$pane_idx" "$session" "$win_idx" "$pane_idx"
 
-  [[ "$is_claude" == "1" ]] && claude_resume_list+=("$session:$win_idx.$pane_idx|$pane_dir")
+  [[ "$is_claude" == "1" ]] && claude_resume_list+=("$session:$win_idx.$pane_idx|$pane_dir|${claude_session_id:-}")
 
   # Reapply layout after each pane so geometry stays correct
   tmux select-layout -t "$session:$win_idx" "$win_layout" 2>/dev/null
@@ -143,15 +143,28 @@ if [[ ${#claude_resume_list[@]} -gt 0 ]]; then
   echo "${#claude_resume_list[@]} pane(s) had Claude Code running:"
   for entry in "${claude_resume_list[@]}"; do
     target="${entry%%|*}"
-    dir="${entry#*|}"
+    rest="${entry#*|}"
+    dir="${rest%%|*}"
+    sid="${rest#*|}"
     echo ""
-    echo "  $target  ($dir)"
-    read -rp "  Resume claude --continue? [y/N] " answer
-    if [[ "$answer" =~ ^[Yy]$ ]]; then
-      tmux send-keys -t "$target" "claude --continue" Enter
-      echo "  → Resumed"
+    if [[ -n "$sid" ]]; then
+      echo "  $target  ($dir)  [session: ${sid:0:8}…]"
+      read -rp "  Resume claude --resume $sid? [y/N] " answer
+      if [[ "$answer" =~ ^[Yy]$ ]]; then
+        tmux send-keys -t "$target" "claude --resume '$sid'" Enter
+        echo "  → Resumed (specific session)"
+      else
+        echo "  → Skipped"
+      fi
     else
-      echo "  → Skipped"
+      echo "  $target  ($dir)  [session ID unknown]"
+      read -rp "  Resume claude --resume (interactive picker)? [y/N] " answer
+      if [[ "$answer" =~ ^[Yy]$ ]]; then
+        tmux send-keys -t "$target" "claude --resume" Enter
+        echo "  → Opened interactive picker"
+      else
+        echo "  → Skipped"
+      fi
     fi
   done
 fi

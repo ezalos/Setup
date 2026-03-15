@@ -35,14 +35,24 @@ tmux list-sessions -F '#{session_name}' | while read -r session; do
     | while IFS='|' read -r pane_idx pane_dir pane_pid; do
       # Detect Claude Code via session process group
       is_claude=0
+      claude_session_id=""
       if ps -o comm= -g "$pane_pid" 2>/dev/null | grep -q 'claude'; then
         is_claude=1
+        # Extract the Claude session ID from the child claude process
+        claude_pid=$(ps -o pid=,comm= --ppid "$pane_pid" 2>/dev/null \
+          | awk '$2 == "claude" {print $1; exit}')
+        if [[ -n "$claude_pid" && -f "$HOME/.claude/sessions/$claude_pid.json" ]]; then
+          claude_session_id=$(python3 -c \
+            "import json; print(json.load(open('$HOME/.claude/sessions/$claude_pid.json'))['sessionId'])" \
+            2>/dev/null || true)
+        fi
       fi
 
-      # Write metadata line
-      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      # Write metadata line (9 columns: session, win_idx, win_name, win_layout,
+      #   pane_idx, pane_dir, is_claude, win_active, claude_session_id)
+      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
         "$session" "$win_idx" "$win_name" "$win_layout" \
-        "$pane_idx" "$pane_dir" "$is_claude" "$win_active" \
+        "$pane_idx" "$pane_dir" "$is_claude" "$win_active" "$claude_session_id" \
         >> "$SAVE_DIR/state.tsv"
 
       # Capture scrollback (last 10k lines)
