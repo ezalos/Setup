@@ -118,7 +118,17 @@ pytest -s -v tests/test_dotfiles.py
 
 ### Docker Environment
 
-Docker configs exist for reproducible development/testing environments:
+Docker configs exist for reproducible development/testing environments. The `dwork` shell function (defined in `.zshrc`) provides a convenient way to spawn containers from any directory:
+
+```bash
+dwork        # start/attach to CPU container (default)
+dwork cpu    # explicit CPU
+dwork gpu    # GPU container (nvidia runtime)
+```
+
+This auto-starts the container if it's not already running, then drops you into a zsh shell inside it.
+
+Manual compose commands are also available:
 
 ```bash
 docker compose -f docker-compose.gpu.yaml build

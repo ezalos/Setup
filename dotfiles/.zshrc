@@ -214,6 +214,26 @@ alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true 
 alias docker_clean_overlay='docker rm -vf $(docker ps --filter=status=exited --filter=status=created -q) ; docker rmi -f $(docker images --filter=dangling=true -q) ; docker volume prune -f ; docker system prune -a -f'
 alias docker_kill_all='docker kill $(docker ps -a -q)'
 
+# Spawn a dev docker container (cpu or gpu) from anywhere
+dwork() {
+  local variant="${1:-cpu}"
+  local compose_file="$PATH_SETUP_DIR/docker-compose.${variant}.yaml"
+  local service="work.${variant}"
+
+  if [[ ! -f "$compose_file" ]]; then
+    echo "Unknown variant: $variant (expected cpu or gpu)"
+    return 1
+  fi
+
+  # Start the container if not already running
+  if ! docker compose -f "$compose_file" ps --status=running --format '{{.Name}}' 2>/dev/null | grep -q "$service"; then
+    echo "Starting $service..."
+    docker compose -f "$compose_file" up -d
+  fi
+
+  docker compose -f "$compose_file" exec "$service" zsh
+}
+
 # Convert epoch timestamp to human-readable idle string (e.g. "2d 5h", "15m")
 _tmux_idle_fmt() {
   local now=$(date +%s)
@@ -260,7 +280,7 @@ tls() {
 
 # tmux cleanup: detect phantom windows and stale sessions
 tclean() {
-  local stale=0 threshold_hours=72 dry_run=0
+  local stale=1 threshold_hours=72 dry_run=0
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -311,7 +331,7 @@ USAGE
       count=$((count + 1))
       targets+=("${sess}:${widx}")
       reasons+=("phantom: shell with no history, cursor at line ${cury}")
-      previews+=("$(tmux capture-pane -t "${sess}:${widx}" -p 2>/dev/null | tail -5)")
+      previews+=("$(tmux capture-pane -t "${sess}:${widx}" -p 2>/dev/null | sed '/^$/d' | tail -10)")
       targeted["${sess}:${widx}"]=1
     fi
   done
@@ -362,7 +382,7 @@ USAGE
         count=$((count + 1))
         targets+=("${sess}:${windex}")
         reasons+=("stale: session detached, idle ${idle_str}, all windows shell-only")
-        previews+=("$(tmux capture-pane -t "${sess}:${windex}" -p 2>/dev/null | tail -5)")
+        previews+=("$(tmux capture-pane -t "${sess}:${windex}" -p 2>/dev/null | sed '/^$/d' | tail -10)")
         targeted["${sess}:${windex}"]=1
       done
     done
@@ -380,7 +400,11 @@ USAGE
   for i in {1..$count}; do
     printf "\033[1;33m%3d)\033[0m \033[1m%s\033[0m — %s\n" "$i" "${targets[$i]}" "${reasons[$i]}"
     if [[ -n "${previews[$i]}" ]]; then
-      printf "\033[2m%s\033[0m\n" "${previews[$i]}"
+      printf "     \033[2m┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\033[0m\n"
+      while IFS= read -r pvline; do
+        printf "     \033[2m│\033[0m %s\n" "$pvline"
+      done <<< "${previews[$i]}"
+      printf "     \033[2m┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\033[0m\n"
     fi
     echo ""
   done
@@ -473,6 +497,10 @@ _ta() {
   _describe 'tmux session' sessions
 }
 compdef _ta ta
+
+# tmux session save/restore (for reboots)
+tsave()    { "$PATH_SETUP_DIR/scripts/tmux-save.sh" "$@"; }
+trestore() { "$PATH_SETUP_DIR/scripts/tmux-restore.sh" "$@"; }
 
 # WezTerm without tmux (overrides default_prog)
 alias wez='wezterm start -- /bin/zsh &'
