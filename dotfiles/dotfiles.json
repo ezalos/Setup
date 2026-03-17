@@ -543,6 +543,10 @@
                 "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.config/wezterm/wezterm.lua",
                     "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.config/wezterm/wezterm.lua",
+                    "backups": []
                 }
             },
             "only_devices": null,
@@ -563,6 +567,10 @@
                 },
                 "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/CLAUDE.md",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/CLAUDE.md",
                     "backups": []
                 }
             },
@@ -585,6 +593,15 @@
                 "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/settings.json",
                     "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/settings.json",
+                    "backups": [
+                        {
+                            "backup_path": "/Users/louis/Setup/dotfiles/old/claude_settings_MacBook.Pro.de.Louis.local.louis_2026-03-05_16:10:37.598270",
+                            "datetime": "2026-03-05_16:10:37.598270"
+                        }
+                    ]
                 }
             },
             "only_devices": null,
@@ -607,6 +624,10 @@
                 },
                 "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/statusline.py",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/statusline.py",
                     "backups": []
                 }
             },

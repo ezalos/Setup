@@ -1,7 +1,6 @@
 -- LSP and completion configuration
 -- Only sets up servers that are actually installed on the system
 
-local lspconfig = require("lspconfig")
 local cmp = require("cmp")
 local luasnip = require("luasnip")
 
@@ -67,11 +66,14 @@ local servers = {
   },
 }
 
+-- Apply capabilities to all LSP servers
+vim.lsp.config("*", { capabilities = capabilities })
+
 for server, cfg in pairs(servers) do
   if vim.fn.executable(cfg.executable) == 1 then
-    lspconfig[server].setup({
-      capabilities = capabilities,
+    vim.lsp.config(server, {
       settings = cfg.settings or {},
     })
+    vim.lsp.enable(server)
   end
 end

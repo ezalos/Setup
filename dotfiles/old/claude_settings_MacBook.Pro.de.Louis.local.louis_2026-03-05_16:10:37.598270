@@ -1,0 +1,16 @@
+{
+  "model": "claude-opus-4-6",
+  "statusLine": {
+    "type": "command",
+    "command": ".claude/statusline-command.py"
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "osgrep@osgrep": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
+  }
+}

@@ -31,11 +31,16 @@
 export AWS_PROFILE="euprod"
 export AWS_REGION="eu-west-1"
 
-export THESAURUS_ROUTE_BASE=https://thesaurus-api.heuritech.com/api
-export OPSTER_MODULES_ROUTE_BASE=https://opster-api.heuritech.com/modules
-export MODULES_ROUTE_BASE=https://modules-api.heuritech.com
-export CATALOG_ROUTE_BASE=https://catalog-api.heuritech.com
-export INDUS_ROUTE_BASE=https://indus-api.heuritech.com
-export DATASET_ROUTE_BASE=https://dataset-api.heuritech.com
-export LABELING_ROUTE_BASE=https://labeling-api.heuritech.com
+export THESAURUS_ROUTE_BASE=https://core-api.heuritech.com/thesaurus
+export OPSTER_MODULES_ROUTE_BASE=https://core-api.heuritech.com/opster/training_requests
+export MODULES_ROUTE_BASE=https://core-api.heuritech.com/indus
+export CATALOG_ROUTE_BASE=https://core-api.heuritech.com/catalogx
+export INDUS_ROUTE_BASE=https://core-api.heuritech.com/indus
+export DATASET_ROUTE_BASE=https://core-api.heuritech.com/dataset
+export LABELING_ROUTE_BASE=https://core-api.heuritech.com/labeling
+
+function krsync_ { command="krsync -ravh --progress --stats --exclude={'libraries/*/tests/*','*.csv','*.ndjson','.git*','*.tar.gz','**.venv/**','.osgrep/lancedb/**','env','**venv/**','.python-version','*.pyc','__pycache__','.pytest_cache','.ipynb_checkpoint','*dump.json','untracked_files/data/**','untracked_files/**.json*'} $HOME/$1/ $2:/data/$1";
+  echo $command;
+  eval $command;}
+
 
