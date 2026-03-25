@@ -595,3 +595,14 @@ if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
         path_append "${_nvm_node_dirs[1]}/bin"
     fi
 fi
+
+# Claude Code
+claude() { command claude --enable-auto-mode --rc "$@"; }
+claudetg() { command claude --enable-auto-mode --channels plugin:telegram@claude-plugins-official --rc "$@"; }
+
+# bun completions
+[ -s "/home/ezalos/.bun/_bun" ] && source "/home/ezalos/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
