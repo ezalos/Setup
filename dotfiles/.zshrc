@@ -640,3 +640,116 @@ _setup_notices_list_pending() {
 _setup_notices_count_pending() {
   _setup_notices_list_pending | grep -c .
 }
+
+setup_notices() {
+  local cmd="${1:-list}"
+  shift 2>/dev/null
+
+  case "$cmd" in
+    list|'')
+      local pending
+      pending=$(_setup_notices_list_pending)
+      if [[ -z "$pending" ]]; then
+        echo "No pending setup notices."
+        return 0
+      fi
+      echo "Pending setup notices:"
+      local id f summary
+      while IFS=$'\t' read -r id f; do
+        summary="$(awk -F': *' '/^summary:/ {print $2; exit}' "$f")"
+        printf '\n  [%s] %s\n' "$id" "$summary"
+        printf '    Doc:  %s\n' "$f"
+        printf '    Run:  setup_notices run %s\n' "$id"
+        printf '    Or:   setup_notices show %s  (then ack manually)\n' "$id"
+      done <<< "$pending"
+      ;;
+
+    all)
+      local f id summary acked marker
+      for f in "$SETUP_NOTICES_DIR"/20*.md(N); do
+        id="$(awk -F': *' '/^id:/ {print $2; exit}' "$f")"
+        summary="$(awk -F': *' '/^summary:/ {print $2; exit}' "$f")"
+        if [[ -f "$SETUP_NOTICES_ACK_DIR/$id.acked" ]]; then
+          marker='[x]'
+        else
+          marker='[ ]'
+        fi
+        printf '%s %s — %s\n' "$marker" "$id" "$summary"
+      done
+      ;;
+
+    show)
+      local id="$1"
+      [[ -z "$id" ]] && { echo "Usage: setup_notices show <id>" >&2; return 1 }
+      local f
+      f="$(_setup_notices_find "$id")" || {
+        echo "setup_notices: no notice with id '$id'" >&2; return 1
+      }
+      ${PAGER:-less} "$f"
+      ;;
+
+    run)
+      local id="$1"
+      [[ -z "$id" ]] && { echo "Usage: setup_notices run <id>" >&2; return 1 }
+      local f
+      f="$(_setup_notices_find "$id")" || {
+        echo "setup_notices: no notice with id '$id'" >&2; return 1
+      }
+      local ack_cmd
+      ack_cmd="$(awk -F': *' '/^ack_cmd:/ {sub(/^ *ack_cmd: */,""); print; exit}' "$f")"
+      if [[ -z "$ack_cmd" ]]; then
+        echo "setup_notices: notice '$id' has no ack_cmd; use 'setup_notices ack $id' after you finish manually" >&2
+        return 1
+      fi
+      # Expand ~ in the command
+      ack_cmd="${ack_cmd/#\~/$HOME}"
+      echo "setup_notices: running '$ack_cmd'"
+      if eval "$ack_cmd"; then
+        mkdir -p "$SETUP_NOTICES_ACK_DIR"
+        touch "$SETUP_NOTICES_ACK_DIR/$id.acked"
+        echo "setup_notices: acked '$id'"
+      else
+        echo "setup_notices: ack_cmd failed, notice NOT acked" >&2
+        return 1
+      fi
+      ;;
+
+    ack)
+      local id="$1"
+      [[ -z "$id" ]] && { echo "Usage: setup_notices ack <id>" >&2; return 1 }
+      _setup_notices_find "$id" >/dev/null || {
+        echo "setup_notices: no notice with id '$id'" >&2; return 1
+      }
+      mkdir -p "$SETUP_NOTICES_ACK_DIR"
+      touch "$SETUP_NOTICES_ACK_DIR/$id.acked"
+      echo "setup_notices: acked '$id'"
+      ;;
+
+    unack)
+      local id="$1"
+      [[ -z "$id" ]] && { echo "Usage: setup_notices unack <id>" >&2; return 1 }
+      rm -f "$SETUP_NOTICES_ACK_DIR/$id.acked"
+      echo "setup_notices: unacked '$id'"
+      ;;
+
+    *)
+      echo "Usage: setup_notices [list|all|show <id>|run <id>|ack <id>|unack <id>]" >&2
+      return 1
+      ;;
+  esac
+}
+
+# Find the notice file for an id; print its path or return non-zero.
+_setup_notices_find() {
+  local id="$1"
+  local f
+  for f in "$SETUP_NOTICES_DIR"/20*.md(N); do
+    local this_id
+    this_id="$(awk -F': *' '/^id:/ {print $2; exit}' "$f")"
+    if [[ "$this_id" == "$id" ]]; then
+      echo "$f"
+      return 0
+    fi
+  done
+  return 1
+}
