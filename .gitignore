@@ -16,6 +16,7 @@ data/test_data
 *.pyo
 
 .envrc
+.envrc.heuritech
 .secrets.sh
 .logs
 .osgrep
