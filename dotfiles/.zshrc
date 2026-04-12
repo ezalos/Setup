@@ -753,3 +753,12 @@ _setup_notices_find() {
   done
   return 1
 }
+
+_setup_notices_check() {
+  local n
+  n="$(_setup_notices_count_pending)"
+  if (( n > 0 )); then
+    echo "⚠️  $n pending setup notice(s): run \`setup_notices\` to view"
+  fi
+}
+_setup_notices_check
