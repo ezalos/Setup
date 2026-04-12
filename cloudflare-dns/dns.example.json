@@ -1,0 +1,19 @@
+{
+  "zone": "example.com",
+  "records": [
+    {
+      "type": "CNAME",
+      "name": "app",
+      "content": "your-tunnel-id.cfargotunnel.com",
+      "proxied": true,
+      "comment": "App via Cloudflare Tunnel"
+    },
+    {
+      "type": "A",
+      "name": "api",
+      "content": "0.0.0.0",
+      "proxied": true,
+      "comment": "API server"
+    }
+  ]
+}

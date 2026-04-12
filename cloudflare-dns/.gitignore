@@ -1,0 +1,2 @@
+# dns.json may contain origin IPs — keep it out of version control
+dns.json
