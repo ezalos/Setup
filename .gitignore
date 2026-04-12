@@ -19,3 +19,5 @@ data/test_data
 .secrets.sh
 .logs
 .osgrep
+
+plans
