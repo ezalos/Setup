@@ -754,6 +754,38 @@ _setup_notices_find() {
   return 1
 }
 
+
+# ---------- grab: reverse file fetch over SSH ----------
+# See: ~/Setup/plans/2026_04_12-spec_grab_reverse_fetch.md
+
+GRAB_ENABLED_HOSTS=(
+  TheBeast TinyButMighty
+  rnd1 rnd2 rnd3 rnd4
+  smic
+)
+# MacBook and MacBook_Heuritech are excluded — they currently accept no
+# inbound SSH. Add them here if that ever changes.
+
+GRAB_RECEIVER_PORT=19923
+
+_grab_receiver_ensure() {
+  local pid_file="$HOME/.cache/grab-receiver.pid"
+  if [[ -f "$pid_file" ]] && kill -0 "$(<"$pid_file")" 2>/dev/null; then
+    return 0
+  fi
+  mkdir -p "$HOME/.cache" "$HOME/Downloads/grab"
+  nohup python3 "$HOME/Setup/scripts/grab-receiver.py" \
+    --port "$GRAB_RECEIVER_PORT" \
+    >"$HOME/.cache/grab-receiver.log" 2>&1 &!
+  # Give it a moment to bind the port
+  local i
+  for i in 1 2 3 4 5; do
+    [[ -f "$pid_file" ]] && return 0
+    sleep 0.1
+  done
+  return 0  # don't block ssh if receiver is slow; `grab` will fail cleanly
+}
+
 _setup_notices_check() {
   local n
   n="$(_setup_notices_count_pending)"
