@@ -892,7 +892,10 @@ grab() {
   for target in "$@"; do
     dir="$(dirname -- "$target")"
     base="$(basename -- "$target")"
-    if ! tar c -C "$dir" -- "$base" | socat - UNIX-CONNECT:"$GRAB_SOCK"; then
+    # `ch` = create + dereference symlinks. Many files in Louis's setup are
+    # symlinks managed by src_dotfiles; sending their content (not the link)
+    # is what's actually useful on the receiving machine.
+    if ! tar ch -C "$dir" -- "$base" | socat - UNIX-CONNECT:"$GRAB_SOCK"; then
       echo "grab: transfer failed for $target" >&2
       return 1
     fi
