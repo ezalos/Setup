@@ -3,25 +3,34 @@
 # ABOUTME: Writes result to ~/.cache/dotfiles_sync_status, rate-limited to 30min globally via flock.
 
 CACHE_FILE="${HOME}/.cache/dotfiles_sync_status"
-LOCK_FILE="${HOME}/.cache/dotfiles_sync.lock"
+LOCK_DIR="${HOME}/.cache/dotfiles_sync.lock.d"
 SETUP_DIR="${HOME}/Setup"
 MAX_AGE=1800  # 30 minutes in seconds
 
 mkdir -p "${HOME}/.cache"
 
+# Portable mtime. GNU stat must come first: on Linux, "stat -f" means
+# "filesystem info" (succeeds with wrong output), while "stat -c" fails
+# cleanly on macOS. BSD stat on macOS uses "-f <format>".
+get_mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0
+}
+
 # Fast path: if cache is fresh, exit immediately (~1ms cost)
 if [[ -f "$CACHE_FILE" ]]; then
-  file_age=$(( $(date +%s) - $(stat -c %Y "$CACHE_FILE" 2>/dev/null || echo 0) ))
+  file_age=$(( $(date +%s) - $(get_mtime "$CACHE_FILE") ))
   (( file_age < MAX_AGE )) && exit 0
 fi
 
-# Acquire lock (non-blocking — if another session is already fetching, just exit)
-exec 9>"$LOCK_FILE"
-flock -n 9 || exit 0
+# Acquire lock via atomic mkdir (portable; no flock dependency)
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  exit 0  # another session is already fetching
+fi
+trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
 
 # Double-check mtime after acquiring lock (another session may have just finished)
 if [[ -f "$CACHE_FILE" ]]; then
-  file_age=$(( $(date +%s) - $(stat -c %Y "$CACHE_FILE" 2>/dev/null || echo 0) ))
+  file_age=$(( $(date +%s) - $(get_mtime "$CACHE_FILE") ))
   (( file_age < MAX_AGE )) && exit 0
 fi
 
