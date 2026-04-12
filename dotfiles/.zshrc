@@ -193,6 +193,9 @@ fi
 [[ -f "$PATH_SETUP_DIR/scripts/setup_helpers.sh" ]] && source "$PATH_SETUP_DIR/scripts/setup_helpers.sh"
 [[ -f "$PATH_SETUP_DIR/scripts/heuritech_env.sh" ]] && source "$PATH_SETUP_DIR/scripts/heuritech_env.sh"
 
+# Check dotfiles sync status in background (shared cache, max once per 30min globally)
+("$PATH_SETUP_DIR/scripts/dotfiles-check.sh" &) 2>/dev/null
+
 # General aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]] || [[ $WHICH_COMPUTER == "smic_Heuritech" ]] || [[ $WHICH_COMPUTER == "rnd_Heuritech" ]]; then
 alias copy='xclip -sel c'

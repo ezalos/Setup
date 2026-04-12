@@ -48,6 +48,7 @@
   # last prompt line gets hidden if it would overlap with left prompt.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
+    dotfiles_sync           # dotfiles repo sync status (~/Setup)
     status                  # exit code of the last command
     command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
@@ -1735,5 +1736,26 @@ function prompt_my_cpu_temp() {
       p10k segment -s COOL -f green -t "${cpu_temp}"$'\uE339' -i $'\uE350'
     fi
   fi
+}
+
+function prompt_dotfiles_sync() {
+  local cache_file="${HOME}/.cache/dotfiles_sync_status"
+  [[ -f "$cache_file" ]] || return
+  local sync_status=$(<"$cache_file")
+
+  # Icons padded to 2-char width so "dot" aligns across all states
+  local icon="" color="green"
+  case "$sync_status" in
+    "ok")           icon=$'\u2713 '      ; color="green"  ;;  # ✓
+    "dirty")        icon=$'\u270E '      ; color="yellow" ;;  # ✎
+    "ahead")        icon=$'\u21E1 '      ; color="yellow" ;;  # ⇡
+    "dirty ahead")  icon=$'\u270E\u21E1' ; color="yellow" ;;  # ✎⇡
+    "behind")       icon=$'\u21E3 '      ; color="red"    ;;  # ⇣
+    "dirty behind") icon=$'\u270E\u21E3' ; color="red"    ;;  # ✎⇣
+    *diverged*)     icon=$'\u21D5 '      ; color="red"    ;;  # ⇕
+    *)              icon="? "            ; color="red"    ;;
+  esac
+
+  p10k segment -s DOTFILES -f "$color" -i $'\u2699' -t "${icon} dot"
 }
 
