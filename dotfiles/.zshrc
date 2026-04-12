@@ -866,6 +866,40 @@ ssh() {
     "export GRAB_SOCK='$sock'; exec \$SHELL -l"
 }
 
+grab() {
+  if [[ -z "$GRAB_SOCK" ]]; then
+    echo "grab: not in a grab-enabled ssh session (GRAB_SOCK unset)" >&2
+    echo "      re-ssh using your zshrc's ssh wrapper, and ensure the host" >&2
+    echo "      is in GRAB_ENABLED_HOSTS on the local side." >&2
+    return 1
+  fi
+  if (( $# == 0 )); then
+    echo "Usage: grab <file-or-dir> [...]" >&2
+    return 1
+  fi
+  if ! command -v socat >/dev/null 2>&1; then
+    echo "grab: socat not found on this machine — install it (setup_notices show grab_setup)" >&2
+    return 1
+  fi
+  local target
+  for target in "$@"; do
+    if [[ ! -e "$target" ]]; then
+      echo "grab: $target: no such file or directory" >&2
+      return 1
+    fi
+  done
+  local dir base
+  for target in "$@"; do
+    dir="$(dirname -- "$target")"
+    base="$(basename -- "$target")"
+    if ! tar c -C "$dir" -- "$base" | socat - UNIX-CONNECT:"$GRAB_SOCK"; then
+      echo "grab: transfer failed for $target" >&2
+      return 1
+    fi
+    echo "grab: sent $target"
+  done
+}
+
 _setup_notices_check() {
   local n
   n="$(_setup_notices_count_pending)"
