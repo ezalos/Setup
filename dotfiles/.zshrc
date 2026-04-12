@@ -837,6 +837,35 @@ _ssh_parse() {
   return 0
 }
 
+# ssh wrapper — for interactive invocations to hosts in GRAB_ENABLED_HOSTS,
+# set up a per-session reverse Unix-socket tunnel and inject GRAB_SOCK into
+# the remote shell so `grab` works there. Otherwise pass through unchanged.
+ssh() {
+  # Fast path 1: stdin/stdout not a TTY → scripted use, don't wrap.
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    command ssh "$@"
+    return
+  fi
+  local host
+  if ! host="$(_ssh_parse "$@")"; then
+    command ssh "$@"
+    return
+  fi
+  # Opt-in allowlist check (zsh [(Ie)…] lookup returns 0 if not found).
+  if (( ! ${GRAB_ENABLED_HOSTS[(Ie)$host]} )); then
+    command ssh "$@"
+    return
+  fi
+  _grab_receiver_ensure
+  local sock="/tmp/grab-${USER}-$$-${RANDOM}.sock"
+  # Clean up any leftover with the same name (extremely unlikely, but safe).
+  rm -f "$sock"
+  command ssh \
+    -R "$sock:127.0.0.1:$GRAB_RECEIVER_PORT" \
+    -t "$@" \
+    "export GRAB_SOCK='$sock'; exec \$SHELL -l"
+}
+
 _setup_notices_check() {
   local n
   n="$(_setup_notices_count_pending)"
