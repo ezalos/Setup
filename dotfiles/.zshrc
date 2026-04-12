@@ -193,8 +193,14 @@ fi
 [[ -f "$PATH_SETUP_DIR/scripts/setup_helpers.sh" ]] && source "$PATH_SETUP_DIR/scripts/setup_helpers.sh"
 [[ -f "$PATH_SETUP_DIR/scripts/heuritech_env.sh" ]] && source "$PATH_SETUP_DIR/scripts/heuritech_env.sh"
 
-# Check dotfiles sync status in background (shared cache, max once per 30min globally)
-("$PATH_SETUP_DIR/scripts/dotfiles-check.sh" &) 2>/dev/null
+# Refresh dotfiles sync cache in background before each prompt.
+# Script is fast (~20ms for local state) and backgrounded so it never blocks
+# the prompt. The git fetch inside is globally rate-limited to once per 30min.
+_dotfiles_sync_bg() {
+  ("$PATH_SETUP_DIR/scripts/dotfiles-check.sh" &) 2>/dev/null
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _dotfiles_sync_bg
 
 # General aliases
 if [[ $WHICH_COMPUTER == "TheBeast" ]] || [[ $WHICH_COMPUTER == "smic_Heuritech" ]] || [[ $WHICH_COMPUTER == "rnd_Heuritech" ]]; then

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# ABOUTME: Background script to check ~/Setup git sync status against remote.
-# ABOUTME: Writes result to ~/.cache/dotfiles_sync_status, rate-limited to 30min globally via flock.
+# ABOUTME: Updates ~/Setup sync status cache. Local state recomputes every call
+# ABOUTME: (no network, ~20ms); git fetch is rate-limited to once per 30min globally.
 
 CACHE_FILE="${HOME}/.cache/dotfiles_sync_status"
+FETCH_MARKER="${HOME}/.cache/dotfiles_sync.last_fetch"
 LOCK_DIR="${HOME}/.cache/dotfiles_sync.lock.d"
 SETUP_DIR="${HOME}/Setup"
 MAX_AGE=1800  # 30 minutes in seconds
@@ -16,30 +17,35 @@ get_mtime() {
   stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0
 }
 
-# Fast path: if cache is fresh, exit immediately (~1ms cost)
-if [[ -f "$CACHE_FILE" ]]; then
-  file_age=$(( $(date +%s) - $(get_mtime "$CACHE_FILE") ))
-  (( file_age < MAX_AGE )) && exit 0
-fi
-
-# Acquire lock via atomic mkdir (portable; no flock dependency)
-if ! mkdir "$LOCK_DIR" 2>/dev/null; then
-  exit 0  # another session is already fetching
-fi
-trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
-
-# Double-check mtime after acquiring lock (another session may have just finished)
-if [[ -f "$CACHE_FILE" ]]; then
-  file_age=$(( $(date +%s) - $(get_mtime "$CACHE_FILE") ))
-  (( file_age < MAX_AGE )) && exit 0
-fi
-
 cd "$SETUP_DIR" || exit 1
 
-# Fetch remote state (the only network call)
-git fetch --quiet 2>/dev/null
+# Decide whether to fetch. Only the network call is rate-limited —
+# local status computation always runs below so commits/pushes show instantly.
+needs_fetch=1
+if [[ -f "$FETCH_MARKER" ]]; then
+  age=$(( $(date +%s) - $(get_mtime "$FETCH_MARKER") ))
+  (( age < MAX_AGE )) && needs_fetch=0
+fi
 
-# Compute sync status
+if (( needs_fetch )); then
+  # Atomic mkdir lock (portable; no flock dependency)
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+    # Double-check under lock — another session may have just finished fetching
+    if [[ -f "$FETCH_MARKER" ]]; then
+      age=$(( $(date +%s) - $(get_mtime "$FETCH_MARKER") ))
+      (( age < MAX_AGE )) && needs_fetch=0
+    fi
+    if (( needs_fetch )); then
+      git fetch --quiet 2>/dev/null
+      touch "$FETCH_MARKER"
+    fi
+  fi
+  # If we couldn't get the lock, another session is fetching — just skip
+  # the fetch and compute status against whatever @{u} we already have.
+fi
+
+# Always recompute local status against current refs (cheap, no network).
 local_head=$(git rev-parse HEAD 2>/dev/null)
 remote_head=$(git rev-parse @{u} 2>/dev/null)
 merge_base=$(git merge-base HEAD @{u} 2>/dev/null)
