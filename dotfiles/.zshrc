@@ -615,3 +615,28 @@ claudetg() { command claude --enable-auto-mode --channels plugin:telegram@claude
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ---------- setup_notices ----------
+# Per-machine first-time-setup reminders. See: ~/Setup/setup_notices/README.md
+
+SETUP_NOTICES_DIR="$HOME/Setup/setup_notices"
+SETUP_NOTICES_ACK_DIR="$HOME/.cache/setup_notices"
+
+# Prints each pending notice ID and its notice file path, tab-separated,
+# one per line. Silent if none pending.
+_setup_notices_list_pending() {
+  [[ ! -d "$SETUP_NOTICES_DIR" ]] && return 0
+  mkdir -p "$SETUP_NOTICES_ACK_DIR"
+  local f id
+  for f in "$SETUP_NOTICES_DIR"/20*.md(N); do
+    id="$(awk -F': *' '/^id:/ {print $2; exit}' "$f")"
+    [[ -z "$id" ]] && continue
+    [[ -f "$SETUP_NOTICES_ACK_DIR/$id.acked" ]] && continue
+    printf '%s\t%s\n' "$id" "$f"
+  done
+}
+
+# Counts pending notices.
+_setup_notices_count_pending() {
+  _setup_notices_list_pending | grep -c .
+}
