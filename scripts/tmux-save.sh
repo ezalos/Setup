@@ -15,6 +15,7 @@ EOF
 fi
 
 SAVE_DIR="$HOME/.tmux-save"
+SAVE_LOG="$HOME/.tmux-save.log"
 
 # Clear previous save
 [[ -d "$SAVE_DIR" ]] && rip "$SAVE_DIR"
@@ -26,8 +27,19 @@ if ! tmux list-sessions &>/dev/null; then
   exit 1
 fi
 
+# Skip sessions whose names contain characters that will break tmux target
+# parsing or are clearly unresolved template variables (e.g. VS Code's
+# ${workspaceFolder}).
+is_bad_session_name() {
+  [[ "$1" =~ [\$\\\{\}] ]]
+}
+
 # Save each session → window → pane
 tmux list-sessions -F '#{session_name}' | while read -r session; do
+  if is_bad_session_name "$session"; then
+    echo "  SKIP (bad name): $session"
+    continue
+  fi
   tmux list-windows -t "$session" -F '#{window_index}|#{window_name}|#{window_layout}|#{window_active}' \
   | while IFS='|' read -r win_idx win_name win_layout win_active; do
     tmux list-panes -t "$session:$win_idx" \
@@ -71,7 +83,14 @@ if [[ -f "$SAVE_DIR/state.tsv" ]]; then
   total_panes=$(wc -l < "$SAVE_DIR/state.tsv")
   total_sessions=$(cut -f1 "$SAVE_DIR/state.tsv" | sort -u | wc -l)
   claude_panes=$(awk -F'\t' '$7 == 1' "$SAVE_DIR/state.tsv" | wc -l)
-  echo "Saved $total_panes pane(s) across $total_sessions session(s) ($claude_panes with Claude Code)"
+  summary="Saved $total_panes pane(s) across $total_sessions session(s) ($claude_panes with Claude Code)"
+  echo "$summary"
 else
-  echo "No panes found to save."
+  summary="No panes found to save."
+  echo "$summary"
 fi
+
+# Append to persistent log (survives save-dir wipe)
+printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$summary" >> "$SAVE_LOG"
+# Keep only last 100 lines
+tail -n 100 "$SAVE_LOG" > "$SAVE_LOG.tmp" && mv "$SAVE_LOG.tmp" "$SAVE_LOG"

@@ -48,6 +48,12 @@ show_pane_context() {
 
 echo "Restoring from $(cat "$SAVE_DIR/saved_at")..."
 
+# Session names with these characters break tmux target parsing or are
+# unresolved template variables (e.g. VS Code's ${workspaceFolder}).
+is_bad_session_name() {
+  [[ "$1" =~ [\$\\\{\}] ]]
+}
+
 prev_session=""
 prev_win=""
 skip_session=""
@@ -64,6 +70,12 @@ while IFS=$'\t' read -r session win_idx win_name win_layout pane_idx pane_dir is
   # --- New session ---
   if [[ "$session" != "$prev_session" ]]; then
     skip_session=""
+    if is_bad_session_name "$session"; then
+      echo "  SKIP: session '$session' has invalid characters"
+      skip_session="$session"
+      prev_session="$session"
+      continue
+    fi
     if tmux has-session -t "$session" 2>/dev/null; then
       echo "  SKIP: session '$session' already exists"
       skip_session="$session"
@@ -137,7 +149,44 @@ total_sessions=$(cut -f1 "$STATE" | sort -u | wc -l)
 echo "Restored $total_sessions session(s)."
 echo "Scrollback captures available in: $SAVE_DIR/pane_contents/"
 
+# --- Claude session verification helpers ---
+
+# Convert a working directory to Claude's project dir path
+claude_project_dir() {
+  local wdir="$1"
+  # Claude encodes paths: /home/ezalos/foo → -home-ezalos-foo
+  local encoded="${wdir//\//-}"
+  encoded="${encoded#-}"  # strip leading dash
+  echo "$HOME/.claude/projects/-${encoded}"
+}
+
+# Find the N most recent session IDs in a Claude project dir, excluding already-assigned ones
+# Usage: find_recent_sessions <project_dir> <count> <exclude_list_var>
+# Prints session IDs one per line, most recent first
+find_recent_sessions() {
+  local proj_dir="$1" count="$2"
+  shift 2
+  local excludes=("$@")
+  [[ -d "$proj_dir" ]] || return 1
+  local results=()
+  while IFS= read -r fpath; do
+    local candidate
+    candidate=$(basename "$fpath" .jsonl)
+    # Skip if already assigned
+    local skip=0
+    for ex in "${excludes[@]}"; do
+      [[ "$candidate" == "$ex" ]] && { skip=1; break; }
+    done
+    (( skip )) && continue
+    results+=("$candidate")
+    (( ${#results[@]} >= count )) && break
+  done < <(ls -t "$proj_dir"/*.jsonl 2>/dev/null)
+  printf '%s\n' "${results[@]}"
+}
+
 # Interactive Claude Code resumption
+assigned_sessions=()
+
 if [[ ${#claude_resume_list[@]} -gt 0 ]]; then
   echo ""
   echo "${#claude_resume_list[@]} pane(s) had Claude Code running:"
@@ -147,17 +196,91 @@ if [[ ${#claude_resume_list[@]} -gt 0 ]]; then
     dir="${rest%%|*}"
     sid="${rest#*|}"
     echo ""
-    if [[ -n "$sid" ]]; then
+
+    # Verify saved session ID against what's on disk
+    proj_dir=$(claude_project_dir "$dir")
+    latest_sid=""
+    saved_exists=0
+    saved_stale=0
+
+    if [[ -d "$proj_dir" ]]; then
+      latest_sid=$(find_recent_sessions "$proj_dir" 1 "${assigned_sessions[@]}")
+      if [[ -n "$sid" && -f "$proj_dir/${sid}.jsonl" ]]; then
+        saved_exists=1
+        # Check if there's a newer session
+        if [[ -n "$latest_sid" && "$latest_sid" != "$sid" ]]; then
+          saved_stale=1
+        fi
+      fi
+    fi
+
+    if [[ -n "$sid" && "$saved_exists" -eq 1 && "$saved_stale" -eq 0 ]]; then
+      # Saved session exists and is the latest — straightforward resume
       echo "  $target  ($dir)  [session: ${sid:0:8}…]"
       read -rp "  Resume claude --resume $sid? [y/N] " answer
       if [[ "$answer" =~ ^[Yy]$ ]]; then
         tmux send-keys -t "$target" "claude --resume '$sid'" Enter
-        echo "  → Resumed (specific session)"
+        assigned_sessions+=("$sid")
+        echo "  → Resumed"
       else
         echo "  → Skipped"
       fi
+
+    elif [[ -n "$sid" && "$saved_exists" -eq 1 && "$saved_stale" -eq 1 ]]; then
+      # Saved session exists but a newer one is available
+      echo "  $target  ($dir)"
+      echo "    saved:  ${sid:0:8}…  (from tsave snapshot)"
+      echo "    latest: ${latest_sid:0:8}…  (most recent on disk)"
+      echo "  Options: [s]aved / [l]atest / [p]icker / [N]one"
+      read -rp "  Choice: " answer
+      case "$answer" in
+        s|S)
+          tmux send-keys -t "$target" "claude --resume '$sid'" Enter
+          assigned_sessions+=("$sid")
+          echo "  → Resumed saved session"
+          ;;
+        l|L)
+          tmux send-keys -t "$target" "claude --resume '$latest_sid'" Enter
+          assigned_sessions+=("$latest_sid")
+          echo "  → Resumed latest session"
+          ;;
+        p|P)
+          tmux send-keys -t "$target" "claude --resume" Enter
+          echo "  → Opened interactive picker"
+          ;;
+        *)
+          echo "  → Skipped"
+          ;;
+      esac
+
+    elif [[ -n "$latest_sid" ]]; then
+      # Saved session missing or unknown, but we found a recent one on disk
+      if [[ -n "$sid" ]]; then
+        echo "  $target  ($dir)  [saved session ${sid:0:8}… not found on disk]"
+      else
+        echo "  $target  ($dir)  [session ID was not captured]"
+      fi
+      echo "    latest on disk: ${latest_sid:0:8}…"
+      echo "  Options: [l]atest / [p]icker / [N]one"
+      read -rp "  Choice: " answer
+      case "$answer" in
+        l|L)
+          tmux send-keys -t "$target" "claude --resume '$latest_sid'" Enter
+          assigned_sessions+=("$latest_sid")
+          echo "  → Resumed latest session"
+          ;;
+        p|P)
+          tmux send-keys -t "$target" "claude --resume" Enter
+          echo "  → Opened interactive picker"
+          ;;
+        *)
+          echo "  → Skipped"
+          ;;
+      esac
+
     else
-      echo "  $target  ($dir)  [session ID unknown]"
+      # No session info at all
+      echo "  $target  ($dir)  [no session data found]"
       read -rp "  Resume claude --resume (interactive picker)? [y/N] " answer
       if [[ "$answer" =~ ^[Yy]$ ]]; then
         tmux send-keys -t "$target" "claude --resume" Enter
