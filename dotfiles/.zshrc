@@ -786,6 +786,57 @@ _grab_receiver_ensure() {
   return 0  # don't block ssh if receiver is slow; `grab` will fail cleanly
 }
 
+# Parses ssh argv. On interactive invocations (no trailing remote command
+# and no explicit non-interactive flag), prints the destination host alias
+# and returns 0. Otherwise returns non-zero and prints nothing.
+#
+# Handles OpenSSH single-letter flags that take an argument (`-p 2222`,
+# `-i ~/key`, `-L 8080:host:80`, `-o Key=val`, etc.), including the
+# attached form (`-p2222`).
+#
+# Flags that imply "not an interactive shell" cause a non-zero return:
+#   -T (disable pseudo-tty), -N (no command at all), -f (background),
+#   -G (print config), -W (stdio forward).
+_ssh_parse() {
+  # Flags that expect an argument (OpenSSH man page summary).
+  local argflags="BbcDEeFIiJLlmOopQRSWw"
+  local expect_arg=0
+  local host=""
+  local arg c
+  for arg in "$@"; do
+    if (( expect_arg )); then
+      expect_arg=0
+      continue
+    fi
+    case "$arg" in
+      -T|-N|-f|-G|-W) return 1 ;;
+      --) continue ;;  # explicit end-of-options marker
+    esac
+    if [[ "$arg" == -* && "$arg" != "-" ]]; then
+      c="${arg[2]}"  # second character (zsh indexing is 1-based)
+      if [[ -n "$c" && "$argflags" == *"$c"* ]]; then
+        if (( ${#arg} == 2 )); then
+          expect_arg=1
+        fi
+        # else: attached value (`-p2222`), no expect_arg
+      fi
+      continue
+    fi
+    # Bare argument
+    if [[ -z "$host" ]]; then
+      host="$arg"
+    else
+      # Second bare arg = remote command → not interactive
+      return 1
+    fi
+  done
+  [[ -z "$host" ]] && return 1
+  # Strip user@ prefix if present
+  host="${host##*@}"
+  echo "$host"
+  return 0
+}
+
 _setup_notices_check() {
   local n
   n="$(_setup_notices_count_pending)"
