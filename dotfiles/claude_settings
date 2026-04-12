@@ -31,7 +31,22 @@
     "code-simplifier@claude-plugins-official": true,
     "safety-net@cc-marketplace": true,
     "frontend-design@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "telegram@claude-plugins-official": true
   },
-  "effortLevel": "high"
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "voiceEnabled": true,
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": true
 }
