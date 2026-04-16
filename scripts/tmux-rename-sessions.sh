@@ -87,6 +87,39 @@ _self_test() {
 }
 
 # ---------------------------------------------------------------------------- #
+# Old auto-pattern regex: matches e.g. w-0416-14h30
+# ---------------------------------------------------------------------------- #
+_OLD_PATTERN='^w-[0-9]{4}-[0-9]{2}h[0-9]{2}$'
+
+# ---------------------------------------------------------------------------- #
+# Iterate qualifying sessions and print "old|new" lines on stdout.
+# Prints skip notices for non-matching or problematic sessions to stderr.
+# ---------------------------------------------------------------------------- #
+_plan_renames() {
+  if ! tmux list-sessions >/dev/null 2>&1; then
+    echo "no tmux server running" >&2
+    return 0
+  fi
+
+  local old_name created first_pane_path new_name
+  while IFS='|' read -r old_name created; do
+    if [[ ! "$old_name" =~ $_OLD_PATTERN ]]; then
+      printf 'skip (custom name): %s\n' "$old_name" >&2
+      continue
+    fi
+    first_pane_path=$(tmux list-windows -t "$old_name" \
+      -F '#{window_index}|#{pane_current_path}' 2>/dev/null \
+      | sort -n | head -1 | cut -d'|' -f2-)
+    if [[ -z "$first_pane_path" ]]; then
+      printf 'skip (no first window): %s\n' "$old_name" >&2
+      continue
+    fi
+    new_name=$(_gen_session_name "$first_pane_path" "$created")
+    printf '%s|%s\n' "$old_name" "$new_name"
+  done < <(tmux list-sessions -F '#{session_name}|#{session_created}')
+}
+
+# ---------------------------------------------------------------------------- #
 # Entry point
 # ---------------------------------------------------------------------------- #
 main() {
@@ -112,8 +145,16 @@ USAGE
       echo
       ;;
     "")
-      echo "dry-run mode not yet implemented" >&2
-      exit 2
+      echo "Dry-run: planned renames (best-effort — basename comes from current first-window path, not creation-time path)"
+      echo "Pass --apply to execute."
+      echo "---"
+      local old new count=0
+      while IFS='|' read -r old new; do
+        printf '  %s  →  %s\n' "$old" "$new"
+        count=$((count + 1))
+      done < <(_plan_renames)
+      echo "---"
+      echo "$count session(s) would be renamed."
       ;;
     --apply)
       echo "apply mode not yet implemented" >&2
