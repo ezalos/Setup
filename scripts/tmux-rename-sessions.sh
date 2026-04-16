@@ -109,7 +109,7 @@ _plan_renames() {
     fi
     first_pane_path=$(tmux list-windows -t "$old_name" \
       -F '#{window_index}|#{pane_current_path}' 2>/dev/null \
-      | sort -n | head -1 | cut -d'|' -f2-)
+      | awk -F'|' 'NR==1 || $1+0 < min+0 {min=$1; line=$0} END { if (line != "") { sub(/^[^|]*\|/,"",line); print line } }')
     if [[ -z "$first_pane_path" ]]; then
       printf 'skip (no first window): %s\n' "$old_name" >&2
       continue
