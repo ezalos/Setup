@@ -157,8 +157,26 @@ USAGE
       echo "$count session(s) would be renamed."
       ;;
     --apply)
-      echo "apply mode not yet implemented" >&2
-      exit 2
+      local renamed=0 skipped_collision=0 old new
+      while IFS='|' read -r old new; do
+        if [[ "$old" == "$new" ]]; then
+          printf 'skip (already correct): %s\n' "$old"
+          continue
+        fi
+        if tmux has-session -t "=$new" 2>/dev/null; then
+          printf 'skip (collision: %s already exists): %s\n' "$new" "$old" >&2
+          skipped_collision=$((skipped_collision + 1))
+          continue
+        fi
+        if tmux rename-session -t "=$old" "$new"; then
+          printf '  %s  →  %s\n' "$old" "$new"
+          renamed=$((renamed + 1))
+        else
+          printf 'error renaming %s → %s\n' "$old" "$new" >&2
+        fi
+      done < <(_plan_renames)
+      echo "---"
+      echo "$renamed renamed, $skipped_collision skipped (collision)"
       ;;
     *)
       echo "error: unknown arg: $1" >&2
