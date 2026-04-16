@@ -102,8 +102,25 @@ Dry-run by default: lists planned renames for auto-pattern sessions.
   --self-test       run the sanitize/gen unit tests
 USAGE
       ;;
+    --gen-name)
+      local dir="${2:-}"
+      if [[ -z "$dir" ]]; then
+        echo "error: --gen-name requires a directory argument" >&2
+        exit 2
+      fi
+      _gen_session_name "$dir" "$(date +%s)"
+      echo
+      ;;
+    "")
+      echo "dry-run mode not yet implemented" >&2
+      exit 2
+      ;;
+    --apply)
+      echo "apply mode not yet implemented" >&2
+      exit 2
+      ;;
     *)
-      echo "not-yet-implemented" >&2
+      echo "error: unknown arg: $1" >&2
       exit 2
       ;;
   esac
