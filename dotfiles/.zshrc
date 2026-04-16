@@ -477,7 +477,16 @@ USAGE
 }
 
 # tmux helpers: create, attach
-tn() { tmux new-session -s "${1:-$(date +w-%m%d-%Hh%M)}"; }
+# tmux new session: if no arg given, name from $PWD basename + timestamp via shared script
+tn() {
+  local name
+  if [[ -n "${1:-}" ]]; then
+    name="$1"
+  else
+    name=$("$PATH_SETUP_DIR/scripts/tmux-rename-sessions.sh" --gen-name "$PWD")
+  fi
+  tmux new-session -s "$name"
+}
 ta() {
   if [[ -n "$1" ]]; then
     # Try switch-client first (avoids nesting when already inside tmux)
@@ -510,6 +519,7 @@ compdef _ta ta
 # tmux session save/restore (for reboots)
 tsave()    { "$PATH_SETUP_DIR/scripts/tmux-save.sh" "$@"; }
 trestore() { "$PATH_SETUP_DIR/scripts/tmux-restore.sh" "$@"; }
+trename()  { "$PATH_SETUP_DIR/scripts/tmux-rename-sessions.sh" "$@"; }
 
 # WezTerm without tmux (overrides default_prog)
 alias wez='wezterm start -- /bin/zsh &'
