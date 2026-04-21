@@ -21,4 +21,4 @@ data/test_data
 .logs
 .osgrep
 
-plans
+/plans
