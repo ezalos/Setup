@@ -63,4 +63,31 @@ config.keys = {
   },
 }
 
+-- macOS only: Option+Arrow → shell word-nav (readline \eb/\ef), which tmux passes
+-- through untouched. fn+Option+Arrow (= OPT+Home/End on Mac keyboards) → Meta+Arrow
+-- sequence that tmux's bind -n M-Left/M-Right intercepts for pane switching.
+-- On Linux, Alt+Arrow keeps its default Meta+Arrow sequence → tmux pane switch.
+if wezterm.target_triple:find('darwin') then
+  table.insert(config.keys, {
+    key = 'LeftArrow',
+    mods = 'OPT',
+    action = wezterm.action.SendString('\x1bb'),
+  })
+  table.insert(config.keys, {
+    key = 'RightArrow',
+    mods = 'OPT',
+    action = wezterm.action.SendString('\x1bf'),
+  })
+  table.insert(config.keys, {
+    key = 'Home',
+    mods = 'OPT',
+    action = wezterm.action.SendString('\x1b[1;3D'),
+  })
+  table.insert(config.keys, {
+    key = 'End',
+    mods = 'OPT',
+    action = wezterm.action.SendString('\x1b[1;3C'),
+  })
+end
+
 return config
