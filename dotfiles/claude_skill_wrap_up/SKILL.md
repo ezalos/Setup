@@ -175,8 +175,11 @@ claude-log wrap-up INFO "wrap-up: no self-improvement findings"
 - **CLAUDE.md** — edit relevant project or global CLAUDE.md.
 - **Rules** — create or update `<repo>/.claude/rules/<topic>.md`.
 - **Auto memory** — append insight to the project's auto-memory.
-- **Skill / Hook spec** — write a spec to `~/Setup/docs/plans/YYYY-MM-DD-<name>-design.md`. Do NOT auto-build the skill.
+- **Skill self-improvement** — edit the SKILL.md of any skill that ran in this session if user feedback or caveats during its execution would have led to better behavior. Examples: a missed trigger phrase in the description; an action the skill should have taken automatically but Louis had to ask for; a step that fired in the wrong order; a guard that should have prevented something. Treat user corrections (the universal-baseline WARNING events for the relevant skill) as the primary signal. Edit the SKILL.md inline; commit per the regular Phase 1 flow.
+- **New skill / Hook spec** — write a spec to `~/Setup/docs/plans/YYYY-MM-DD-<name>-design.md`. Do NOT auto-build the new skill.
 - **CLAUDE.local.md** — create or update per-project local memory.
+
+**Capture the trigger source.** When applying a skill self-improvement, note in the summary what user input prompted it ("Louis said X mid-execution → updated skill Y to do Z automatically"). This makes the audit trail readable and gives Louis a chance to push back if the change misread his feedback.
 
 ### Summary format (for the consolidated report)
 
@@ -192,10 +195,13 @@ Findings (applied):
 3. ✅ Automation: <description>
    → [Skill spec] <path-to-new-spec.md>
 
+4. ✅ Skill self-improvement: <skill-name>: <trigger from user input>
+   → [SKILL.md] <what was edited>
+
 ---
 No action needed:
 
-4. <description>
+5. <description>
    <reason — already documented / out of scope / etc.>
 ```
 

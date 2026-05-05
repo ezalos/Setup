@@ -136,6 +136,10 @@ When invoked with `--apply <file>` (or "apply" in conversation when audit is fre
 
 The audit skill itself is observability-enabled (eats own dog food).
 
+**Self-improvement capture (Phase 5):** at the end of every audit run, before printing the final summary, the audit reviews any user feedback or caveats from the current invocation against its OWN SKILL.md. If user input during the audit run would have produced a better audit (a missed scope, a confusing prompt, a heuristic that fired wrong, a trigger phrase that should have caught something it missed), the audit edits its own SKILL.md inline and lists the change in the summary under a `Self-improvement` section. Treat user corrections logged as WARNING via the universal baseline as the primary signal. This mirrors Phase 3 of the wrap-up skill but scoped to this single skill's own behavior — keeps the audit's quality drifting *upward* rather than calcifying.
+
+The audit's universal baseline already logs WARNING on user corrections; the self-improvement step turns that signal into action without waiting for a wrap-up run to do it.
+
 | Level | Trigger | Message |
 |---|---|---|
 | CRITICAL | Cannot read a target SKILL.md / agent file | `<path> unreadable: <reason>` |
