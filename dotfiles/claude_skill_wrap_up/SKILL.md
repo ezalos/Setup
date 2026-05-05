@@ -201,7 +201,54 @@ No action needed:
 
 ## Phase 4: Publish It
 
-(populated in Task 8)
+After all other phases complete, review the full conversation for
+publishable material:
+
+- Interesting technical solutions or debugging stories.
+- Community-relevant announcements or updates.
+- Educational content (how-tos, tips, lessons learned).
+- Project milestones or feature launches.
+
+### If publishable material exists
+
+Create a per-post directory under `~/Drafts/`:
+
+```bash
+mkdir -p ~/Drafts/<post-slug>
+```
+
+Where `<post-slug>` is a kebab-case version of the working title.
+
+Write tailored drafts for each platform:
+
+- `~/Drafts/<post-slug>/Reddit.md` — tldr at top, then full-post structure
+- `~/Drafts/<post-slug>/Blog.md` — long-form with section headings
+
+Platforms supported in v1: **Reddit, Blog**. (To add more — HN,
+Mastodon, X, etc. — extend this list.)
+
+In the consolidated report, present:
+
+```
+Potential content to publish:
+
+1. "<Title of post>" — 1-2 sentence description.
+   Drafts: ~/Drafts/<post-slug>/Reddit.md, Blog.md
+
+(Drafts written. No posting happens automatically — paste manually
+when ready.)
+```
+
+If multiple publishable items: write all drafts. Note the most
+time-sensitive one in the summary; do NOT post automatically.
+
+### If nothing publishable
+
+Output `Nothing worth publishing from this session.` in the summary and log:
+
+```
+claude-log wrap-up INFO "wrap-up: no publishable content this session"
+```
 
 ## Final consolidated report
 
