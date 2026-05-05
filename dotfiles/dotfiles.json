@@ -726,6 +726,60 @@
                 "TinyButMighty.ezalos"
             ],
             "variants": null
+        },
+        "claude_skill_open_local_port": {
+            "alias": "claude_skill_open_local_port",
+            "main": "dotfiles/claude_skill_open_local_port",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/open-local-port",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_link_develle_domain": {
+            "alias": "claude_skill_link_develle_domain",
+            "main": "dotfiles/claude_skill_link_develle_domain",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/link-develle-domain",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_share_file": {
+            "alias": "claude_skill_share_file",
+            "main": "dotfiles/claude_skill_share_file",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/share-file",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_log": {
+            "alias": "claude_log",
+            "main": "dotfiles/bin/claude-log",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.local/bin/claude-log",
+                    "backups": []
+                }
+            },
+            "only_devices": null,
+            "variants": null
         }
     },
     "devices": {
