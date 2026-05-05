@@ -252,4 +252,46 @@ claude-log wrap-up INFO "wrap-up: no publishable content this session"
 
 ## Final consolidated report
 
-(populated in Task 9)
+After all four phases complete, present this single report as the final
+output of the skill:
+
+````
+# Wrap-up — YYYY-MM-DD HH:MM
+
+## Phase 1 — Ship It
+- Committed: <repos and short subjects>
+- Pushed: <repos>  (or "none")
+- File placement: <fixes>  (or "no changes needed")
+- Deploy: <ran X / failed: ... / skipped (no marker)>
+- Tasks: <N completed, M flagged orphaned>
+
+## Phase 2 — Remember It
+Applied (high-confidence):
+- [<tier>] <summary>
+
+Review please (low-confidence — applied to <tier>, may want relocation):
+- <summary>  (or "none")
+
+## Phase 3 — Review & Apply
+Applied:
+1. <category>: <description> → [<tier>] <action>
+
+No action needed:
+2. <description> — <reason>
+
+## Phase 4 — Publish It
+- <Title>: drafted at ~/Drafts/<slug>/  (or "Nothing worth publishing")
+
+## Self-observability
+<count> entries written to ~/.claude/lessons.md this run.
+````
+
+The `<count>` is the number of `claude-log wrap-up` lines that landed
+in `~/.claude/lessons.md` during this run — verify by:
+
+```bash
+# Replace YYYY-MM-DD with today's date
+grep -c "^$(date +%Y-%m-%d) wrap-up " ~/.claude/lessons.md
+```
+
+(Subtract any that were already there before this run started.)
