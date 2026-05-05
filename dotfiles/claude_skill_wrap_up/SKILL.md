@@ -43,7 +43,77 @@ claude-log wrap-up CRITICAL "wrap-up: deploy failed in <repo>: <stderr-tail>"
 
 ## Phase 1: Ship It
 
-(populated in Task 5)
+### 1a. Commit
+
+For each repo directory touched during this session:
+
+1. Run `git status --porcelain` in that repo.
+2. If output is empty: skip — repo is clean.
+3. If non-empty:
+   - Inspect the diff (`git diff` and `git diff --cached`) to draft a one-line commit subject summarizing the change.
+   - Stage relevant files explicitly (avoid `git add -A` — never commit secrets or unrelated dirty work).
+   - Commit on the default branch (`master` for Louis's own repos; check `git symbolic-ref --short HEAD` first).
+   - **Do NOT use `--no-verify`.** If a hook fails, treat it as a precondition failure: log `WARNING wrap-up: phase1 hook failed in <repo>: <hook-name>`, leave the commit unmade, and report in the final summary.
+4. **Push policy:** push only if (a) the user explicitly asked for pushes during this session, OR (b) the repo's CLAUDE.md frontmatter has `auto-push: true`. Otherwise leave un-pushed and report.
+
+If a commit or push fails for non-hook reasons (network error, etc.), log:
+
+```
+claude-log wrap-up CRITICAL "wrap-up: phase1 ship failed in <repo>: <reason>"
+```
+
+### 1b. File placement check
+
+For each file created or modified during this session:
+
+1. **Naming.** If the project has a CLAUDE.md with naming conventions, check the file matches; otherwise infer from neighbor files (snake_case vs kebab-case). If a violation is found, rename via `git mv`.
+2. **Location.** If the file is misplaced (e.g., a test file in `src/`, a doc in the project root), move it to the correct subfolder.
+3. **Document files** (.md, .docx, .pdf, .xlsx, .pptx) created at the workspace root or in a code directory: move to `docs/` if a `docs/` folder exists.
+
+On a rename collision (target name already exists), log:
+
+```
+claude-log wrap-up WARNING "wrap-up: file rename collision: <from> -> <to>"
+```
+
+…and leave the file in place; report in summary.
+
+### 1c. Deploy
+
+Detect a deploy step by checking, in order, the FIRST match:
+
+1. `Makefile` containing a `deploy:` target → run `make deploy`
+2. `scripts/deploy.sh` (executable) → run `scripts/deploy.sh`
+3. `bin/deploy` (executable) → run `bin/deploy`
+4. Project `CLAUDE.md` containing `## Deploy` followed by a fenced bash code block → run that block's first command
+
+If a marker matched: run the command. Capture stdout/stderr.
+- On exit 0: report `Deploy: ran <command>` in summary.
+- On non-zero exit: log:
+
+  ```
+  claude-log wrap-up CRITICAL "wrap-up: deploy failed in <repo>: <stderr-tail>"
+  ```
+
+  Report in summary, but DO NOT abort wrap-up — proceed to subsequent phases.
+
+If NO marker matched: log:
+
+```
+claude-log wrap-up INFO "wrap-up: no deploy marker in <repo>; skipped"
+```
+
+…and report `Deploy: skipped (no marker)` in summary. **Do NOT ask the user about manual deployment.**
+
+### 1d. Task cleanup
+
+1. Run TaskList. Read all tasks.
+2. For tasks completed during this session but still `pending` or `in_progress`: TaskUpdate to `completed`.
+3. For tasks `pending` for ≥2 sessions without progress: mark them as orphaned in the summary. Do NOT auto-delete. Log:
+
+   ```
+   claude-log wrap-up WARNING "wrap-up: orphaned task <id>: <subject>"
+   ```
 
 ## Phase 2: Remember It
 
