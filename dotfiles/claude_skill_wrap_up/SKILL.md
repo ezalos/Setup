@@ -151,7 +151,53 @@ claude-log wrap-up WARNING "wrap-up: ambiguous memory placement for <topic>; cho
 
 ## Phase 3: Review & Apply
 
-(populated in Task 7)
+Analyze the conversation for self-improvement findings. **Auto-apply all
+actionable findings immediately**; do not gate per-finding.
+
+If the session was short or routine with nothing notable, output
+"Nothing to improve" in the summary and log:
+
+```
+claude-log wrap-up INFO "wrap-up: no self-improvement findings"
+```
+
+…then proceed to Phase 4.
+
+### Finding categories
+
+- **Skill gap** — Claude struggled, got wrong, needed multiple attempts.
+- **Friction** — Repeated manual steps, things Louis had to ask explicitly that should have been automatic.
+- **Knowledge** — Facts Claude didn't know but should have.
+- **Automation** — Repetitive patterns that could become skills, hooks, or scripts.
+
+### Action types
+
+- **CLAUDE.md** — edit relevant project or global CLAUDE.md.
+- **Rules** — create or update `<repo>/.claude/rules/<topic>.md`.
+- **Auto memory** — append insight to the project's auto-memory.
+- **Skill / Hook spec** — write a spec to `~/Setup/docs/plans/YYYY-MM-DD-<name>-design.md`. Do NOT auto-build the skill.
+- **CLAUDE.local.md** — create or update per-project local memory.
+
+### Summary format (for the consolidated report)
+
+```
+Findings (applied):
+
+1. ✅ Skill gap: <description>
+   → [CLAUDE.md] <what was added>
+
+2. ✅ Knowledge: <description>
+   → [Rules] <file>
+
+3. ✅ Automation: <description>
+   → [Skill spec] <path-to-new-spec.md>
+
+---
+No action needed:
+
+4. <description>
+   <reason — already documented / out of scope / etc.>
+```
 
 ## Phase 4: Publish It
 
