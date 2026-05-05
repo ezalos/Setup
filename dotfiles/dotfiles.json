@@ -780,6 +780,20 @@
             },
             "only_devices": null,
             "variants": null
+        },
+        "claude_skill_wrap_up": {
+            "alias": "claude_skill_wrap_up",
+            "main": "dotfiles/claude_skill_wrap_up",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/wrap-up",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
         }
     },
     "devices": {
