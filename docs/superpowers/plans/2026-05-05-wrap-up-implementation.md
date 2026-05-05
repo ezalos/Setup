@@ -2,28 +2,30 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship the `wrap-up` skill end-to-end on Louis's machine, including the minimum foundation prerequisites it needs (the `claude-log` helper, the `~/Setup/skills/` directory pattern, and dotfiles plumbing for skills).
+**Goal:** Ship the `wrap-up` skill end-to-end on Louis's machine, including the minimum foundation prerequisites it needs (the `claude-log` helper, the `~/Setup/dotfiles/bin/` directory, and the dotfile entry pattern Louis already established for `claude_skill_*` directories).
 
-**Architecture:** Bundles the foundation pieces from spec [2026-04-21-skill-storage-observability](../../plans/2026-04-21-skill-storage-observability-design.md) that wrap-up directly depends on, then implements wrap-up itself per spec [2026-05-05-wrap-up-skill](../../plans/2026-05-05-wrap-up-skill-design.md). Skill body is a markdown SKILL.md file Claude follows; the only "code" code here is the `claude-log` shell script.
+**Architecture:** Bundles the foundation pieces from spec [2026-04-21-skill-storage-observability](../../plans/2026-04-21-skill-storage-observability-design.md) (as amended 2026-05-05) that wrap-up directly depends on, then implements wrap-up itself per spec [2026-05-05-wrap-up-skill](../../plans/2026-05-05-wrap-up-skill-design.md). Skill body is a markdown SKILL.md file Claude follows; the only "code" code here is the `claude-log` shell script.
 
 **Tech Stack:** POSIX shell (bash), Python 3 (existing `src_dotfiles` for deploy), pytest for shell-script tests, markdown for SKILL.md.
+
+**Pattern note:** This plan adopts the `dotfiles/claude_skill_<snake_name>/` directory pattern Louis already established (visible in `claude_skill_open_local_port`, `claude_skill_link_develle_domain`, `claude_skill_share_file`). Snake-case in source dir + alias, kebab-case in deploy path. `only_devices` defaulted to current device only.
 
 ---
 
 ## Pre-flight: working directory
 
-All work happens in `~/Setup/` on the `master` branch (per Louis's CLAUDE.md: own repos commit directly to default branch). No worktree.
+All work happens in `~/Setup/` on the `master` branch (per Louis's CLAUDE.md). No worktree.
 
 Verify before starting:
 
 ```bash
 cd ~/Setup
-git status              # should be clean or only have unrelated WIP
+git status              # claude_skill_* WIP dirs may exist; that's intentional
 git rev-parse --abbrev-ref HEAD   # should be 'master'
 test -d src_dotfiles && test -f dotfiles/dotfiles.json   # foundation files exist
 ```
 
-If `git status` shows unrelated dirty files (e.g., the existing `dotfiles/claude_md` modifications visible at session start), commit or stash those first — do not let them leak into the plan's commits.
+The unrelated WIP (`.zshrc`, `claude_md`, `claude_settings`, `config_nvim/*`, `nvim-cheatsheet.md`) was stashed before this plan started executing, so it doesn't leak into plan commits. The three `claude_skill_*` directories and their `dotfiles.json` entries are kept — they're the established pattern this plan adopts.
 
 ---
 
@@ -31,15 +33,14 @@ If `git status` shows unrelated dirty files (e.g., the existing `dotfiles/claude
 
 ```
 ~/Setup/
-├── bin/
-│   └── claude-log                        (NEW — Task 2)
-├── skills/                               (NEW DIR — Task 1)
-│   └── wrap-up/
-│       └── SKILL.md                      (NEW — Tasks 4-9)
-├── tests/
-│   └── test_claude_log.py                (NEW — Task 2)
 ├── dotfiles/
-│   └── dotfiles.json                     (MODIFY — Tasks 3, 10)
+│   ├── bin/
+│   │   └── claude-log                              (NEW — Task 2)
+│   ├── claude_skill_wrap_up/                       (NEW DIR — Task 4)
+│   │   └── SKILL.md                                (NEW — Tasks 4-9)
+│   └── dotfiles.json                               (MODIFY — Tasks 3, 10)
+├── tests/
+│   └── test_claude_log.py                          (NEW — Task 2)
 └── docs/
     └── superpowers/
         └── plans/
@@ -48,65 +49,36 @@ If `git status` shows unrelated dirty files (e.g., the existing `dotfiles/claude
 
 ---
 
-## Task 1: Skills directory + bin directory + README pointer
+## Task 1: `~/Setup/dotfiles/bin/` directory
 
 **Files:**
-- Create: `~/Setup/skills/README.md`
-- Create: `~/Setup/bin/.keep` (placeholder so the empty dir lands in git)
+- Create: `~/Setup/dotfiles/bin/.keep` (placeholder so the empty dir lands in git)
 
-- [ ] **Step 1: Create the directories.**
-
-```bash
-mkdir -p ~/Setup/skills ~/Setup/bin
-```
-
-- [ ] **Step 2: Write `~/Setup/skills/README.md`.**
-
-```markdown
-# Authored Claude skills
-
-Skills Louis writes, version-controlled and deployed via the
-`src_dotfiles` system. Each subdirectory is one skill; deploy maps it
-into `~/.claude/skills/<name>/` via a `dotfiles.json` entry.
-
-Foundation: `docs/plans/2026-04-21-skill-storage-observability-design.md`
-Audit:      `docs/plans/2026-05-05-observability-audit-design.md`
-
-## Observability contract
-
-Every skill here must satisfy three checks (see foundation §4):
-
-1. SKILL.md contains a `## Observability` section.
-2. SKILL.md contains at least one `claude-log <skill-name> <LEVEL> "<message>"` invocation.
-3. The skill name passed to `claude-log` matches the frontmatter `name:`.
-
-Run `/audit-observability` to verify.
-```
-
-- [ ] **Step 3: Placeholder file in bin/.**
+- [ ] **Step 1: Create the directory.**
 
 ```bash
-touch ~/Setup/bin/.keep
+mkdir -p ~/Setup/dotfiles/bin
+touch ~/Setup/dotfiles/bin/.keep
 ```
 
-- [ ] **Step 4: Verify.**
+- [ ] **Step 2: Verify.**
 
 ```bash
-ls -la ~/Setup/skills ~/Setup/bin
-cat ~/Setup/skills/README.md | head -3
+ls -la ~/Setup/dotfiles/bin
 ```
 
-Expected: both directories listed, README header reads "Authored Claude skills".
+Expected: directory listed, `.keep` file present.
 
-- [ ] **Step 5: Commit.**
+- [ ] **Step 3: Commit.**
 
 ```bash
 cd ~/Setup
-git add skills/README.md bin/.keep
-git commit -m "feat(skills): add ~/Setup/skills/ + ~/Setup/bin/ directory pattern
+git add dotfiles/bin/.keep
+git commit -m "feat(dotfiles): add dotfiles/bin/ for deployable helper scripts
 
-Foundation directories for authored Claude skills and supporting binaries.
-Per docs/plans/2026-04-21-skill-storage-observability-design.md."
+Co-locates supporting binaries with other dotfiles so the existing
+deploy pattern (one entry per file in dotfiles.json) applies uniformly.
+First user: claude-log (next commit)."
 ```
 
 ---
@@ -114,7 +86,7 @@ Per docs/plans/2026-04-21-skill-storage-observability-design.md."
 ## Task 2: `claude-log` helper script (TDD)
 
 **Files:**
-- Create: `~/Setup/bin/claude-log`
+- Create: `~/Setup/dotfiles/bin/claude-log`
 - Create: `~/Setup/tests/test_claude_log.py`
 
 - [ ] **Step 1: Write the failing test.**
@@ -122,21 +94,19 @@ Per docs/plans/2026-04-21-skill-storage-observability-design.md."
 `~/Setup/tests/test_claude_log.py`:
 
 ```python
-"""Tests for the bin/claude-log helper script.
+"""Tests for the dotfiles/bin/claude-log helper script.
 
 The script appends one structured line per call to a target log file.
 Format: 'YYYY-MM-DD skill-name [LEVEL] : message'
 """
 import os
 import re
-import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parent.parent / "bin" / "claude-log"
+SCRIPT = Path(__file__).resolve().parent.parent / "dotfiles" / "bin" / "claude-log"
 LINE_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2} (?P<skill>\S+) \[(?P<level>INFO|WARNING|CRITICAL)\] : (?P<msg>.+)$"
 )
@@ -144,7 +114,6 @@ LINE_RE = re.compile(
 
 @pytest.fixture
 def log_dir(tmp_path):
-    """Provide a temp dir for CLAUDE_LOG_FILE and clean env."""
     return tmp_path
 
 
@@ -237,7 +206,7 @@ def test_concurrent_calls_no_interleave(log_dir):
         assert LINE_RE.match(line), f"line not matching format: {line!r}"
 
 
-def test_default_log_path_is_claude_lessons(monkeypatch, tmp_path):
+def test_default_log_path_is_claude_lessons(tmp_path):
     """Without CLAUDE_LOG_FILE set, default is ~/.claude/lessons.md.
 
     We override HOME to redirect, so the test doesn't touch the real file.
@@ -262,11 +231,11 @@ def test_default_log_path_is_claude_lessons(monkeypatch, tmp_path):
 cd ~/Setup && uv run pytest tests/test_claude_log.py -v
 ```
 
-Expected: all tests fail (script doesn't exist yet, or `chmod +x` not set).
+Expected: all tests fail (script doesn't exist yet).
 
 - [ ] **Step 3: Write the script.**
 
-`~/Setup/bin/claude-log`:
+`~/Setup/dotfiles/bin/claude-log`:
 
 ```bash
 #!/usr/bin/env bash
@@ -299,7 +268,7 @@ mkdir -p "$log_dir"
 date_str="$(date +%Y-%m-%d)"
 line="$date_str $skill [$level] : $msg"
 
-# mkdir-based portable lock (works on macOS BSD + Linux GNU; no flock)
+# mkdir-based portable lock (works on macOS BSD + Linux GNU; no flock dependency)
 lock_dir="$log_file.lock"
 attempts=0
 max_attempts=50    # 50 * 0.1s = 5s timeout
@@ -312,7 +281,6 @@ while ! mkdir "$lock_dir" 2>/dev/null; do
     sleep 0.1
 done
 
-# Whether or not we got the lock, append. If we did get the lock, ensure cleanup.
 trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
 
 printf '%s\n' "$line" >> "$log_file"
@@ -321,7 +289,7 @@ printf '%s\n' "$line" >> "$log_file"
 - [ ] **Step 4: Make executable.**
 
 ```bash
-chmod +x ~/Setup/bin/claude-log
+chmod +x ~/Setup/dotfiles/bin/claude-log
 ```
 
 - [ ] **Step 5: Run tests to verify they pass.**
@@ -336,18 +304,18 @@ Expected: all 8 tests PASS.
 
 ```bash
 TMPLOG=$(mktemp)
-CLAUDE_LOG_FILE="$TMPLOG" ~/Setup/bin/claude-log smoke-test INFO "hello from plan task 2"
+CLAUDE_LOG_FILE="$TMPLOG" ~/Setup/dotfiles/bin/claude-log smoke-test INFO "hello from plan task 2"
 cat "$TMPLOG"
 rm "$TMPLOG"
 ```
 
-Expected output: one line matching `YYYY-MM-DD smoke-test [INFO] : hello from plan task 2`.
+Expected: one line matching `YYYY-MM-DD smoke-test [INFO] : hello from plan task 2`.
 
 - [ ] **Step 7: Commit.**
 
 ```bash
 cd ~/Setup
-git add bin/claude-log tests/test_claude_log.py
+git add dotfiles/bin/claude-log tests/test_claude_log.py
 git commit -m "feat(bin): add claude-log helper for skill observability
 
 Portable POSIX shell helper that appends structured log lines to
@@ -381,16 +349,16 @@ mkdir -p ~/.local/bin
 echo "$PATH" | tr ':' '\n' | grep -q "$HOME/.local/bin" && echo "PATH OK" || echo "PATH MISSING ~/.local/bin"
 ```
 
-If "PATH MISSING", add `~/.local/bin` to PATH via `~/.zshrc` (or wherever Louis manages PATH) before continuing — `claude-log` won't be findable otherwise. This is a one-liner edit, not a sub-task.
+If "PATH MISSING", add `~/.local/bin` to PATH via `~/.zshrc` before continuing — `claude-log` won't be findable on PATH otherwise.
 
 - [ ] **Step 2: Add `claude-log` entry to `dotfiles.json`.**
 
-Edit `~/Setup/dotfiles/dotfiles.json`. Add a new top-level entry inside the `"dotfiles": { ... }` object (alphabetical placement, near `claude_md`):
+Edit `~/Setup/dotfiles/dotfiles.json`. Add a new top-level entry inside the `"dotfiles": { ... }` object, near the existing `claude_skill_*` entries:
 
 ```json
-"claude-log": {
-    "alias": "claude-log",
-    "main": "bin/claude-log",
+"claude_log": {
+    "alias": "claude_log",
+    "main": "dotfiles/bin/claude-log",
     "deploy": {
         "<DEVICE>": {
             "deploy_path": "/home/ezalos/.local/bin/claude-log",
@@ -401,6 +369,8 @@ Edit `~/Setup/dotfiles/dotfiles.json`. Add a new top-level entry inside the `"do
     "variants": null
 }
 ```
+
+Note: `only_devices: null` here (not restricted) because the helper is generally useful on any machine running Claude Code, not tied to local services.
 
 Replace `<DEVICE>` with the value from Step 1. Replace `/home/ezalos` with the actual `$HOME` if different.
 
@@ -415,17 +385,17 @@ Expected: `JSON OK`. If it fails, fix the syntax error before proceeding.
 - [ ] **Step 4: Deploy via src_dotfiles.**
 
 ```bash
-cd ~/Setup && python -m src_dotfiles deploy claude-log
+cd ~/Setup && python -m src_dotfiles deploy claude_log
 ```
 
-Expected: log lines indicating symlink creation. The deployer will symlink `/home/ezalos/.local/bin/claude-log` → `/home/ezalos/Setup/bin/claude-log`.
+Expected: log lines indicating symlink creation. The deployer will symlink `/home/ezalos/.local/bin/claude-log` → `/home/ezalos/Setup/dotfiles/bin/claude-log`.
 
 If `python -m src_dotfiles deploy` is not the right invocation, run `python -m src_dotfiles --help` to find the correct subcommand and update this step.
 
 - [ ] **Step 5: Verify symlink + functionality.**
 
 ```bash
-ls -la ~/.local/bin/claude-log     # should be symlink → ~/Setup/bin/claude-log
+ls -la ~/.local/bin/claude-log     # should be symlink → ~/Setup/dotfiles/bin/claude-log
 which claude-log                    # should resolve to ~/.local/bin/claude-log
 claude-log smoke-deploy INFO "deployed via dotfiles"
 tail -1 ~/.claude/lessons.md       # should show the line
@@ -441,8 +411,9 @@ git add dotfiles/dotfiles.json
 git commit -m "feat(dotfiles): track and deploy claude-log helper
 
 claude-log now deploys to ~/.local/bin via the existing src_dotfiles
-symlink mechanism. First skill-supporting binary to use the new
-~/Setup/bin/ directory pattern."
+symlink mechanism. only_devices: null since the helper is generally
+useful wherever Claude Code runs (not tied to local services like the
+claude_skill_* entries are)."
 ```
 
 ---
@@ -450,17 +421,17 @@ symlink mechanism. First skill-supporting binary to use the new
 ## Task 4: wrap-up SKILL.md scaffold (frontmatter + `## Observability`)
 
 **Files:**
-- Create: `~/Setup/skills/wrap-up/SKILL.md`
+- Create: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`
 
 - [ ] **Step 1: Create the skill directory.**
 
 ```bash
-mkdir -p ~/Setup/skills/wrap-up
+mkdir -p ~/Setup/dotfiles/claude_skill_wrap_up
 ```
 
 - [ ] **Step 2: Write the SKILL.md scaffold (frontmatter + Observability + section stubs).**
 
-`~/Setup/skills/wrap-up/SKILL.md`:
+`~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`:
 
 ````markdown
 ---
@@ -521,26 +492,23 @@ Log via: `claude-log wrap-up <LEVEL> "<message>"`
 (populated in Task 9)
 ````
 
-- [ ] **Step 3: Static check — frontmatter parses, Observability section present, claude-log call present.**
+- [ ] **Step 3: Static check — frontmatter parses, Observability section present, claude-log call present, name match.**
 
 ```bash
-# Frontmatter present
-head -1 ~/Setup/skills/wrap-up/SKILL.md | grep -q '^---$' && echo "frontmatter open OK"
-# Observability section
-grep -q '^## Observability' ~/Setup/skills/wrap-up/SKILL.md && echo "section OK"
-# claude-log invocation
-grep -qE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' ~/Setup/skills/wrap-up/SKILL.md && echo "log call OK"
-# Skill name matches
-grep -q '^name: wrap-up$' ~/Setup/skills/wrap-up/SKILL.md && echo "name OK"
+SKILL=~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md
+head -1 $SKILL | grep -q '^---$' && echo "frontmatter open OK"
+grep -q '^## Observability' $SKILL && echo "section OK"
+grep -qE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' $SKILL && echo "log call OK"
+grep -q '^name: wrap-up$' $SKILL && echo "name OK"
 ```
 
-Expected: all four "OK" lines. If any fails, fix before continuing.
+Expected: all four "OK" lines.
 
 - [ ] **Step 4: Commit.**
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): scaffold wrap-up SKILL.md with observability contract
 
 Frontmatter, ## Observability section with universal baseline + 8
@@ -553,9 +521,9 @@ filled in subsequent commits. Static contract check passes."
 ## Task 5: Phase 1 — Ship It
 
 **Files:**
-- Modify: `~/Setup/skills/wrap-up/SKILL.md` — replace the `## Phase 1: Ship It` stub
+- Modify: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md` — replace the `## Phase 1: Ship It` stub
 
-- [ ] **Step 1: Replace the Phase 1 stub with the full instructions.**
+- [ ] **Step 1: Replace the Phase 1 stub.**
 
 Find:
 ```markdown
@@ -580,7 +548,6 @@ For each repo directory touched during this session:
    - Stage relevant files explicitly (avoid `git add -A` — never commit secrets or unrelated dirty work).
    - Commit on the default branch (`master` for Louis's own repos; check `git symbolic-ref --short HEAD` first).
    - **Do NOT use `--no-verify`.** If a hook fails, treat it as a precondition failure: log `WARNING wrap-up: phase1 hook failed in <repo>: <hook-name>`, leave the commit unmade, and report in the final summary.
-   - On success, log `INFO wrap-up: committed <subject> in <repo>` (optional — only if something noteworthy).
 4. **Push policy:** push only if (a) the user explicitly asked for pushes during this session, OR (b) the repo's CLAUDE.md frontmatter has `auto-push: true`. Otherwise leave un-pushed and report.
 
 If a commit or push fails for non-hook reasons (network error, etc.), log:
@@ -636,7 +603,7 @@ claude-log wrap-up INFO "wrap-up: no deploy marker in <repo>; skipped"
 
 1. Run TaskList. Read all tasks.
 2. For tasks completed during this session but still `pending` or `in_progress`: TaskUpdate to `completed`.
-3. For tasks `pending` for ≥2 sessions without progress (heuristic: created before this session and unchanged): mark them as orphaned in the summary. Do NOT auto-delete. Log:
+3. For tasks `pending` for ≥2 sessions without progress: mark them as orphaned in the summary. Do NOT auto-delete. Log:
 
    ```
    claude-log wrap-up WARNING "wrap-up: orphaned task <id>: <subject>"
@@ -646,16 +613,14 @@ claude-log wrap-up INFO "wrap-up: no deploy marker in <repo>; skipped"
 - [ ] **Step 2: Static-check the contract still holds.**
 
 ```bash
-grep -qE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' ~/Setup/skills/wrap-up/SKILL.md && echo OK
+grep -qE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' ~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md && echo OK
 ```
-
-Expected: `OK`.
 
 - [ ] **Step 3: Commit.**
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): wrap-up Phase 1 (Ship It) instructions
 
 Commit + push policy, file placement check, marker-based deploy
@@ -668,7 +633,7 @@ Deploy section), and task cleanup with orphan detection."
 ## Task 6: Phase 2 — Remember It
 
 **Files:**
-- Modify: `~/Setup/skills/wrap-up/SKILL.md`
+- Modify: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`
 
 - [ ] **Step 1: Replace the Phase 2 stub.**
 
@@ -721,7 +686,7 @@ claude-log wrap-up WARNING "wrap-up: ambiguous memory placement for <topic>; cho
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): wrap-up Phase 2 (Remember It) instructions
 
 Memory tier framework with confidence-gated auto-apply: clear cases ship
@@ -733,7 +698,7 @@ silently, ambiguous cases get applied + flagged for review."
 ## Task 7: Phase 3 — Review & Apply
 
 **Files:**
-- Modify: `~/Setup/skills/wrap-up/SKILL.md`
+- Modify: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`
 
 - [ ] **Step 1: Replace the Phase 3 stub.**
 
@@ -802,7 +767,7 @@ No action needed:
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): wrap-up Phase 3 (Review & Apply) instructions
 
 Self-improvement findings auto-applied across CLAUDE.md / rules / auto
@@ -814,7 +779,7 @@ memory / spec / CLAUDE.local.md tiers, with concrete summary format."
 ## Task 8: Phase 4 — Publish It
 
 **Files:**
-- Modify: `~/Setup/skills/wrap-up/SKILL.md`
+- Modify: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`
 
 - [ ] **Step 1: Replace the Phase 4 stub.**
 
@@ -884,7 +849,7 @@ claude-log wrap-up INFO "wrap-up: no publishable content this session"
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): wrap-up Phase 4 (Publish It) instructions
 
 Per-platform drafts to ~/Drafts/<post-slug>/. Reddit + Blog targets in
@@ -896,7 +861,7 @@ v1. No auto-posting; drafts persist for manual publication."
 ## Task 9: Final consolidated report
 
 **Files:**
-- Modify: `~/Setup/skills/wrap-up/SKILL.md`
+- Modify: `~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md`
 
 - [ ] **Step 1: Replace the final-report stub.**
 
@@ -960,20 +925,18 @@ grep -c "^$(date +%Y-%m-%d) wrap-up " ~/.claude/lessons.md
 - [ ] **Step 2: Final contract check.**
 
 ```bash
-# All four contract requirements
-grep -q '^name: wrap-up$' ~/Setup/skills/wrap-up/SKILL.md
-grep -q '^## Observability' ~/Setup/skills/wrap-up/SKILL.md
-grep -cE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' ~/Setup/skills/wrap-up/SKILL.md   # ≥ 1
+SKILL=~/Setup/dotfiles/claude_skill_wrap_up/SKILL.md
+grep -q '^name: wrap-up$' $SKILL
+grep -q '^## Observability' $SKILL
+grep -cE 'claude-log wrap-up (INFO|WARNING|CRITICAL)' $SKILL   # ≥ 1
 echo "contract check complete"
 ```
-
-Expected: no errors, third line prints a number ≥ 1.
 
 - [ ] **Step 3: Commit.**
 
 ```bash
 cd ~/Setup
-git add skills/wrap-up/SKILL.md
+git add dotfiles/claude_skill_wrap_up/SKILL.md
 git commit -m "feat(skill): wrap-up final consolidated report format
 
 Single report at end of all four phases with explicit sections per
@@ -992,19 +955,19 @@ complete; contract check passes."
 
 Use the same `<DEVICE>` value from Task 3 Step 1.
 
-Add to `dotfiles.json` (alphabetical placement):
+Add to `dotfiles.json`, near the existing `claude_skill_*` entries:
 
 ```json
-"skill-wrap-up": {
-    "alias": "skill-wrap-up",
-    "main": "skills/wrap-up",
+"claude_skill_wrap_up": {
+    "alias": "claude_skill_wrap_up",
+    "main": "dotfiles/claude_skill_wrap_up",
     "deploy": {
         "<DEVICE>": {
             "deploy_path": "/home/ezalos/.claude/skills/wrap-up",
             "backups": []
         }
     },
-    "only_devices": null,
+    "only_devices": ["<DEVICE>"],
     "variants": null
 }
 ```
@@ -1018,10 +981,10 @@ python -c "import json; json.load(open('/home/ezalos/Setup/dotfiles/dotfiles.jso
 - [ ] **Step 3: Deploy via src_dotfiles.**
 
 ```bash
-cd ~/Setup && python -m src_dotfiles deploy skill-wrap-up
+cd ~/Setup && python -m src_dotfiles deploy claude_skill_wrap_up
 ```
 
-Expected: log lines indicating symlink creation. After this, `~/.claude/skills/wrap-up` is a symlink → `~/Setup/skills/wrap-up`.
+Expected: log lines indicating symlink creation. After this, `~/.claude/skills/wrap-up` is a symlink → `~/Setup/dotfiles/claude_skill_wrap_up`.
 
 - [ ] **Step 4: Verify deploy.**
 
@@ -1045,7 +1008,7 @@ Expected: Claude finds the new wrap-up skill (the description triggers on "wrap 
 - The consolidated report has the four phase sections.
 - For phases that did nothing meaningful (e.g., no publishable content), the report says so and `lessons.md` has the corresponding INFO line.
 
-If the smoke test reveals a real issue (skill doesn't trigger, phase missing, log line malformed), fix and re-test before declaring done.
+If the smoke test reveals a real issue, fix and re-test before declaring done.
 
 - [ ] **Step 6: Commit.**
 
@@ -1057,17 +1020,16 @@ git commit -m "feat(dotfiles): track and deploy wrap-up skill
 wrap-up SKILL.md now deploys to ~/.claude/skills/wrap-up via the
 existing src_dotfiles symlink mechanism. First user-authored skill
 shipped via the foundation pattern from spec
-2026-04-21-skill-storage-observability."
+2026-04-21-skill-storage-observability (as amended 2026-05-05 to adopt
+the pre-existing claude_skill_* convention)."
 ```
 
 ---
 
 ## Self-review checklist (run after writing the plan, before executing)
 
-- [ ] **Spec coverage:** every section of the wrap-up spec maps to a task. Phase 1 → Task 5, Phase 2 → Task 6, Phase 3 → Task 7, Phase 4 → Task 8, final report → Task 9, observability → Task 4 (scaffold) + reinforced throughout, foundation prereqs → Tasks 1-3, deploy → Task 10.
-- [ ] **Placeholder scan:** no "TBD", "implement later", "similar to above" — every step has the actual code/command.
-- [ ] **Type/name consistency:** skill name `wrap-up` is consistent across SKILL.md frontmatter, every `claude-log wrap-up …` invocation, and the dotfiles entry `skill-wrap-up`.
-- [ ] **Contract verification:** Tasks 4 and 9 explicitly run the three contract checks (Observability section, claude-log call, name match).
-- [ ] **Smoke test exists:** Task 10 Step 5 invokes the skill end-to-end.
-
-If any check fails: fix inline before handing off to execution.
+- [x] **Spec coverage:** every section of the wrap-up spec maps to a task.
+- [x] **Placeholder scan:** no "TBD", "implement later", "similar to above" — every step has the actual code/command.
+- [x] **Type/name consistency:** skill name `wrap-up` is consistent across SKILL.md frontmatter, every `claude-log wrap-up …` invocation, and the dotfiles entry `claude_skill_wrap_up`. Helper script alias `claude_log` is consistent everywhere it appears.
+- [x] **Contract verification:** Tasks 4 and 9 explicitly run the three contract checks (Observability section, claude-log call, name match).
+- [x] **Smoke test exists:** Task 10 Step 5 invokes the skill end-to-end.

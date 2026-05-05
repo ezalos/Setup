@@ -24,28 +24,30 @@ This spec establishes the shared foundation that later specs (audit meta-skill, 
 
 ### 1. Storage & deploy
 
-Authored skills live in `~/Setup/skills/<name>/`, git-tracked. Each skill is a directory containing at minimum a `SKILL.md` (and any helper scripts / references the skill needs).
+**Amended 2026-05-05** — adopts the pattern Louis already established for `claude_skill_open_local_port`, `claude_skill_link_develle_domain`, `claude_skill_share_file`. Skills are co-located with other dotfiles under `~/Setup/dotfiles/`, not in a parallel `~/Setup/skills/` tree.
+
+Authored skills live in `~/Setup/dotfiles/claude_skill_<snake_name>/`, git-tracked. Each skill is a directory containing at minimum a `SKILL.md` (and any helper scripts / references the skill needs). Snake-case in the source dir (matches dotfile entry alias), kebab-case in the deploy path (matches Claude's skill conventions).
 
 Each authored skill gets **one entry** in `dotfiles/dotfiles.json`:
 
 ```json
-"skill-<name>": {
-  "alias": "skill-<name>",
-  "main": "skills/<name>",
+"claude_skill_<snake_name>": {
+  "alias": "claude_skill_<snake_name>",
+  "main": "dotfiles/claude_skill_<snake_name>",
   "deploy": {
     "<device-identifier>": {
-      "deploy_path": "/home/<user>/.claude/skills/<name>",
+      "deploy_path": "/home/<user>/.claude/skills/<kebab-name>",
       "backups": []
     }
   },
-  "only_devices": null,
+  "only_devices": ["<device-identifier>"],
   "variants": null
 }
 ```
 
-The existing `src_dotfiles/DotFile.py` deployer handles directories fine (`shutil.rmtree` branch when overwriting, `os.symlink` to target). Symlink means edits in `~/Setup/skills/<name>/` propagate to `~/.claude/skills/<name>/` with no redeploy step.
+The existing `src_dotfiles/DotFile.py` deployer handles directories fine (`shutil.rmtree` branch when overwriting, `os.symlink` to target). Symlink means edits in `~/Setup/dotfiles/claude_skill_<name>/` propagate to `~/.claude/skills/<kebab-name>/` with no redeploy step.
 
-Per-device scoping via `only_devices`: skills that only make sense on one machine (e.g., `open-port` on the home box with the SFR router) can be restricted.
+**`only_devices` defaults to current device only.** Most authored skills are tied to specific machine state (home network, local services); deploying everywhere by default would push them onto laptops where they're irrelevant. To make a skill global, set `only_devices: null`.
 
 ### 2. Logging files — two files, different semantics
 
@@ -62,7 +64,7 @@ No rotation. File is append-only. Revisit if it exceeds a size that's painful to
 
 ### 3. Helper script `claude-log`
 
-**Location:** `~/Setup/bin/claude-log` (deployed via `dotfiles.json` like any other dotfile — one entry, symlinked to `~/.local/bin/claude-log` or similar PATH location).
+**Location:** `~/Setup/dotfiles/bin/claude-log` (deployed via `dotfiles.json` like any other dotfile — one entry with `main: "dotfiles/bin/claude-log"`, symlinked to `~/.local/bin/claude-log` or similar PATH location). Co-locating supporting binaries under `dotfiles/` keeps the "everything we deploy lives under dotfiles/" invariant.
 
 **Signature:**
 ```
