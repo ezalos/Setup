@@ -117,7 +117,37 @@ claude-log wrap-up INFO "wrap-up: no deploy marker in <repo>; skipped"
 
 ## Phase 2: Remember It
 
-(populated in Task 6)
+Review what was learned this session. For each piece of knowledge, choose
+a destination tier per the framework:
+
+| Tier               | Path                                                | Use for                                                                |
+|--------------------|-----------------------------------------------------|------------------------------------------------------------------------|
+| Auto memory        | `~/.claude/projects/<project>/memory/`              | Patterns Claude discovered, project quirks, debugging insights         |
+| Project CLAUDE.md  | `<repo>/CLAUDE.md`                                  | Permanent project rules, conventions, commands, architecture           |
+| Project rules      | `<repo>/.claude/rules/<topic>.md` (with `paths:`)   | Topic-specific instructions scoped to file types                       |
+| CLAUDE.local.md    | `<repo>/CLAUDE.local.md`                            | Personal WIP context, sandbox creds, current focus (not committed)     |
+| `@import`          | reference in CLAUDE.md                              | Cross-reference rather than duplicate                                  |
+
+### Confidence-gated auto-apply
+
+For each knowledge item:
+
+- **High confidence** (one tier clearly fits per the table): auto-apply,
+  list under "Applied" in the summary.
+- **Low confidence** (≥2 tiers plausibly fit, OR user intent didn't
+  clearly indicate scope): auto-apply *the chosen tier* but list under
+  "Review please" in the summary so Louis can quickly relocate.
+
+Heuristics for "low confidence":
+- Could be project-wide OR file-type-scoped (CLAUDE.md vs `.claude/rules/`)
+- Could be permanent OR ephemeral (CLAUDE.md vs CLAUDE.local.md)
+- Refers to something cross-cutting
+
+When low confidence, log:
+
+```
+claude-log wrap-up WARNING "wrap-up: ambiguous memory placement for <topic>; chose <tier>"
+```
 
 ## Phase 3: Review & Apply
 
