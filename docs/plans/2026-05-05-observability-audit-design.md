@@ -82,7 +82,7 @@ proposed: |
   This skill follows the universal observability baseline (see
   docs/plans/2026-04-21-skill-storage-observability-design.md).
 
-  **Universal baseline:** CRITICAL on abort, WARNING on correction/fallback/retry/precondition-fail, INFO on edge path.
+  **Universal baseline:** CRITICAL on abort; WARNING on correction/fallback/retry/precondition-fail; INFO (systematic) on any user feedback during the run; INFO on edge path. (See foundation §4.)
 
   **Skill-specific triggers:**
 
@@ -117,7 +117,7 @@ If `decision:` is missing or invalid: apply fails for that block, audit reports 
 When generating each proposal, the audit reads the skill body and surfaces:
 - **Failure points** the skill mentions or implies — calls to external APIs (`curl`, `gh`, `sfr`, `cloudflare`), retries, precondition checks, user-confirmation gates.
 - **Skill-specific message templates** referencing the skill's own data shape (e.g. `add-dotfile` uses `<alias>` and `<device>`; `open-local-port` uses `<port>` and `<service>`).
-- **Universal baseline** is always included verbatim.
+- **Universal baseline** is always included verbatim, including the systematic-feedback INFO trigger (foundation §4).
 - **Free-text "anything else?" hint** appended at the end of every proposal: a comment line `# triggers I might have missed: <none|list>` so Louis can add domain-specific events the audit didn't anticipate.
 
 The proposal is a *suggestion*, not a contract — Louis's edits override.

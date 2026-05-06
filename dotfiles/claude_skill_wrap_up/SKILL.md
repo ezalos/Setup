@@ -16,7 +16,11 @@ Present one consolidated report at the end.
 This skill follows the universal observability baseline (see
 `docs/plans/2026-04-21-skill-storage-observability-design.md`).
 
-**Universal baseline:** CRITICAL on abort, WARNING on correction/fallback/retry/precondition-fail, INFO on edge path.
+**Universal baseline:**
+- CRITICAL on abort.
+- WARNING on user correction (would have produced wrong result), fallback, retry, precondition-fail.
+- **INFO (systematic) on any user feedback, suggestion, or caveat during skill execution.** No judgment about "noteworthy" — log every distinct user message that conveys preference, redirection, refinement, or commentary. Format: `feedback: '<paraphrase>'; phase=<where>; changed <what>` (or `no change — already on track`).
+- INFO on edge-case path hit.
 
 **Skill-specific triggers:**
 
@@ -27,6 +31,7 @@ This skill follows the universal observability baseline (see
 | WARNING  | Low-confidence memory placement (Phase 2)                  | `wrap-up: ambiguous memory placement for <topic>; chose <tier>` |
 | WARNING  | Phase 1 file rename collision                              | `wrap-up: file rename collision: <from> -> <to>`          |
 | WARNING  | Task flagged orphaned (>2 sessions stale)                  | `wrap-up: orphaned task <id>: <subject>`                  |
+| INFO     | **Any user feedback during the wrap-up run** (per universal baseline) | `wrap-up: feedback: '<paraphrase>'; phase=<phase>; changed <what>` |
 | INFO     | No deploy marker in repo                                   | `wrap-up: no deploy marker in <repo>; skipped`            |
 | INFO     | Nothing publishable                                        | `wrap-up: no publishable content this session`            |
 | INFO     | Nothing to improve                                         | `wrap-up: no self-improvement findings`                   |

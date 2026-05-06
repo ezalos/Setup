@@ -101,8 +101,15 @@ A skill is **observability-enabled** iff its `SKILL.md` satisfies all three:
    | Level | Universal trigger |
    |---|---|
    | `CRITICAL` | Skill aborted / errored out / required user escape to recover |
-   | `WARNING` | User corrected Claude's approach mid-skill; fallback path taken; retry needed; precondition not met |
+   | `WARNING` | User correction mid-skill (Claude was about to produce wrong result); fallback path taken; retry needed; precondition not met |
+   | `INFO` (systematic) | **Any user feedback, suggestion, or caveat during skill execution.** No judgment call about whether it's "noteworthy" — every distinct user message that conveys preference, redirection, refinement, or commentary MUST be logged. This is the high-value signal: it's where future proactive automation comes from. |
    | `INFO` | Edge-case code path hit; surprising-but-handled condition |
+
+   **On user-feedback capture:** the `WARNING` (correction) and `INFO` (feedback) triggers are deliberately separate. A correction means Claude would have produced a wrong result without the user's intervention; feedback may be Claude was on track and the user is enriching, refining, or noting future-relevant context. Both are signal; only the former is friction. The message format for feedback INFO should capture: (1) one-line paraphrase of what the user said, (2) the skill phase / step where it landed, (3) what the skill changed in response (or "no change — already on track"). Example:
+
+   ```
+   claude-log wrap-up INFO "feedback: 'minimize attention time'; phase=design Q3; changed default to confidence-gated B"
+   ```
 
    Skill-specific triggers are listed as a table beneath the baseline, e.g.:
 
