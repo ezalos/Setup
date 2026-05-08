@@ -4,6 +4,39 @@ description: Use when Louis asks to share a local file via a private link — e.
 allowed-tools: Read, Bash, AskUserQuestion
 ---
 
+## Observability
+
+This skill follows the universal observability baseline (see `docs/plans/2026-04-21-skill-storage-observability-design.md`).
+
+**Universal baseline:**
+- CRITICAL on abort.
+- WARNING on user correction (Claude was about to be wrong), fallback, retry, precondition-fail.
+- **INFO (systematic) on any user feedback, suggestion, or caveat during the run.** Every distinct user message that conveys preference, redirection, refinement, or commentary MUST be logged. Format: `feedback: '<paraphrase>'; phase=<where>; changed <what>` (or `no change — already on track`).
+- INFO on edge-case path hit.
+
+**Skill-specific triggers:**
+
+| Level | Trigger | Message template |
+|---|---|---|
+| CRITICAL | `share-file` CLI errors out (scp fail, etc.) | `share-file: CLI failed: <stderr-tail>` |
+| CRITICAL | Share infra not bootstrapped (`/srv/share` missing on Pi) | `share-file: infra not bootstrapped; pointed Louis at share_file/README.md` |
+| WARNING | Filename suggests sensitive content (e.g. contains "secret", "password", "key", "private") | `share-file: filename '<name>' may be sensitive; suggested rename` |
+| WARNING | File size > 1GB (no quota enforced; flag for user awareness) | `share-file: large file <name> (<size>); confirmed with Louis` |
+| WARNING | User asked to share a directory or multiple files (CLI rejects) | `share-file: directory/multi-file share requested; suggested tar` |
+| WARNING | Duration parse failure (e.g. combined units like '2h30m') | `share-file: bad duration '<input>'; asked Louis for single-unit form` |
+| INFO | URL generated successfully | `share-file: shared <name> for <duration>; URL handed to Louis` |
+| INFO | Fell back to direct python invocation (alias missing) | `share-file: alias missing; used python3 direct path` |
+
+Concrete invocation examples:
+
+```
+claude-log share-file INFO "share-file: starting; path=<path> duration=<dur>"
+claude-log share-file WARNING "share-file: filename 'secrets.env' may be sensitive; suggested rename"
+claude-log share-file CRITICAL "share-file: CLI failed: ssh: connect to host tinybutmighty port 22: Connection refused"
+```
+
+# triggers I might have missed: token-collision (extremely rare with 192-bit entropy), TinyButMighty disk full
+
 # share-file
 
 Generates a long-random-token URL that serves a single local file from `share.develle.fr` for a bounded time, then expires.

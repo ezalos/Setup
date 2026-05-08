@@ -4,6 +4,41 @@ description: Use when Louis asks to open an external port on his home network â€
 allowed-tools: Read, Edit, Write, Bash, Grep, AskUserQuestion
 ---
 
+## Observability
+
+This skill follows the universal observability baseline (see `docs/plans/2026-04-21-skill-storage-observability-design.md`).
+
+**Universal baseline:**
+- CRITICAL on abort.
+- WARNING on user correction (Claude was about to be wrong), fallback, retry, precondition-fail.
+- **INFO (systematic) on any user feedback, suggestion, or caveat during the run.** Every distinct user message that conveys preference, redirection, refinement, or commentary MUST be logged. Format: `feedback: '<paraphrase>'; phase=<where>; changed <what>` (or `no change â€” already on track`).
+- INFO on edge-case path hit.
+
+**Skill-specific triggers:**
+
+| Level | Trigger | Message template |
+|---|---|---|
+| CRITICAL | `nat.py add` fails (router unreachable, auth, etc.) | `open-local-port: nat add failed for <name>: <reason>` |
+| CRITICAL | `nginx -t` fails after writing new config | `open-local-port: nginx config invalid for <name>: <stderr-tail>` |
+| WARNING | `SFR_BOX_PASSWORD` missing from env at start | `open-local-port: SFR_BOX_PASSWORD not in env; asked Louis to source ~/.secrets.sh` |
+| WARNING | Requested ext_port or name already in NAT rules | `open-local-port: collision: <port-or-name> already taken by rule <id>` |
+| WARNING | Requested reserved port 80/443 without explicit confirmation | `open-local-port: reserved port <port> requested; confirmed with Louis` |
+| WARNING | Asked to re-enable disabled rule 1 (ssh ext 22) | `open-local-port: re-enable of disabled ssh ext 22 requested; confirmed with Louis` |
+| WARNING | Proxied DNS handoff requested for non-CF-friendly port | `open-local-port: handoff to link-develle-domain with proxied=true on port <port>; recommended grey-cloud` |
+| INFO | NAT rule added | `open-local-port: rule added: <name> ext=<port> dst=<dst>:<dst_port> proto=<proto>` |
+| INFO | nginx server block added and reloaded | `open-local-port: nginx server block added for <name>; reload OK` |
+| INFO | Reachability check from outside LAN succeeded | `open-local-port: reachability OK for <public-ip>:<ext_port>` |
+
+Concrete invocation examples:
+
+```
+claude-log open-local-port INFO "open-local-port: starting; name=<name> ext=<port>"
+claude-log open-local-port WARNING "open-local-port: collision: 9000 already taken by rule 7"
+claude-log open-local-port CRITICAL "open-local-port: nat add failed for comfyui: 401 Unauthorized"
+```
+
+# triggers I might have missed: <none>
+
 # open-local-port
 
 Opens an external port on Louis's SFR Box and (when relevant) wires up the nginx reverse proxy on TinyButMighty so Internet traffic reaches a service on the LAN.
