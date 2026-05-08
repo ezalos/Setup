@@ -48,11 +48,12 @@ claude-log audit-observability CRITICAL "audit-observability: apply failed for w
 Flags:
 - `--user-only` — restrict scan to `~/.claude/skills/` + `~/.claude/agents/`
 - `--project-only` — restrict scan to `<cwd>/.claude/skills/` + `<cwd>/.claude/agents/`
+- `--installed` — also scan installed third-party skills in user-space (report-only; no proposals)
 - `--plugins` — also scan plugin skills (report-only; no proposals)
 - `--verify-only` — skip proposal generation; print report and exit
 - `--apply <path>` — read a previously-generated proposals file and apply approved decisions
 
-Default scope (no flags): user + project skills + agents. Plugins excluded.
+Default scope (no flags): user + project skills + agents that are **Louis-authored** (symlinks into `~/Setup/dotfiles/`). Installed third-party skills (real directories in `~/.claude/skills/` populated by marketplaces) are excluded by default. Plugins always excluded by default.
 
 If invoked with no flags AND no proposals file argument: run Phase 1 + Phase 2.
 If invoked with `--apply <path>`: run Phase 3.
@@ -72,15 +73,27 @@ No user input required during this phase.
 
 Resolve the scope flags to a list of files. The mapping:
 
-| Scope | Glob |
-|---|---|
-| user skills | `~/.claude/skills/*/SKILL.md` |
-| user agents | `~/.claude/agents/*.md` |
-| project skills | `<cwd>/.claude/skills/*/SKILL.md` |
-| project agents | `<cwd>/.claude/agents/*.md` |
-| plugin skills (only with `--plugins`) | `~/.claude/plugins/*/skills/*/SKILL.md` and `~/.claude/plugins/cache/*/*/skills/*/SKILL.md` |
+| Scope | Glob | Editability |
+|---|---|---|
+| user skills (authored) | `~/.claude/skills/*/SKILL.md` where the skill dir is a **symlink** to `~/Setup/dotfiles/...` | editable |
+| user skills (installed) | `~/.claude/skills/*/SKILL.md` where the skill dir is a **real directory** | upstream-owned |
+| user agents | `~/.claude/agents/*.md` | editable (assume Louis-authored) |
+| project skills | `<cwd>/.claude/skills/*/SKILL.md` | editable |
+| project agents | `<cwd>/.claude/agents/*.md` | editable |
+| plugin skills (only with `--plugins`) | `~/.claude/plugins/*/skills/*/SKILL.md` and `~/.claude/plugins/cache/*/*/skills/*/SKILL.md` | upstream-owned |
 
-Deduplicate symlinks: if two paths resolve to the same target, count once.
+**Distinguishing authored from installed in user-space:**
+
+```bash
+# A user-space skill is "authored" iff its directory is a symlink:
+[ -L ~/.claude/skills/<name> ] && echo authored || echo installed
+```
+
+Louis's deployment pattern (foundation spec §1) symlinks every authored skill from `~/Setup/dotfiles/claude_skill_<snake_name>/` to `~/.claude/skills/<kebab-name>/`. Real directories in `~/.claude/skills/` are necessarily third-party-installed (marketplaces, manual copies, etc.).
+
+Default behavior: scan authored only. Add `--installed` to include installed skills (report-only, no proposals).
+
+Deduplicate symlinks: if two scope-paths resolve to the same target, count once.
 
 If a target is unreadable: log CRITICAL and skip it (don't abort the audit).
 
@@ -88,15 +101,16 @@ If a target is unreadable: log CRITICAL and skip it (don't abort the audit).
 
 Read frontmatter + body. Apply these checks in order:
 
-1. **Has `observability: opt-out` in frontmatter** → status = `opted-out`. Note the `observability_set` date if present.
-2. **Has `observability: deferred` in frontmatter** → status = `deferred`. Note date if present.
-3. **Contract checks (all three must pass for `passing`):**
+1. **Editability check first.** If the target is upstream-owned (installed third-party in user-space, plugin skill): status = `installed-third-party` (or `plugin`). Run the contract checks below for reporting purposes, but never propose edits — these get listed in a separate report-only section.
+2. **Has `observability: opt-out` in frontmatter** → status = `opted-out`. Note the `observability_set` date if present.
+3. **Has `observability: deferred` in frontmatter** → status = `deferred`. Note date if present.
+4. **Contract checks (all three must pass for `passing`):**
    - Body contains `^## Observability` heading.
    - Body contains at least one `claude-log\s+\S+\s+(INFO|WARNING|CRITICAL)` invocation.
-   - The first arg passed to `claude-log` matches the frontmatter `name:` value.
-4. Otherwise → status = `needs-attention`. Capture WHICH bullet(s) failed.
+   - The first arg passed to `claude-log` matches the frontmatter `name:` value. If the skill has no `name:` field (some installed skills omit it), fall back to the directory's basename for the match check.
+5. Otherwise (and only if editable) → status = `needs-attention`. Capture WHICH bullet(s) failed.
 
-Plugin scope: the same checks apply, but the result is report-only.
+Frontmatter parse failure: log WARNING and treat as `needs-attention` (editable) or `installed-third-party` (upstream) per editability.
 
 ### 1c. Tailored proposal (only for `needs-attention`)
 
@@ -151,11 +165,12 @@ Write `~/.claude/audit-proposals-YYYY-MM-DD.md`. Structure:
 # Observability Audit — YYYY-MM-DD
 
 ## Summary
-- N passing, M needs attention, K opted out, J deferred
-- Plugins (if --plugins): P scanned; Q passing, R needs attention (report-only)
+- Authored: N passing, M needs attention, K opted out, J deferred
+- Installed third-party (if --installed): P scanned; Q passing, R failing contract (report-only)
+- Plugins (if --plugins): P scanned; Q passing, R failing contract (report-only)
 - Lessons log: ~/.claude/lessons.md (current line count: <N>)
 
-## ✅ Passing
+## ✅ Passing (authored)
 - <skill-a> (<source>) — last reviewed <date if available>
 - <skill-b> (<source>)
 
@@ -163,9 +178,13 @@ Write `~/.claude/audit-proposals-YYYY-MM-DD.md`. Structure:
 - <skill-c> (<source>) — opt-out, set <date>
 - <skill-d> (<source>) — deferred, set <date>
 
+## 📦 Installed third-party (report-only, --installed flag required to display)
+- <skill-e> — passing
+- <skill-f> — failing: <bullets>
+
 ## 📦 Plugins (report-only, --plugins flag)
-- <skill-e> (plugin: <name>) — passing
-- <skill-f> (plugin: <name>) — needs attention: <bullets>
+- <skill-g> (plugin: <name>) — passing
+- <skill-h> (plugin: <name>) — failing: <bullets>
 
 ## ❌ Needs attention — review each block, edit "decision:" line, save
 

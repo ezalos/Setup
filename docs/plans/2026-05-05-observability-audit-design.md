@@ -13,7 +13,7 @@ The interaction model is shaped by Louis's stated goal: **minimize attention tim
 
 ## Non-goals
 
-- Auditing plugin-installed skills by default. They're upstream-owned; Louis can't usefully edit them. (Opt-in `--plugins` flag is a flagged extension, not a v1 must.)
+- Auditing upstream-owned skills by default. Two flavors: plugin skills (in `~/.claude/plugins/`) and installed third-party skills (real directories in `~/.claude/skills/` populated by marketplaces). Both are upstream-owned; Louis can't usefully edit them. Distinguished from authored skills (which are symlinks into `~/Setup/dotfiles/`) at scan time. Opt-in via `--plugins` and `--installed` flags respectively, both report-only.
 - Detecting observability in *inline* subagent prompts (where a skill's body contains the subagent task text directly, not a reference to a named agent file). Detection requires understanding skill execution flow; defer to v2.
 - Verifying that logged events actually fire at runtime. The audit is static — contract presence, not runtime behavior. A separate "is the logging actually happening?" tool would be a different skill.
 - Backporting opt-out tracking from prior runs. v1 starts fresh: opt-outs are written into skill frontmatter going forward, not migrated from any external state.
@@ -27,6 +27,7 @@ User-invocable skill: `/audit-observability [flags]`
 Flags:
 - `--user-only` — restrict scan to `~/.claude/skills/` + `~/.claude/agents/`
 - `--project-only` — restrict scan to `<cwd>/.claude/skills/` + `<cwd>/.claude/agents/`
+- `--installed` — also scan installed third-party skills in `~/.claude/skills/` (real directories, not symlinks); report-only, no edits proposed
 - `--plugins` — also scan `~/.claude/plugins/.../skills/` (report-only, no edits proposed)
 - `--verify-only` — skip proposal generation; just print the report
 - `--apply <path-to-proposals-file>` — read a previously-generated proposals file and apply approved decisions
