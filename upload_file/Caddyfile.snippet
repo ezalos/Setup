@@ -1,0 +1,31 @@
+# upload.develle.fr — WebDAV inbox for phone → server file drops.
+# Mirrors share.develle.fr's TLS setup: DNS-01 via Cloudflare, port 443 only.
+# Single user, basic auth over HTTPS, bcrypt hash inline.
+# Pull files off the Pi with `pull-uploads` on TheBeast.
+#
+# `webdav` is a third-party directive with no default order, so the WebDAV
+# handler and the catch-all `respond 404` live inside an explicit `route`
+# block that fixes their execution order.
+
+upload.develle.fr {
+	root * /srv/upload
+
+	# Single account: "louis" with the bcrypt hash from `caddy hash-password`.
+	# Hash is safe to commit (bcrypt) but rotating the password means
+	# rotating this line + the saved cred on every device.
+	basic_auth /* {
+		louis $2a$14$cOkSfN3xrgi.DPrCJ.OigufCuDIH.mqLdN0ix9L2P4kl2yDWPcMFG
+	}
+
+	route {
+		webdav /inbox/* {
+			prefix /inbox
+			root /srv/upload/inbox
+		}
+		respond 404
+	}
+
+	log {
+		output file /var/log/caddy/upload.access.log
+	}
+}
