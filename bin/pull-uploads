@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# ABOUTME: Pulls files from the upload.develle.fr inbox on TinyButMighty
+# ABOUTME: down to ~/Inbox/ on TheBeast and removes them from the Pi.
+
+set -euo pipefail
+
+DEST="${UPLOAD_INBOX_DEST:-$HOME/Inbox}"
+REMOTE_HOST="${UPLOAD_REMOTE_HOST:-TinyButMighty}"
+REMOTE_PATH="${UPLOAD_REMOTE_PATH:-/srv/upload/inbox/}"
+
+mkdir -p "$DEST"
+
+# --remove-source-files: delete on the Pi after a successful transfer.
+# --partial: leave half-transferred files behind on failure so we can resume.
+# --info=progress2: single-line aggregate progress.
+rsync -avz --remove-source-files --partial --info=progress2 \
+	"$REMOTE_HOST:$REMOTE_PATH" "$DEST/"
+
+# Sweep empty subdirs the rsync leaves behind. Top-level inbox stays.
+ssh "$REMOTE_HOST" "find $REMOTE_PATH -mindepth 1 -type d -empty -delete" || true
+
+echo "Pulled to $DEST"
+ls -la "$DEST" | tail -n +2
