@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>upload.develle.fr</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, sans-serif; max-width: 640px; margin: 0 auto; padding: 1.5rem; line-height: 1.4; }
+  h1 { font-size: 1.2rem; margin-bottom: 0.25rem; }
+  .sub { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  label.drop {
+    display: block; padding: 2.5rem 1rem; border: 2px dashed #888; border-radius: 8px;
+    text-align: center; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  label.drop.over { background: rgba(120, 180, 255, 0.15); border-color: #4a8; }
+  label.drop input { display: none; }
+  .btn {
+    display: block; width: 100%; padding: 0.9rem; margin-top: 1rem;
+    font-size: 1rem; font-weight: 600; border: 0; border-radius: 6px;
+    background: #2a6; color: white; cursor: pointer;
+  }
+  .btn:disabled { background: #888; cursor: default; }
+  progress { width: 100%; height: 1.2rem; margin-top: 1rem; }
+  .log { margin-top: 1.5rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; }
+  .log div { padding: 0.35rem 0.5rem; border-radius: 4px; margin-bottom: 0.2rem; }
+  .log .ok  { background: rgba(80, 200, 120, 0.18); }
+  .log .err { background: rgba(255, 90, 90, 0.18); }
+  .log .info { background: rgba(120, 120, 120, 0.12); }
+</style>
+</head>
+<body>
+<h1>Upload to inbox</h1>
+<div class="sub">Files land on TinyButMighty. Pull on the laptop with <code>pull-uploads</code>.</div>
+
+<label class="drop" id="drop">
+  <input type="file" id="files" multiple>
+  <div id="dropmsg">Tap to pick files, or drop them here.</div>
+</label>
+
+<button class="btn" id="go" disabled>Upload</button>
+<progress id="prog" hidden></progress>
+<div class="log" id="log"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const drop = $("drop"), input = $("files"), go = $("go"), prog = $("prog"), log = $("log"), dropmsg = $("dropmsg");
+
+function append(msg, cls = "info") {
+  const d = document.createElement("div");
+  d.textContent = msg;
+  d.className = cls;
+  log.prepend(d);
+}
+
+function updateMsg() {
+  const n = input.files.length;
+  if (!n) { dropmsg.textContent = "Tap to pick files, or drop them here."; go.disabled = true; }
+  else { dropmsg.textContent = n === 1 ? input.files[0].name : `${n} files selected`; go.disabled = false; }
+}
+
+input.addEventListener("change", updateMsg);
+
+["dragenter", "dragover"].forEach(e => drop.addEventListener(e, ev => {
+  ev.preventDefault(); drop.classList.add("over");
+}));
+["dragleave", "drop"].forEach(e => drop.addEventListener(e, ev => {
+  ev.preventDefault(); drop.classList.remove("over");
+}));
+drop.addEventListener("drop", ev => { input.files = ev.dataTransfer.files; updateMsg(); });
+
+function putFile(file) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) { prog.max = e.total; prog.value = e.loaded; }
+    };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`HTTP ${xhr.status}`));
+    xhr.onerror = () => reject(new Error("network error"));
+    xhr.open("PUT", `/inbox/${encodeURIComponent(file.name)}`);
+    xhr.send(file);
+  });
+}
+
+go.addEventListener("click", async () => {
+  const files = [...input.files];
+  if (!files.length) return;
+  go.disabled = true; prog.hidden = false;
+  for (const file of files) {
+    append(`uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)…`, "info");
+    try {
+      prog.value = 0;
+      await putFile(file);
+      append(`ok  ${file.name}`, "ok");
+    } catch (e) {
+      append(`err ${file.name}: ${e.message}`, "err");
+    }
+  }
+  prog.hidden = true;
+  input.value = "";
+  updateMsg();
+});
+</script>
+</body>
+</html>

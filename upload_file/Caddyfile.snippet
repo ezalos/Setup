@@ -18,11 +18,18 @@ upload.develle.fr {
 	}
 
 	route {
+		# WebDAV inbox at /inbox/* (used by the UI's PUT requests and by
+		# any native WebDAV client that may also connect here).
 		webdav /inbox/* {
 			prefix /inbox
 			root /srv/upload/inbox
 		}
-		respond 404
+
+		# Everything else: serve the static upload UI. file_server returns
+		# 404 for unknown paths and auto-serves /srv/upload/ui/index.html
+		# at the root.
+		root * /srv/upload/ui
+		file_server
 	}
 
 	log {
