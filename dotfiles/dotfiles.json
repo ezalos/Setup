@@ -769,6 +769,20 @@
             ],
             "variants": null
         },
+        "claude_skill_pull_uploads": {
+            "alias": "claude_skill_pull_uploads",
+            "main": "dotfiles/claude_skill_pull_uploads",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/pull-uploads",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
         "claude_skill_notify_louis": {
             "alias": "claude_skill_notify_louis",
             "main": "dotfiles/claude_skill_notify_louis",
@@ -829,6 +843,20 @@
             "deploy": {
                 "TheBeast.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/add-dotfile",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_send_email": {
+            "alias": "claude_skill_send_email",
+            "main": "dotfiles/claude_skill_send_email",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/send-email",
                     "backups": []
                 }
             },
