@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# ABOUTME: Pulls files from the upload.develle.fr inbox on TinyButMighty
+# ABOUTME: down to ~/Inbox/ on the local machine and removes them from the Pi.
+
+set -euo pipefail
+
+DEST="${UPLOAD_INBOX_DEST:-$HOME/Inbox}"
+REMOTE_HOST="${UPLOAD_REMOTE_HOST:-TinyButMighty}"
+REMOTE_PATH="${UPLOAD_REMOTE_PATH:-/srv/upload/inbox/}"
+
+mkdir -p "$DEST"
+
+# --itemize-changes prints a status line per transferred item; lines
+# starting with ">f" are received files. Awk strips the itemize code so
+# we end up with bare filenames in the array.
+mapfile -t fetched < <(
+	rsync -az --remove-source-files --partial --itemize-changes \
+		"$REMOTE_HOST:$REMOTE_PATH" "$DEST/" \
+		| awk '/^>f/ { sub("^[^ ]+ +", ""); print }'
+)
+
+# Sweep empty subdirs the rsync leaves behind. Top-level inbox stays.
+ssh "$REMOTE_HOST" "find $REMOTE_PATH -mindepth 1 -type d -empty -delete" >/dev/null 2>&1 || true
+
+if [ ${#fetched[@]} -eq 0 ]; then
+	echo "Nothing in the inbox."
+	exit 0
+fi
+
+echo "Fetched ${#fetched[@]} file(s):"
+for f in "${fetched[@]}"; do
+	echo "  $DEST/$f"
+done

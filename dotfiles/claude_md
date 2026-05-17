@@ -73,6 +73,7 @@
 - Just `git add` + `git commit`. Push only when Louis asks
 - **NEVER use `--no-verify`, `--no-hooks`, or `--no-pre-commit-hook`**
 - When pre-commit hooks fail: read error, identify cause, fix, re-run. Never bypass
+- **Commit messages with em-dashes / apostrophes / smart-quotes**: write to a temp file with the `Write` tool, then `git commit -F /tmp/msg.txt`. Heredoc-piped messages get mangled by bash's parser around those characters (multiple incidents of subjects coming out wrong or heredoc terminating early). The `<<'EOF'` form does NOT save you here — the issue is wider than variable expansion.
 
 ### Code Safety
 - NEVER rewrite existing working code from scratch without explicit permission

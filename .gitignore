@@ -15,6 +15,7 @@ data/test_data
 *.pyc
 *.pyo
 
+.claude
 .envrc
 .envrc.heuritech
 .secrets.sh
