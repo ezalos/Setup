@@ -161,6 +161,75 @@ def test_deploy_all_dotfiles(setup_test_environment):
         assert path.is_symlink()
         assert Path(dotfile.data.main).exists()
 
+@pytest.mark.run(order=8)
+def test_deploy_idempotent_skips_correct_symlink(setup_test_environment):
+    """Re-deploying an already-correct symlink should be a no-op (returns False)."""
+    manager = ManageDotfiles()
+    dotfile = manager.db.select_by_alias("test_dotfile_a")
+    assert dotfile is not None
+    # first deploy from prior test landed the symlink; redeploy → idempotent
+    deploy_path = Path(dotfile.data.deploy[dotfile.identifier].deploy_path)
+    assert deploy_path.is_symlink()
+    mtime_before = deploy_path.lstat().st_mtime
+    assert dotfile.deploy() is False
+    assert deploy_path.lstat().st_mtime == mtime_before  # untouched
+
+@pytest.mark.run(order=8)
+def test_deploy_escalates_to_sudo_on_permission_error(setup_test_environment, monkeypatch):
+    """When os-level deploy raises PermissionError, fall back to `sudo ln -sfn`."""
+    import subprocess
+    from src_dotfiles import DotFile as dotfile_mod
+
+    manager = ManageDotfiles()
+    dotfile = manager.db.select_by_alias("test_dotfile_a")
+    assert dotfile is not None
+
+    # Force the as-user path to fail with PermissionError.
+    def boom(self, deploy_path, target):
+        raise PermissionError("simulated EACCES")
+    monkeypatch.setattr(dotfile_mod.DotFile, "_deploy_as_user", boom)
+
+    # Capture the sudo invocation instead of actually calling sudo.
+    calls = []
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, returncode=0, stderr="")
+    monkeypatch.setattr(dotfile_mod.subprocess, "run", fake_run)
+
+    # Need the existing symlink gone so the idempotent fast-path doesn't fire.
+    deploy_path = dotfile.data.deploy[dotfile.identifier].deploy_path
+    if os.path.lexists(deploy_path):
+        os.unlink(deploy_path)
+
+    assert dotfile.deploy() is True
+    assert len(calls) == 1
+    assert calls[0][:3] == ["sudo", "ln", "-sfn"]
+    assert calls[0][-1] == deploy_path
+
+@pytest.mark.run(order=8)
+def test_deploy_all_continues_past_one_failure(setup_test_environment, monkeypatch):
+    """All-mode loop must report failures and keep going, not abort the run."""
+    from src_dotfiles import DotFile as dotfile_mod
+
+    manager = ManageDotfiles()
+    assert len(manager.db.data) >= 2
+
+    # Sabotage exactly one dotfile's deploy.
+    victim_alias = manager.db.data[0].data.alias
+    original_deploy = dotfile_mod.DotFile.deploy
+    def maybe_boom(self):
+        if self.data.alias == victim_alias:
+            raise RuntimeError("simulated failure")
+        return original_deploy(self)
+    monkeypatch.setattr(dotfile_mod.DotFile, "deploy", maybe_boom)
+
+    # Should not raise — failures are caught and summarized.
+    manager.deploy()
+
+    # And the other dotfiles should be reachable / deployable afterwards.
+    survivor = manager.db.data[1]
+    assert os.path.lexists(survivor.data.deploy[survivor.identifier].deploy_path)
+
 # -------------------------------- Backup tests ------------------------------- #
 
 @pytest.mark.run(order=9)

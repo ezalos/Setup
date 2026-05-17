@@ -1,6 +1,7 @@
 # File operations
 import os
 import shutil
+import subprocess
 from datetime import datetime
 from src_dotfiles.config import config
 from pathlib import Path
@@ -66,8 +67,9 @@ class DotFile:
         without touching anything. Otherwise removes whatever is at the target
         path and creates the symlink, returning True.
 
-        Raises on failure to remove an existing file (e.g. permission denied)
-        so the caller can surface a clean error instead of crashing on symlink.
+        If the symlink lands somewhere the current user can't write (e.g.
+        /etc/nginx/nginx.conf), falls back to `sudo ln -sfn` for just that
+        one entry — keeps the rest of the run as the unprivileged user.
         """
         deploy_path = self.data.deploy[self.identifier].deploy_path
 
@@ -83,7 +85,17 @@ class DotFile:
             logger.debug(f"{deploy_path} already symlinks to {target}; skipping")
             return False
 
-        # Use lexists so broken symlinks are detected too.
+        try:
+            self._deploy_as_user(deploy_path, target)
+        except PermissionError as e:
+            logger.warning(f"{deploy_path}: permission denied ({e}); escalating via sudo")
+            self._deploy_via_sudo(deploy_path, target)
+
+        logger.info(f"Symlink created {deploy_path} -> {target}")
+        return True
+
+    def _deploy_as_user(self, deploy_path: str, target: str) -> None:
+        """Remove anything at deploy_path and symlink target → deploy_path as the current user."""
         if os.path.lexists(deploy_path):
             logger.debug(f'Deleting {deploy_path}')
             if os.path.isdir(deploy_path) and not os.path.islink(deploy_path):
@@ -97,8 +109,27 @@ class DotFile:
             os.makedirs(dirs)
 
         os.symlink(target, deploy_path)
-        logger.info(f"Symlink created {deploy_path} -> {target}")
-        return True
+
+    def _deploy_via_sudo(self, deploy_path: str, target: str) -> None:
+        """Replace whatever's at deploy_path with a symlink to target, using sudo.
+
+        Refuses to recurse into directories (sudo rm -rf on a system path is too
+        sharp a tool for an auto-elevation fallback); the caller must clean up
+        manually if deploy_path is a non-symlink directory.
+        """
+        if os.path.isdir(deploy_path) and not os.path.islink(deploy_path):
+            raise PermissionError(
+                f"{deploy_path} is a directory (not a symlink); refusing to sudo-rmtree. "
+                f"Remove it manually then re-run deploy."
+            )
+        result = subprocess.run(
+            ["sudo", "ln", "-sfn", target, deploy_path],
+            stderr=subprocess.PIPE, text=True,
+        )
+        if result.returncode != 0:
+            raise PermissionError(
+                f"sudo ln failed for {deploy_path}: {result.stderr.strip() or 'unknown error'}"
+            )
 
     def backup(self) -> None:
         """Create a backup of the current file if it exists and is not a symlink."""
