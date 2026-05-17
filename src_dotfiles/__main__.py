@@ -3,6 +3,7 @@
 import fire
 from src_dotfiles.database import Dependencies
 from src_dotfiles.config import config
+from src_dotfiles.models import DeployedDotFile
 from ezpy_logs.LoggerFactory import LoggerFactory
 from typing import Optional
 
@@ -67,6 +68,59 @@ class ManageDotfiles:
                 logger.error("Argument path is different from the one in the system")
                 logger.error(f"{current_dot_file.data.deploy[current_dot_file.identifier].deploy_path} != {new_dot_file.data.deploy[new_dot_file.identifier].deploy_path}")
                 raise NotImplementedError
+
+    def extend_to(self, alias: str, device: str, deploy_path: Optional[str] = None) -> None:
+        """Extend an existing dotfile to a new device.
+
+        Adds `device` to the dotfile's `deploy` map and, if `only_devices` is set,
+        appends `device` to that list too. Does NOT copy files to the target
+        device — run `deploy` on the target host afterwards (typically via
+        setup_sync_down + `python -m src_dotfiles deploy`).
+
+        Args:
+            alias (str): Alias of the dotfile to extend (must already exist).
+            device (str): Device identifier to add (e.g. "TinyButMighty.ezalos").
+            deploy_path (Optional[str]): Where the dotfile should land on the
+                target device. If omitted, reuses the deploy_path of an existing
+                deploy entry — fine when the home_path is identical on both
+                devices, wrong otherwise.
+        """
+        model = self.db.metadata.dotfiles.get(alias)
+        if model is None:
+            logger.error(f"No dotfile with alias {alias!r} in registry")
+            return
+
+        if deploy_path is None:
+            if not model.deploy:
+                logger.error(f"{alias} has no existing deploy entries; --deploy-path is required")
+                return
+            sample_device, sample_entry = next(iter(model.deploy.items()))
+            deploy_path = sample_entry.deploy_path
+            logger.info(f"Defaulting deploy_path to {deploy_path!r} (copied from {sample_device})")
+
+        if device in model.deploy:
+            existing = model.deploy[device].deploy_path
+            if existing == deploy_path:
+                logger.info(f"{alias} already deploys to {device} at {deploy_path}; no change to deploy map")
+            else:
+                logger.error(
+                    f"{alias} already has a deploy entry for {device} at {existing!r} "
+                    f"which differs from requested {deploy_path!r}; refusing to overwrite"
+                )
+                return
+        else:
+            model.deploy[device] = DeployedDotFile(deploy_path=deploy_path, backups=[])
+            logger.info(f"Added deploy entry for {device}: {deploy_path}")
+
+        if model.only_devices is not None and device not in model.only_devices:
+            model.only_devices.append(device)
+            logger.info(f"Appended {device} to only_devices")
+        elif model.only_devices is not None:
+            logger.info(f"{device} already in only_devices")
+
+        self.db.metadata.dotfiles[alias] = model
+        self.db.save_all()
+        logger.info(f"Saved. Now run `python -m src_dotfiles deploy --alias {alias}` on {device}.")
 
     def deploy(self, alias: Optional[str] = None) -> None:
         """Deploy dotfiles to the system.

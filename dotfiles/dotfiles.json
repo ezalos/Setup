@@ -790,10 +790,15 @@
                 "TheBeast.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/notify-louis",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/notify-louis",
+                    "backups": []
                 }
             },
             "only_devices": [
-                "TheBeast.ezalos"
+                "TheBeast.ezalos",
+                "TinyButMighty.ezalos"
             ],
             "variants": null
         },
