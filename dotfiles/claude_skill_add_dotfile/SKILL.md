@@ -83,7 +83,9 @@ Inspect:
 - If yes: does that entry have a `deploy[<current_device>]` block?
 - If yes: does the entry's `main` file exist at the expected location?
 
-Routing table:
+**First, check whether `target_path` is inside `~/Setup/dotfiles/`** (i.e. the file was authored directly into the dotfiles directory, e.g. a freshly written SKILL.md). If yes: there is no copy-from-system step to perform — the source is already in place; only the registry entry and the deploy symlink need to be created. The canonical `python -m src_dotfiles add` subcommand assumes target_path is the deploy_path and would set the wrong fields. **STOP** and route to a `register` subcommand (`python -m src_dotfiles register --alias=<...> --main=<dotfiles/path> --deploy-path=<absolute>`). If that subcommand does not yet exist, build it in `src_dotfiles/__main__.py` per the spec at `docs/plans/2026-05-17-register-existing-dotfile-design.md` before proceeding. Do not hand-edit the JSON as a shortcut.
+
+Otherwise use the standard routing table:
 
 | target exists | target is symlink | alias in registry | deploy block for current device | symlink resolves to expected main | → Path |
 |---|---|---|---|---|---|
@@ -111,43 +113,21 @@ When intent classified as ADD:
    - If no collision → use `derived` as the alias.
    - If collision → show Louis the existing entry's `main` path. Use AskUserQuestion to ask for an override alias. Suggest a path-disambiguated form (e.g. parent directory + filename: `nvim/init.lua` instead of just `init.lua`). Log WARNING `add-dotfile: alias collision for <derived>; using <override>`.
 
-### 3b. Move into the dotfiles directory
+### 3b. Register + copy + deploy via the CLI
 
-1. Compute main: `main_path = "dotfiles/<alias>"` relative to `~/Setup/`.
-2. Copy the file: `cp -r <target_path> ~/Setup/<main_path>` (or `cp <target_path> ~/Setup/<main_path>` for files; preserve mode bits).
-3. Verify: file exists at `~/Setup/<main_path>` with same contents as `target_path`.
-
-### 3c. Add the registry entry
-
-Edit `~/Setup/dotfiles/dotfiles.json`. Add:
-
-```json
-"<alias>": {
-    "alias": "<alias>",
-    "main": "dotfiles/<alias>",
-    "deploy": {
-        "<current_device>": {
-            "deploy_path": "<absolute target_path>",
-            "backups": []
-        }
-    },
-    "only_devices": null,
-    "variants": null
-}
-```
-
-Verify JSON parses after the edit.
-
-### 3d. Deploy
+The canonical `add` subcommand handles 3b/3c/3d in one transactional call: it creates the model, backs up any existing file at target_path, copies it into `dotfiles/<alias>`, and symlinks target_path back to the copy.
 
 ```bash
-cd ~/Setup && python -m src_dotfiles deploy --alias=<alias>
+cd ~/Setup && python -m src_dotfiles add <absolute target_path> --alias=<alias>
 ```
 
-The deployer handles: backup of any existing file at `target_path`, removal, symlink creation. If it raises:
+For skill-style dotfiles that should not auto-deploy to every device, add `--only-device=<current_device>` so the entry gets `only_devices=[<current_device>]`.
+
+If it exits non-zero or returns `None` (alias collision when `force=False`):
 - Log CRITICAL `add-dotfile: deployer failed for <alias>: <reason>`.
-- The local registry edit and the file copy persist; Louis can investigate. Don't try to "rollback" — the deployer's own state machine is the authority.
 - Abort.
+
+**Never hand-edit `dotfiles/dotfiles.json` as a fallback** — if the CLI doesn't fit the case (e.g. source already inside `~/Setup/dotfiles/`, multi-device pre-registration), add the missing subcommand to `src_dotfiles/__main__.py` first. The registry has invariants (`deploy`/`only_devices`/`variants`/`devices`) that the model classes enforce; manual edits drift from them silently.
 
 ### 3e. Verify
 
@@ -177,16 +157,13 @@ When intent classified as DEPLOY-HERE:
 2. Propose a `deploy_path` for current_device:
    - Heuristic: pick the most similar existing device's `deploy_path` (same OS prefix, same user-home pattern). For example, if there's a `Linux` device with `/home/<user>/.zshrc`, propose `/home/<current-user>/.zshrc`.
    - If no similar device: log WARNING `add-dotfile: no similar device for <alias>; user provided <path>` and use AskUserQuestion to ask Louis for the path.
-3. Add the deploy block to `dotfiles.json`:
+3. Add the deploy entry via the CLI (do **not** hand-edit `dotfiles.json`):
 
-   ```json
-   "<current_device>": {
-       "deploy_path": "<provided>",
-       "backups": []
-   }
+   ```bash
+   cd ~/Setup && python -m src_dotfiles extend_to <alias> <current_device> --deploy-path=<provided>
    ```
 
-4. Deploy: `python -m src_dotfiles deploy --alias=<alias>`. Same error handling as Phase 3d.
+4. Deploy: `python -m src_dotfiles deploy --alias=<alias>`. Same error handling as Phase 3b.
 5. Verify: symlink at `<provided>` → `~/Setup/<main>`.
 6. Commit: `dotfiles: deploy <alias> on <current_device>`.
 7. Log INFO `add-dotfile: first deploy for <alias> on <current_device>`.
@@ -218,5 +195,5 @@ After completing any path (ADD / DEPLOY-HERE / REDEPLOY / NO-OP / abort), review
 - **Never use `git add -A`** — stage explicit paths.
 - **Never use `--no-verify`** — if a hook fails, report and stop.
 - **Never delete original target_path** before the deployer succeeds — the deployer itself does the swap (file → symlink) atomically.
-- **Don't pollute `dotfiles.json` on partial failure** — write registry edits AFTER the deploy succeeds, not before. (Reorder Phase 3c and 3d if needed: deploy first, then registry update — if the deployer requires the registry first, write to a temp registry, deploy, then atomic-rename. Verify behavior of `python -m src_dotfiles add` for the canonical add-flow if available; it may be more transactional than manual deploy.)
+- **Never hand-edit `dotfiles/dotfiles.json`.** All registry mutations go through `python -m src_dotfiles <subcommand>` (`add`, `extend_to`, `deploy`, future `register`). If no subcommand fits the case, add one to `src_dotfiles/__main__.py` first — write/Edit on the JSON is a violation even "just to bridge the gap." The registry persists model invariants that drift silently when bypassed.
 - **Cross-platform paths**: use `python -c "import os; print(os.path.expanduser('<path>'))"` for `~`-resolution rather than relying on shell tilde expansion in passed-through Bash strings.
