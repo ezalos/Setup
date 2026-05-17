@@ -50,6 +50,16 @@ claude-log wrap-up CRITICAL "wrap-up: deploy failed in <repo>: <stderr-tail>"
 
 ### 1a. Commit
 
+Treat this phase as **session-boundary cleanup**, not strict
+this-turn scope. If a repo has uncommitted work that's COHERENT
+(same area of code as recent commits, would write cleanly as one
+commit, looks like an interrupted save), commit it even if it
+predates the current turn. The point of automated wrap-up is to
+leave the repo shippable across session boundaries. Skip clearly
+unrelated clutter — paths dirty for weeks, big binaries, anything
+that has no narrative tie to recent commits. When in doubt about
+a path, exclude it.
+
 For each repo directory touched during this session:
 
 1. Run `git status --porcelain` in that repo.
@@ -58,6 +68,7 @@ For each repo directory touched during this session:
    - Inspect the diff (`git diff` and `git diff --cached`) to draft a one-line commit subject summarizing the change.
    - Stage relevant files explicitly (avoid `git add -A` — never commit secrets or unrelated dirty work).
    - Commit on the default branch (`master` for Louis's own repos; check `git symbolic-ref --short HEAD` first).
+   - **Commit-message handling:** when the message contains em-dashes / apostrophes / smart-quotes, write to a temp file via the `Write` tool first, then `git commit -F /tmp/msg.txt`. Bash heredoc parsing mangles those characters and has produced wrong commit subjects across multiple sessions.
    - **Do NOT use `--no-verify`.** If a hook fails, treat it as a precondition failure: log `WARNING wrap-up: phase1 hook failed in <repo>: <hook-name>`, leave the commit unmade, and report in the final summary.
 4. **Push policy:** push only if (a) the user explicitly asked for pushes during this session, OR (b) the repo's CLAUDE.md frontmatter has `auto-push: true`. Otherwise leave un-pushed and report.
 
