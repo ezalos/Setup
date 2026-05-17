@@ -841,6 +841,10 @@
                 "TheBeast.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/audit-observability",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/audit-observability",
+                    "backups": []
                 }
             },
             "only_devices": null,
@@ -851,6 +855,10 @@
             "main": "dotfiles/claude_skill_add_dotfile",
             "deploy": {
                 "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/add-dotfile",
+                    "backups": []
+                },
+                "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/add-dotfile",
                     "backups": []
                 }
