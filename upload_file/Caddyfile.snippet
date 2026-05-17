@@ -18,6 +18,16 @@ upload.develle.fr {
 	}
 
 	route {
+		# Browsers that navigate to /inbox/ (a footgun, since /inbox is the
+		# WebDAV path) get redirected to the upload UI. Only GET/HEAD —
+		# real WebDAV verbs (PUT, PROPFIND, DELETE, MKCOL, etc.) still
+		# reach the webdav handler below.
+		@browser_inbox {
+			method GET HEAD
+			path /inbox /inbox/
+		}
+		redir @browser_inbox / 302
+
 		# WebDAV inbox at /inbox/* (used by the UI's PUT requests and by
 		# any native WebDAV client that may also connect here).
 		webdav /inbox/* {

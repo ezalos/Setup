@@ -68,6 +68,39 @@ Driven by `~/Setup/plans/2026_05_14-plan_upload_develle_fr.md`. Depends
 on the share-file stack already being up (see `~/Setup/share_file/README.md`)
 — this reuses the same Caddy install, NAT rule, and Cloudflare token.
 
+## Gotchas
+
+- **Browser to `/inbox/`** previously returned `405 Method Not Allowed`
+  because `/inbox/` is the WebDAV endpoint and `file_server` doesn't
+  speak PROPFIND/GET-as-listing. The Caddyfile now redirects GET/HEAD
+  on `/inbox` and `/inbox/` to `/` so phones that guess the URL still
+  land on the upload page. Real WebDAV verbs (PUT, PROPFIND, DELETE,
+  MKCOL, etc.) still reach the webdav handler.
+
+- **`apt upgrade` clobbers the custom Caddy binary.** Both the
+  cloudflare DNS provider and the WebDAV handler are non-standard
+  modules added via `caddy add-package`. When the cloudsmith Caddy
+  package is upgraded, the binary at `/usr/bin/caddy` is replaced with
+  the stock build and Caddy fails to start (the journal will show
+  `module not registered: dns.providers.cloudflare`). `caddy` is now
+  `apt-mark hold`-ed on the Pi to prevent this; when you intentionally
+  want to upgrade Caddy, unhold, upgrade, then immediately re-run:
+
+  ```bash
+  ssh TinyButMighty 'sudo caddy add-package \
+    github.com/caddy-dns/cloudflare \
+    github.com/mholt/caddy-webdav && \
+    sudo systemctl restart caddy'
+  ```
+
+  …and only then `apt-mark hold caddy` again.
+
+- **Native phone WebDAV clients are flaky.** Material Files (Android)
+  in particular failed to negotiate the connection during initial
+  setup. The browser UI at `/` is the recommended phone flow because
+  it relies only on standard HTTPS + basic auth + a PUT — no app
+  quirks to debug.
+
 ## Caveats
 
 - **Single user.** No per-recipient auth. The bcrypt-hashed password
