@@ -71,6 +71,7 @@ For each repo directory touched during this session:
    - **Commit-message handling:** when the message contains em-dashes / apostrophes / smart-quotes, write to a temp file via the `Write` tool first, then `git commit -F /tmp/msg.txt`. Bash heredoc parsing mangles those characters and has produced wrong commit subjects across multiple sessions.
    - **Do NOT use `--no-verify`.** If a hook fails, treat it as a precondition failure: log `WARNING wrap-up: phase1 hook failed in <repo>: <hook-name>`, leave the commit unmade, and report in the final summary.
 4. **Push policy:** push only if (a) the user explicitly asked for pushes during this session, OR (b) the repo's CLAUDE.md frontmatter has `auto-push: true`. Otherwise leave un-pushed and report.
+5. **Non-fast-forward handling:** if `git push` fails with `non-fast-forward` / `fetch first` / `Updates were rejected`, the remote has commits the local branch doesn't (e.g. an automated push from another machine landed during the session). Run `git pull --rebase origin <branch>` and retry the push once. If the rebase produces conflicts, abort it (`git rebase --abort`), log a CRITICAL, and surface in the summary — do NOT attempt to resolve conflicts during wrap-up.
 
 If a commit or push fails for non-hook reasons (network error, etc.), log:
 
