@@ -34,5 +34,5 @@
     "safety-net@cc-marketplace": true
   },
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true
+  "effortLevel": "high"
 }

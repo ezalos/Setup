@@ -809,6 +809,10 @@
                 "TheBeast.ezalos": {
                     "deploy_path": "/home/ezalos/.local/bin/claude-log",
                     "backups": []
+                },
+                "TinyButMighty.ezalos": {
+                    "deploy_path": "/home/ezalos/.local/bin/claude-log",
+                    "backups": []
                 }
             },
             "only_devices": null,
