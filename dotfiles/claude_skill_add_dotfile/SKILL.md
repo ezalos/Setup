@@ -1,6 +1,6 @@
 ---
 name: add-dotfile
-description: Use when Louis asks to track a file as a dotfile (e.g. "add ~/.tmux.conf to my dotfiles", "track this config", "manage X via dotfiles") OR to set up tracked dotfiles on the current machine (e.g. "deploy my dotfiles here", "I'm on a new machine, sync up", "deploy <alias> on this device"). Wraps the dotfiles.json registry and src_dotfiles deployer; routes by inspecting registry + filesystem state.
+description: Use when Louis asks to track a file as a dotfile (e.g. "add ~/.tmux.conf to my dotfiles", "track this config", "manage X via dotfiles") OR to set up tracked dotfiles on the current machine (e.g. "deploy my dotfiles here", "I'm on a new machine, sync up", "deploy <alias> on this device") OR whenever you are about to add/modify/extend an entry in `dotfiles/dotfiles.json` — including registering a newly created Claude skill, hook, or wrapper script. **Never hand-edit `dotfiles/dotfiles.json` directly; always come through this skill (which uses the `src_dotfiles` CLI). If the operation has no CLI subcommand, build it in `src_dotfiles/__main__.py` first.** Wraps the dotfiles.json registry and src_dotfiles deployer; routes by inspecting registry + filesystem state.
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, AskUserQuestion
 ---
