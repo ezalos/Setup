@@ -122,6 +122,29 @@ class ManageDotfiles:
         self.db.save_all()
         logger.info(f"Saved. Now run `python -m src_dotfiles deploy --alias {alias}` on {device}.")
 
+    def set_global(self, alias: str) -> None:
+        """Mark a dotfile as eligible for deployment on every device.
+
+        Clears `only_devices` (sets it to None), so any device running
+        `deploy` will create the symlink — deploy paths are translated
+        per-device from existing entries using each device's home_path.
+
+        Args:
+            alias (str): Existing alias to make global.
+        """
+        model = self.db.metadata.dotfiles.get(alias)
+        if model is None:
+            logger.error(f"No dotfile with alias {alias!r} in registry")
+            return
+        if model.only_devices is None:
+            logger.info(f"{alias} already global (only_devices=None); no change")
+            return
+        previous = list(model.only_devices)
+        model.only_devices = None
+        self.db.metadata.dotfiles[alias] = model
+        self.db.save_all()
+        logger.info(f"{alias}: cleared only_devices (was {previous})")
+
     def deploy(self, alias: Optional[str] = None) -> None:
         """Deploy dotfiles to the system.
 
