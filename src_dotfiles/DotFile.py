@@ -58,38 +58,47 @@ class DotFile:
         if deploy:
             self.deploy()
 
-    def deploy(self) -> None:
+    def deploy(self) -> bool:
         """Deploy the dotfile in the system.
-        
-        Creates a symlink from the system path to the main version.
-        Will delete any existing file at the target path.
-        """
-        dirs = os.path.dirname(self.data.deploy[self.identifier].deploy_path)
-        logger.debug(f'Extracting dir part of src: {dirs}')
-        
-        try:
-            if os.path.exists(self.data.deploy[self.identifier].deploy_path):
-                logger.debug(f'Deleting {self.data.deploy[self.identifier].deploy_path}')
-                if os.path.isdir(self.data.deploy[self.identifier].deploy_path) and not os.path.islink(self.data.deploy[self.identifier].deploy_path):
-                    shutil.rmtree(self.data.deploy[self.identifier].deploy_path)
-                else:
-                    os.remove(self.data.deploy[self.identifier].deploy_path)
-        except Exception as e:
-            logger.debug(f"Could not remove {self.data.deploy[self.identifier].deploy_path}: {str(e)}")
 
-        if not os.path.exists(dirs):
-            logger.info(f'{dirs} does not exist: creating it')
-            os.makedirs(dirs)
+        Creates a symlink from the system path to the main version.
+        Idempotent: if the target is already the correct symlink, returns False
+        without touching anything. Otherwise removes whatever is at the target
+        path and creates the symlink, returning True.
+
+        Raises on failure to remove an existing file (e.g. permission denied)
+        so the caller can surface a clean error instead of crashing on symlink.
+        """
+        deploy_path = self.data.deploy[self.identifier].deploy_path
 
         # Resolve variant: use device-specific file if one exists, otherwise main
         source = self.data.main
         if self.data.variants and self.identifier in self.data.variants:
             source = self.data.variants[self.identifier]
             logger.info(f"Using variant for {self.identifier}: {source}")
-
         target = Path(config.project_path).joinpath(source).as_posix()
-        logger.info(f"Symlink created {self.data.deploy[self.identifier].deploy_path} -> {target}")
-        os.symlink(target, self.data.deploy[self.identifier].deploy_path)
+
+        # Idempotent: already the right symlink → no-op.
+        if os.path.islink(deploy_path) and os.readlink(deploy_path) == target:
+            logger.debug(f"{deploy_path} already symlinks to {target}; skipping")
+            return False
+
+        # Use lexists so broken symlinks are detected too.
+        if os.path.lexists(deploy_path):
+            logger.debug(f'Deleting {deploy_path}')
+            if os.path.isdir(deploy_path) and not os.path.islink(deploy_path):
+                shutil.rmtree(deploy_path)
+            else:
+                os.remove(deploy_path)
+
+        dirs = os.path.dirname(deploy_path)
+        if not os.path.exists(dirs):
+            logger.info(f'{dirs} does not exist: creating it')
+            os.makedirs(dirs)
+
+        os.symlink(target, deploy_path)
+        logger.info(f"Symlink created {deploy_path} -> {target}")
+        return True
 
     def backup(self) -> None:
         """Create a backup of the current file if it exists and is not a symlink."""

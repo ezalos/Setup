@@ -148,15 +148,34 @@ class ManageDotfiles:
     def deploy(self, alias: Optional[str] = None) -> None:
         """Deploy dotfiles to the system.
 
+        Idempotent: already-correct symlinks are skipped silently. In all-mode,
+        per-file failures are caught and reported in a summary instead of
+        aborting the run.
+
         Args:
-            alias (Optional[str]):  Alias of the dotfile to deploy. 
+            alias (Optional[str]):  Alias of the dotfile to deploy.
                                     If not provided, will deploy all dotfiles.
         """
-        if alias == None:
+        if alias is None:
             logger.info("Deploying all dotfiles")
+            created, skipped, failed = [], [], []
             for dot_file in self.db.data:
-                dot_file.backup()
-                dot_file.deploy()
+                a = dot_file.data.alias
+                try:
+                    dot_file.backup()
+                    if dot_file.deploy():
+                        created.append(a)
+                    else:
+                        skipped.append(a)
+                except Exception as e:
+                    logger.error(f"deploy failed for {a}: {e}")
+                    failed.append((a, str(e)))
+            logger.info(
+                f"deploy summary: {len(created)} created, "
+                f"{len(skipped)} already correct, {len(failed)} failed"
+            )
+            for a, reason in failed:
+                logger.warning(f"  FAILED {a}: {reason}")
         else:
             dot_file = self.db.select_by_alias(alias)
             if dot_file is None:
