@@ -921,3 +921,6 @@ _setup_notices_check() {
   fi
 }
 _setup_notices_check
+
+# Social content repo (used by /post, /log, /audit skills)
+export SOCIAL_HOME="$HOME/social"
