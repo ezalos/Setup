@@ -34,6 +34,20 @@ config.scrollback_lines = 10000
 -- because the tmux server inherits the environment of whoever started it first.
 -- Cursor's bundled glibc breaks rustup's argv[0] detection (and possibly other tools).
 config.default_prog = { '/bin/zsh', '-c', [[
+  # GUI launches (macOS app icon, some Linux .desktop entries) hand zsh a
+  # minimal PATH and `zsh -c` does not source .zprofile/.zshrc, so tools
+  # like tmux can be unreachable and the exec below would fail with 127.
+  # Prepend common package-manager bindirs that actually exist on this
+  # machine; the case-guard de-dupes when they're already present, and
+  # the directory test makes this a no-op on machines where they aren't.
+  for p in /opt/homebrew/bin /opt/homebrew/sbin /usr/local/bin /usr/local/sbin; do
+    case ":$PATH:" in
+      *":$p:"*) ;;
+      *) [ -d "$p" ] && PATH="$p:$PATH" ;;
+    esac
+  done
+  export PATH
+
   # Sanitize LD_LIBRARY_PATH: strip Cursor AppImage mount paths
   if [ -n "$LD_LIBRARY_PATH" ]; then
     cleaned=$(printf '%s' "$LD_LIBRARY_PATH" | tr ':' '\n' | grep -v '^$' | grep -v '\.mount_cursor' | paste -sd ':')
