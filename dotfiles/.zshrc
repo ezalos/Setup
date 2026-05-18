@@ -509,12 +509,26 @@ ta() {
   fi
 }
 
-# tab-completion for ta: complete with tmux session names
+# tmux switch session (must be inside tmux); no arg → last session
+ts() {
+  if [[ -z "$TMUX" ]]; then
+    echo "ts: not inside tmux (use ta to attach)" >&2
+    return 1
+  fi
+  if [[ -n "$1" ]]; then
+    tmux switch-client -t "$1"
+  else
+    tmux switch-client -l 2>/dev/null || tls
+  fi
+}
+
+# tab-completion for ta/ts: complete with tmux session names
 _ta() {
   local sessions=(${(f)"$(tmux list-sessions -F '#{session_name}' 2>/dev/null)"})
   _describe 'tmux session' sessions
 }
 compdef _ta ta
+compdef _ta ts
 
 # tmux session save/restore (for reboots)
 tsave()    { "$PATH_SETUP_DIR/scripts/tmux-save.sh" "$@"; }
