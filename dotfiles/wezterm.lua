@@ -12,10 +12,14 @@ config.font = wezterm.font_with_fallback({
 })
 config.font_size = 12.0
 
--- Dark purple background with 95% opacity (5% see-through)
-config.window_background_opacity = 0.95
+-- Dark purple background, matching iTerm "Dark" profile:
+--   color   = Display P3 0.1793,0.1194,0.3666 → sRGB #301E61
+--   opacity = 0.90 (iTerm reports ~0.899, rounded)
+--   blur    = iTerm Blur Radius 10 (macOS only)
+config.window_background_opacity = 0.90
+config.macos_window_background_blur = 10
 config.colors = {
-  background = '#1a0a2e',
+  background = '#301E61',
 }
 
 -- Window
