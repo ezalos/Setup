@@ -23,6 +23,7 @@ config.colors = {
 }
 
 -- Window
+config.enable_tab_bar = false
 config.window_padding = {
   left = 8,
   right = 8,
