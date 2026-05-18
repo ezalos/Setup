@@ -509,7 +509,9 @@ ta() {
   fi
 }
 
-# tmux switch session (must be inside tmux); no arg → last session
+# tmux switch session (must be inside tmux)
+# - with arg: switch to that session
+# - no arg: spawn a fresh session in $PWD, switch to it, kill the previous one
 ts() {
   if [[ -z "$TMUX" ]]; then
     echo "ts: not inside tmux (use ta to attach)" >&2
@@ -517,9 +519,14 @@ ts() {
   fi
   if [[ -n "$1" ]]; then
     tmux switch-client -t "$1"
-  else
-    tmux switch-client -l 2>/dev/null || tls
+    return
   fi
+  local prev name
+  prev=$(tmux display-message -p '#S')
+  name=$("$PATH_SETUP_DIR/scripts/tmux-rename-sessions.sh" --gen-name "$PWD")
+  tmux new-session -d -s "$name" -c "$PWD" || return
+  tmux switch-client -t "$name" || { tmux kill-session -t "$name"; return 1; }
+  tmux kill-session -t "$prev"
 }
 
 # tab-completion for ta/ts: complete with tmux session names
