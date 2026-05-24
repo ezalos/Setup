@@ -27,6 +27,14 @@
   .log .ok  { background: rgba(80, 200, 120, 0.18); }
   .log .err { background: rgba(255, 90, 90, 0.18); }
   .log .info { background: rgba(120, 120, 120, 0.12); }
+  .log .path {
+    background: rgba(80, 200, 120, 0.10); border: 1px solid rgba(80, 200, 120, 0.4);
+    cursor: pointer; user-select: all; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .log .path:hover { background: rgba(80, 200, 120, 0.20); }
+  .log .path .label { color: #888; font-size: 0.75rem; flex-shrink: 0; }
+  .log .path .p { flex: 1; word-break: break-all; }
+  .log .path .copied { color: #2a6; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -34,11 +42,11 @@
 <div class="sub">Files land on TinyButMighty. Pull on the laptop with <code>pull-uploads</code>.</div>
 
 <label class="drop" id="drop">
-  <input type="file" id="files" multiple>
+  <input type="file" id="files" multiple accept="*/*">
   <div id="dropmsg">Tap to pick files, or drop them here.</div>
 </label>
 
-<button class="btn" id="go" disabled>Upload</button>
+<button class="btn" id="go">Upload</button>
 <progress id="prog" hidden></progress>
 <div class="log" id="log"></div>
 
@@ -53,13 +61,50 @@ function append(msg, cls = "info") {
   log.prepend(d);
 }
 
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) { /* fall through */ }
+  // Fallback for older browsers / non-HTTPS.
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function appendPath(filename) {
+  // Copy a usable Claude Code prompt, not just the path. "pull uploads"
+  // triggers the pull-uploads skill so Claude rsyncs the file off the Pi
+  // before doing anything with it.
+  const prompt = `pull uploads then read "~/Inbox/${filename}"`;
+  const d = document.createElement("div");
+  d.className = "path";
+  const label = document.createElement("span"); label.className = "label"; label.textContent = "prompt:";
+  const p = document.createElement("span"); p.className = "p"; p.textContent = prompt;
+  const flag = document.createElement("span"); flag.className = "copied"; flag.textContent = "tap to copy";
+  d.append(label, p, flag);
+  d.addEventListener("click", async () => {
+    const ok = await copyText(prompt);
+    flag.textContent = ok ? "copied!" : "copy failed";
+    setTimeout(() => { flag.textContent = "tap to copy"; }, 1500);
+  });
+  log.prepend(d);
+}
+
 function updateMsg() {
   const n = input.files.length;
-  if (!n) { dropmsg.textContent = "Tap to pick files, or drop them here."; go.disabled = true; }
-  else { dropmsg.textContent = n === 1 ? input.files[0].name : `${n} files selected`; go.disabled = false; }
+  if (!n) { dropmsg.textContent = "Tap to pick files, or drop them here."; }
+  else { dropmsg.textContent = n === 1 ? input.files[0].name : `${n} files selected`; }
 }
 
 input.addEventListener("change", updateMsg);
+input.addEventListener("input", updateMsg);
 
 ["dragenter", "dragover"].forEach(e => drop.addEventListener(e, ev => {
   ev.preventDefault(); drop.classList.add("over");
@@ -69,12 +114,15 @@ input.addEventListener("change", updateMsg);
 }));
 drop.addEventListener("drop", ev => { input.files = ev.dataTransfer.files; updateMsg(); });
 
-function putFile(file) {
+function putFile(file, onSent) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.upload.onprogress = e => {
       if (e.lengthComputable) { prog.max = e.total; prog.value = e.loaded; }
     };
+    // Fires when all bytes have left the client; we're now waiting on the
+    // server to ack. Useful signal so the UI can switch to "still working".
+    xhr.upload.onload = () => { if (onSent) onSent(); };
     xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`HTTP ${xhr.status}`));
     xhr.onerror = () => reject(new Error("network error"));
     xhr.open("PUT", `/inbox/${encodeURIComponent(file.name)}`);
@@ -84,19 +132,27 @@ function putFile(file) {
 
 go.addEventListener("click", async () => {
   const files = [...input.files];
-  if (!files.length) return;
+  if (!files.length) {
+    append("no files selected — tap the box above to pick some first", "err");
+    return;
+  }
   go.disabled = true; prog.hidden = false;
   for (const file of files) {
     append(`uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)…`, "info");
     try {
       prog.value = 0;
-      await putFile(file);
+      await putFile(file, () => {
+        prog.removeAttribute("value");
+        append(`bytes sent — waiting on server for ${file.name}…`, "info");
+      });
       append(`ok  ${file.name}`, "ok");
+      appendPath(file.name);
     } catch (e) {
       append(`err ${file.name}: ${e.message}`, "err");
     }
   }
   prog.hidden = true;
+  go.disabled = false;
   input.value = "";
   updateMsg();
 });
