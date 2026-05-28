@@ -638,7 +638,8 @@ fi
 
 # Claude Code
 claude() { command claude --enable-auto-mode --rc "$@"; }
-claudetg() { command claude --enable-auto-mode --channels plugin:telegram@claude-plugins-official --rc "$@"; }
+# claudetg disabled 2026-05-28: telegram channel leaked 100%-CPU `bun server.ts` orphans on session crash. Plugin also off in claude_settings; notify-louis (outbound) unaffected.
+# claudetg() { command claude --enable-auto-mode --channels plugin:telegram@claude-plugins-official --rc "$@"; }
 
 # bun completions
 [ -s "/home/ezalos/.bun/_bun" ] && source "/home/ezalos/.bun/_bun"
