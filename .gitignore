@@ -24,3 +24,7 @@ data/test_data
 
 CLAUDE.local.md
 /plans
+
+# Caddy basic-auth bcrypt hash — see upload_file/README.md.
+# Repo is public; live /etc/caddy/Caddyfile is the source of truth.
+upload_file/Caddyfile.snippet

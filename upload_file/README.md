@@ -108,9 +108,12 @@ on the share-file stack already being up (see `~/Setup/share_file/README.md`)
   delete everything in there.
 - **No quotas.** A misbehaving phone client could fill the Pi disk.
   Check `df -h /srv` on the Pi periodically.
-- **Bcrypt hash is committed.** Safe in practice (offline crack of a
-  24-byte urlsafe password is infeasible at cost 14). Rotate if the
-  repo visibility ever changes.
+- **Bcrypt hash is no longer committed.** `Caddyfile.snippet` is
+  gitignored because the repo is public; a weak/short password would be
+  trivially crackable from the hash. The live `/etc/caddy/Caddyfile` on
+  the Pi is the source of truth. To bootstrap a fresh Pi, regenerate the
+  snippet from the live config (or from `caddy hash-password` plus the
+  template in this README).
 - **No auto-pull.** `pull-uploads` is manual on purpose — local machine
   decides when files come down. If this becomes annoying, wrap it in a
   systemd timer (e.g. 10-min interval).
@@ -119,8 +122,12 @@ on the share-file stack already being up (see `~/Setup/share_file/README.md`)
 
 ## Files in this directory
 
-- `Caddyfile.snippet` — the `upload.develle.fr` block. Source of truth,
-  appended to `/etc/caddy/Caddyfile` on the Pi during bootstrap.
+- `Caddyfile.snippet` — the `upload.develle.fr` block. **Gitignored**
+  (contains bcrypt hash; repo is public). Local-only; the live
+  `/etc/caddy/Caddyfile` on the Pi is the source of truth.
+- `nginx-upload-redirect.conf` — port-80 nginx block that 301-redirects
+  `upload.develle.fr` to HTTPS, so it doesn't fall through to pruna's
+  server block (the implicit default on :80).
 - `README.md` — this file.
 
 The actual CLI lives at `~/Setup/bin/pull-uploads` (picked up via the
