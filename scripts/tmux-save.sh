@@ -14,18 +14,30 @@ EOF
   exit 0
 fi
 
-SAVE_DIR="$HOME/.tmux-save"
-SAVE_LOG="$HOME/.tmux-save.log"
+# Tools installed under the user prefix (notably `rip`) must resolve even when
+# this script runs from cron or the systemd shutdown unit, whose PATH is minimal
+# (`/usr/bin:/bin`). Without this, every non-interactive save died at
+# `rip: command not found` and nothing was ever saved.
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-# Clear previous save
-[[ -d "$SAVE_DIR" ]] && rip "$SAVE_DIR"
-mkdir -p "$SAVE_DIR/pane_contents"
+SAVE_DIR="${TMUX_SAVE_DIR:-$HOME/.tmux-save}"
+SAVE_LOG="${TMUX_SAVE_LOG:-$HOME/.tmux-save.log}"
+STAGING_DIR="${SAVE_DIR}.staging"
 
-# Bail if tmux isn't running
+# Bail BEFORE touching the existing save if there is nothing to capture. Wiping
+# the old snapshot first (the previous behaviour) meant a run with no server -
+# e.g. a cron tick or the shutdown unit firing while tmux was already down -
+# destroyed the last good save and wrote nothing in its place.
 if ! tmux list-sessions &>/dev/null; then
   echo "No tmux server running."
   exit 1
 fi
+
+# Build the new snapshot in a staging dir, then swap it into place only once it
+# is complete (see end of script). A failure partway through therefore leaves
+# the previous good save untouched.
+[[ -d "$STAGING_DIR" ]] && rip "$STAGING_DIR"
+mkdir -p "$STAGING_DIR/pane_contents"
 
 # Skip sessions whose names contain characters that will break tmux target
 # parsing or are clearly unresolved template variables (e.g. VS Code's
@@ -65,18 +77,23 @@ tmux list-sessions -F '#{session_name}' | while read -r session; do
       printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
         "$session" "$win_idx" "$win_name" "$win_layout" \
         "$pane_idx" "$pane_dir" "$is_claude" "$win_active" "$claude_session_id" \
-        >> "$SAVE_DIR/state.tsv"
+        >> "$STAGING_DIR/state.tsv"
 
       # Capture scrollback (last 10k lines)
       # Sanitize session name for safe filenames (sessions can contain slashes)
       safe_session="${session//\//__}"
       tmux capture-pane -t "$session:$win_idx.$pane_idx" -p -S -10000 \
-        > "$SAVE_DIR/pane_contents/${safe_session}_${win_idx}_${pane_idx}.txt" 2>/dev/null
+        > "$STAGING_DIR/pane_contents/${safe_session}_${win_idx}_${pane_idx}.txt" 2>/dev/null
     done
   done
 done
 
-date '+%Y-%m-%d %H:%M:%S' > "$SAVE_DIR/saved_at"
+date '+%Y-%m-%d %H:%M:%S' > "$STAGING_DIR/saved_at"
+
+# Snapshot is complete: swap it into place. The previous save goes to the
+# graveyard (recoverable via `rip --unbury`) only now that a full new one exists.
+[[ -d "$SAVE_DIR" ]] && rip "$SAVE_DIR"
+mv "$STAGING_DIR" "$SAVE_DIR"
 
 # Summary
 if [[ -f "$SAVE_DIR/state.tsv" ]]; then
@@ -90,7 +107,7 @@ else
   echo "$summary"
 fi
 
-# Append to persistent log (survives save-dir wipe)
+# Append to persistent log (lives outside the save dir, so it survives the swap)
 printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$summary" >> "$SAVE_LOG"
 # Keep only last 100 lines
 tail -n 100 "$SAVE_LOG" > "$SAVE_LOG.tmp" && mv "$SAVE_LOG.tmp" "$SAVE_LOG"

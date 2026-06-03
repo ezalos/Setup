@@ -17,7 +17,7 @@ EOF
   exit 0
 }
 
-SAVE_DIR="$HOME/.tmux-save"
+SAVE_DIR="${TMUX_SAVE_DIR:-$HOME/.tmux-save}"
 STATE="$SAVE_DIR/state.tsv"
 CONTEXT_LINES=25
 
