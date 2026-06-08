@@ -627,9 +627,9 @@ node() { lazy_load_nvm && node "$@"; }
 npm()  { lazy_load_nvm && npm  "$@"; }
 npx()  { lazy_load_nvm && npx  "$@"; }
 
-# TheBeast: add nvm node binaries to PATH so non-interactive tools (make, /bin/sh)
+# TheBeast/MacBook: add nvm node binaries to PATH so non-interactive tools (make, /bin/sh)
 # can find globally installed packages like marp without triggering lazy-load
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+if [[ $WHICH_COMPUTER == "TheBeast" || $WHICH_COMPUTER == "MacBook" ]]; then
     local _nvm_node_dirs=("$NVM_DIR"/versions/node/*(On))
     if (( ${#_nvm_node_dirs} )); then
         path_append "${_nvm_node_dirs[1]}/bin"
