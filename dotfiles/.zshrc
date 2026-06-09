@@ -3,8 +3,11 @@
 # ---------------------------------------------------------------------------- #
 
 
-# Check if CURSOR_AGENT is set and return early if it is
-if [[ -n "$CURSOR_AGENT" ]]; then
+# Give background agents a plain prompt, but keep p10k for interactive
+# terminals even when they inherit CURSOR_AGENT (e.g. Cursor's own terminal).
+# A real keyboard session is interactive with stdout on a TTY; a captured
+# agent shell is not, so it falls through to the plain-prompt path below.
+if [[ -n "$CURSOR_AGENT" ]] && { [[ ! -o interactive ]] || [[ ! -t 1 ]]; }; then
     export WHICH_COMPUTER="CURSOR_AGENT"
 fi
 
