@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 import fire
+import os
+from pathlib import Path
 from src_dotfiles.database import Dependencies
 from src_dotfiles.config import config
-from src_dotfiles.models import DeployedDotFile
+from src_dotfiles.models import DeployedDotFile, DotFileModel
+from src_dotfiles.DotFile import DotFile
 from ezpy_logs.LoggerFactory import LoggerFactory
 from typing import Optional
 
@@ -68,6 +71,83 @@ class ManageDotfiles:
                 logger.error("Argument path is different from the one in the system")
                 logger.error(f"{current_dot_file.data.deploy[current_dot_file.identifier].deploy_path} != {new_dot_file.data.deploy[new_dot_file.identifier].deploy_path}")
                 raise NotImplementedError
+
+    def register(
+        self,
+        alias: str,
+        deploy_path: str,
+        main: Optional[str] = None,
+        only_device: Optional[str] = None,
+        force: bool = False,
+    ) -> Optional[str]:
+        """Register an existing-in-place dotfile and deploy it.
+
+        Use when the source already lives at `~/Setup/<main>` (e.g. a newly
+        authored SKILL.md inside `dotfiles/claude_skill_*/`) and only the
+        registry entry + deploy symlink need to be created. Unlike `add`, this
+        does NOT back up or copy the source — it is already where it belongs;
+        only the symlink at `deploy_path` is created.
+
+        Args:
+            alias (str): Registry alias (must not collide unless force=True).
+            deploy_path (str): Absolute path where the symlink should land on
+                the current device.
+            main (Optional[str]): Path inside ~/Setup/ to the source. Default:
+                `dotfiles/<alias>` (matches the registry convention).
+            only_device (Optional[str]): If set, restrict deploy to this device
+                identifier. For device-scoped skills, pass the current device.
+            force (bool): Allow overwriting an existing entry with the same alias.
+
+        Returns:
+            Optional[str]: The alias on success, None on collision (force=False)
+                or missing source.
+        """
+        logger.debug(f"{alias = } {deploy_path = } {main = } {only_device = } {force = }")
+
+        if main is None:
+            main = Path(config.dotfiles_dir).joinpath(alias).as_posix()
+
+        source_abs = Path(config.project_path).joinpath(main)
+        if not source_abs.exists():
+            logger.error(f"register: source {source_abs} does not exist; nothing to register")
+            return None
+
+        if not os.path.isabs(deploy_path):
+            logger.error(f"register: deploy_path {deploy_path!r} must be absolute")
+            return None
+        if not deploy_path.startswith(config.home):
+            logger.warning(
+                f"register: deploy_path {deploy_path!r} is not under home {config.home!r}; "
+                "proceeding anyway"
+            )
+
+        identifier = config.identifier
+        existing = self.db.metadata.dotfiles.get(alias)
+        if existing is not None and not force:
+            logger.warning(f"register: alias {alias!r} already exists and force is not set")
+            return None
+
+        if existing is not None:
+            logger.info(f"register: alias {alias!r} exists and force is set; updating deploy entry for {identifier}")
+            existing.deploy[identifier] = DeployedDotFile(deploy_path=deploy_path, backups=[])
+            if only_device and existing.only_devices is not None and identifier not in existing.only_devices:
+                existing.only_devices.append(identifier)
+            model = existing
+        else:
+            model = DotFileModel(
+                alias=alias,
+                main=main,
+                deploy={identifier: DeployedDotFile(deploy_path=deploy_path, backups=[])},
+                only_devices=[only_device] if only_device else None,
+            )
+
+        dot_file = DotFile(model, identifier)
+        dot_file.deploy()  # symlink only — no backup/copy, source is already in place
+        self.db.metadata.dotfiles[alias] = model
+        self.db.data.append(dot_file)
+        self.db.save_all()
+        logger.info(f"register: {alias} -> {deploy_path} (main={main})")
+        return alias
 
     def extend_to(self, alias: str, device: str, deploy_path: Optional[str] = None) -> None:
         """Extend an existing dotfile to a new device.

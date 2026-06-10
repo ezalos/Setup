@@ -3,8 +3,11 @@
 # ---------------------------------------------------------------------------- #
 
 
-# Check if CURSOR_AGENT is set and return early if it is
-if [[ -n "$CURSOR_AGENT" ]]; then
+# Give background agents a plain prompt, but keep p10k for interactive
+# terminals even when they inherit CURSOR_AGENT (e.g. Cursor's own terminal).
+# A real keyboard session is interactive with stdout on a TTY; a captured
+# agent shell is not, so it falls through to the plain-prompt path below.
+if [[ -n "$CURSOR_AGENT" ]] && { [[ ! -o interactive ]] || [[ ! -t 1 ]]; }; then
     export WHICH_COMPUTER="CURSOR_AGENT"
 fi
 
@@ -627,9 +630,9 @@ node() { lazy_load_nvm && node "$@"; }
 npm()  { lazy_load_nvm && npm  "$@"; }
 npx()  { lazy_load_nvm && npx  "$@"; }
 
-# TheBeast: add nvm node binaries to PATH so non-interactive tools (make, /bin/sh)
+# TheBeast/MacBook: add nvm node binaries to PATH so non-interactive tools (make, /bin/sh)
 # can find globally installed packages like marp without triggering lazy-load
-if [[ $WHICH_COMPUTER == "TheBeast" ]]; then
+if [[ $WHICH_COMPUTER == "TheBeast" || $WHICH_COMPUTER == "MacBook" ]]; then
     local _nvm_node_dirs=("$NVM_DIR"/versions/node/*(On))
     if (( ${#_nvm_node_dirs} )); then
         path_append "${_nvm_node_dirs[1]}/bin"
