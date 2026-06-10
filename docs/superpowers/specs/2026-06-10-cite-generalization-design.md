@@ -28,6 +28,7 @@ Auto-promote rule: a newer source that is as-or-more authoritative than the orig
 | Run state | Central `~/.local/state/cite/<slug>/` | Next-to-document (fails on read-only targets); repo opt-in hybrid |
 | Structure | 4-skill family: orchestrator + 3 phase skills, renamed | Single mega-skill (huge SKILL.md degrades reliability); Workflow rebuild (loses review gates) |
 | Home | Setup repo, dotfiles-tracked, deployed to `~/.claude/skills/` | Staying loose in `~/.claude/skills/` (untracked, single-device) |
+| Corroboration | Risk-targeted active hunt + opportunistic capture of extra sources from normal searches; validated secondaries can upgrade status or surface conflicts; cite one primary | All-claims sweep (≈2× cost); opt-in flag (data missing from routine runs); metadata-only (wastes the signal); citing both sources (longer footers) |
 
 ## Layout & deployment
 
@@ -76,6 +77,16 @@ existing_source:
   link_status: <ok | dead | redirect-suspect>
   quote_found: <true | false>
 promote_verdict: <auto-promote | flag-better-source | flag-claim-conflict | keep | null>
+corroboration:
+  status: <confirmed | weak | uncorroborated | conflicting | not-sought>
+  sources:                      # secondary sources beyond the primary
+    - url: ...
+      url_domain: ...
+      publication_date: <date | null>
+      authority_tier: <1-6 | null>
+      validated: <true | false> # true = full extract + verbatim quote check passed
+      quote: <verbatim quote | null>   # only when validated
+      snippet: <search snippet>        # always kept, even unvalidated
 ```
 
 ## Phase behavior
@@ -95,6 +106,12 @@ promote_verdict: <auto-promote | flag-better-source | flag-claim-conflict | keep
   - supports a different value → `flag-claim-conflict` with proposed claim update + source — never automatic
   - any date unknown, or worse tier → flagged for review
 - Human review gate on flagged items (edit claim YAML statuses), as today.
+- **Corroboration** (risk-targeted + opportunistic):
+  - *Opportunistic capture*: research subagents never discard extra candidate sources surfaced by normal searches — every plausible secondary is recorded in `corroboration.sources` with url/domain/date/tier/snippet, unvalidated. Free signal, no extra search cost.
+  - *Active hunt* (a deliberate 2nd full extract + validation) only where it changes decisions: best source is tier 5–6/unmapped, predictions/forecasts, and auto-promote candidates.
+  - *Status semantics*: `confirmed` = ≥1 secondary passed full verbatim validation; `weak` = unvalidated secondaries only; `conflicting` = a validated secondary supports a different value. Only **validated** secondaries can upgrade or conflict.
+  - *Effect on decisions* (deterministic, orchestrator-side): tier-5/6 primary + validated independent (different publisher org) tier ≤4 secondary → auto-approvable instead of flagged. Validated conflicting value → `flag-claim-conflict` with both quotes shown. Auto-promote candidates whose validated secondary disagrees → flagged, never promoted. Unvalidated snippets never change status — at most a "possible conflict" note in the report.
+  - Citation output lists one primary source; corroboration lives in the YAML and diagnosis report.
 
 ### /cite-correct `<slug>`
 - Editable markdown original → patch in place, diff-preview gate kept. Converted/read-only input → write `corrected.md` in the bundle as the deliverable.
@@ -129,7 +146,7 @@ Carried over: hash drift abort, Tavily rate-limit → WebSearch fallback + cavea
 
 ## Testing
 
-- pytest from Setup: ported validator/tier tests from M2T; new tests for layered lookup precedence, the auto-promote decision table (recency × tier × value-match matrix), link_check verdicts.
+- pytest from Setup: ported validator/tier tests from M2T; new tests for layered lookup precedence, the auto-promote decision table (recency × tier × value-match matrix), link_check verdicts, and corroboration status/upgrade rules (validated vs unvalidated, independence by publisher org, conflict detection).
 - End-to-end verification: one real M2T deck (diff against old pipeline behavior) + one non-M2T markdown document.
 
 ## Non-goals (v1)
