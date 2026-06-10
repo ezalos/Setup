@@ -8,7 +8,7 @@ rsyncs them to `~/Inbox/` on the local machine.
 
 ```
 Phone (iOS Files / Android WebDAV client)
-   └─ HTTPS PUT /inbox/<filename>   (basic auth: louis / <password>)
+   └─ HTTPS PUT /inbox/<filename>   (basic auth: ezalos / <password>)
    → SFR Box NAT (ext 443 → 192.168.1.74:443)
    → Caddy on TinyButMighty (cert via Cloudflare DNS-01)
    → /srv/upload/inbox/<filename>
@@ -32,7 +32,7 @@ Local machine: pull-uploads
 1. Files app → top-right `…` menu → **Connect to Server**.
 2. Server: `https://upload.develle.fr/inbox/`
 3. Connect As: **Registered User**.
-4. Name: `louis`, Password: paste from password manager.
+4. Name: `ezalos`, Password: paste from password manager.
 5. Tap **Next**. Server appears under "Shared" in the sidebar.
 
 ### Android
