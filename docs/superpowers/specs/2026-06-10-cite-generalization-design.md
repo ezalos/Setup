@@ -87,6 +87,8 @@ corroboration:
       validated: <true | false> # true = full extract + verbatim quote check passed
       quote: <verbatim quote | null>   # only when validated
       snippet: <search snippet>        # always kept, even unvalidated
+      underlying_origin: <org/study the article reports on, or null if unstated>
+      independent: <true | false | null>  # null until checked; requires dedup pass + distinct stated origin
 ```
 
 ## Phase behavior
@@ -109,8 +111,11 @@ corroboration:
 - **Corroboration** (risk-targeted + opportunistic):
   - *Opportunistic capture*: research subagents never discard extra candidate sources surfaced by normal searches — every plausible secondary is recorded in `corroboration.sources` with url/domain/date/tier/snippet, unvalidated. Free signal, no extra search cost.
   - *Active hunt* (a deliberate 2nd full extract + validation) only where it changes decisions: best source is tier 5–6/unmapped, predictions/forecasts, and auto-promote candidates.
-  - *Status semantics*: `confirmed` = ≥1 secondary passed full verbatim validation; `weak` = unvalidated secondaries only; `conflicting` = a validated secondary supports a different value. Only **validated** secondaries can upgrade or conflict.
-  - *Effect on decisions* (deterministic, orchestrator-side): tier-5/6 primary + validated independent (different publisher org) tier ≤4 secondary → auto-approvable instead of flagged. Validated conflicting value → `flag-claim-conflict` with both quotes shown. Auto-promote candidates whose validated secondary disagrees → flagged, never promoted. Unvalidated snippets never change status — at most a "possible conflict" note in the report.
+  - *Status semantics*: `confirmed` = ≥1 secondary passed full verbatim validation AND is independent (below); `weak` = unvalidated secondaries, or validated but independence unconfirmed; `conflicting` = a validated secondary supports a different value. Only **validated, independent** secondaries can upgrade.
+  - *Independence ≠ different publisher.* Syndicated wire stories and press-release rewrites are the same source in different clothes. Two checks, both must pass:
+    1. **Near-duplicate detection (deterministic)**: compare the saved page texts (primary vs secondary) with a text-similarity check (e.g. difflib/shingle ratio on the supporting paragraphs); near-identical wording → same origin → not independent.
+    2. **Underlying origin (subagent-reported, conservative default)**: the subagent records `underlying_origin` — the study/dataset/report/announcement the article is based on (usually stated: "according to Gartner…", "a McKinsey survey…"). Upgrade requires the two origins to be *distinct, stated* orgs or distinct original work (e.g. two separate surveys). Origin unknown or unstated → independence unconfirmed → `weak`, no upgrade.
+  - *Effect on decisions* (deterministic, orchestrator-side): tier-5/6 primary + validated **independent** tier ≤4 secondary → auto-approvable instead of flagged. Validated conflicting value → `flag-claim-conflict` with both quotes shown (a conflict is meaningful even without independence — same-origin sources shouldn't disagree). Auto-promote candidates whose validated secondary disagrees → flagged, never promoted. Unvalidated snippets never change status — at most a "possible conflict" note in the report.
   - Citation output lists one primary source; corroboration lives in the YAML and diagnosis report.
 
 ### /cite-correct `<slug>`
@@ -146,7 +151,7 @@ Carried over: hash drift abort, Tavily rate-limit → WebSearch fallback + cavea
 
 ## Testing
 
-- pytest from Setup: ported validator/tier tests from M2T; new tests for layered lookup precedence, the auto-promote decision table (recency × tier × value-match matrix), link_check verdicts, and corroboration status/upgrade rules (validated vs unvalidated, independence by publisher org, conflict detection).
+- pytest from Setup: ported validator/tier tests from M2T; new tests for layered lookup precedence, the auto-promote decision table (recency × tier × value-match matrix), link_check verdicts, and corroboration status/upgrade rules (validated vs unvalidated, independence: near-duplicate detection on syndicated copies, distinct vs unstated underlying origins, conflict detection).
 - End-to-end verification: one real M2T deck (diff against old pipeline behavior) + one non-M2T markdown document.
 
 ## Non-goals (v1)
