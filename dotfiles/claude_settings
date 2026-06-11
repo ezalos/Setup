@@ -17,6 +17,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "python3 ~/.claude/statusline.py"
@@ -32,7 +33,8 @@
     "safety-net@cc-marketplace": true,
     "frontend-design@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "telegram@claude-plugins-official": false
+    "telegram@claude-plugins-official": false,
+    "mattpocock-skills@ezalos-extras": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -40,9 +42,24 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "ezalos-extras": {
+      "source": {
+        "source": "settings",
+        "name": "ezalos-extras",
+        "owner": { "name": "Louis Develle" },
+        "plugins": [
+          {
+            "name": "mattpocock-skills",
+            "source": { "source": "github", "repo": "mattpocock/skills" },
+            "description": "Matt Pocock's engineering + productivity skills (teach, grill-me, tdd, diagnose, zoom-out, ...)"
+          }
+        ]
+      },
+      "autoUpdate": true
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "voice": {
     "enabled": true,
     "mode": "hold"
