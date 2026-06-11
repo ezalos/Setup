@@ -906,7 +906,12 @@
                 },
                 "TheBeast.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/make-me-understand",
-                    "backups": []
+                    "backups": [
+                        {
+                            "backup_path": "/home/ezalos/Setup/dotfiles/old/claude_skill_make_me_understand_TheBeast.ezalos_2026-06-11_20:28:23.318116",
+                            "datetime": "2026-06-11_20:28:23.318116"
+                        }
+                    ]
                 },
                 "TinyButMighty.ezalos": {
                     "deploy_path": "/home/ezalos/.claude/skills/make-me-understand",
