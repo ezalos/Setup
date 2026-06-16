@@ -1,5 +1,5 @@
 # ABOUTME: Crontab entries managed by cron-deploy.sh.
 # ABOUTME: Standard crontab format. Blank lines and comments are preserved.
 
-# Save tmux sessions every hour for crash recovery
-13 * * * * "$HOME/Setup/scripts/tmux-save.sh" >/dev/null 2>&1
+# Save tmux sessions every 15 min for crash + lost-input recovery (keeps ~1h of history)
+*/15 * * * * "$HOME/Setup/scripts/tmux-save.sh" >/dev/null 2>&1

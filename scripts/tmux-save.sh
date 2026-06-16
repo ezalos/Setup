@@ -95,6 +95,19 @@ date '+%Y-%m-%d %H:%M:%S' > "$STAGING_DIR/saved_at"
 [[ -d "$SAVE_DIR" ]] && rip "$SAVE_DIR"
 mv "$STAGING_DIR" "$SAVE_DIR"
 
+# Keep a short, pruned rolling history of complete snapshots, OUTSIDE the save dir
+# (which is replaced wholesale each run). This lets you recover a recent-but-not-
+# latest state — e.g. a long prompt typed and lost between cron ticks. At the
+# 15-min cadence, keeping 5 covers a bit over an hour.
+HISTORY_DIR="${TMUX_SAVE_HISTORY_DIR:-$HOME/.tmux-save-history}"
+HISTORY_KEEP="${TMUX_SAVE_HISTORY_KEEP:-5}"
+if mkdir -p "$HISTORY_DIR" && cp -a "$SAVE_DIR" "$HISTORY_DIR/$(date '+%Y-%m-%d_%H-%M-%S')"; then
+  # Prune to the newest $HISTORY_KEEP snapshots (rip, not rm — recoverable).
+  ls -1dt "$HISTORY_DIR"/*/ 2>/dev/null | tail -n +"$((HISTORY_KEEP + 1))" | while read -r old; do
+    rip "$old" 2>/dev/null || true
+  done
+fi
+
 # Summary
 if [[ -f "$SAVE_DIR/state.tsv" ]]; then
   total_panes=$(wc -l < "$SAVE_DIR/state.tsv")
