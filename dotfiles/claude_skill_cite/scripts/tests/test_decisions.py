@@ -60,3 +60,29 @@ def test_low_tier_upgraded_by_independent_lowtier_secondary():
 def test_low_tier_not_upgraded_by_weak_corroboration():
     secs = [{"validated": True, "independent": False, "value_match": True, "tier": 3}]
     assert d.apply_corroboration("flagged-low-reputation", 5, secs) == "flagged-low-reputation"
+
+import json as _json
+import subprocess, sys
+from pathlib import Path
+_SCRIPT = Path(__file__).resolve().parents[1] / "decisions.py"
+
+def test_corroborate_cli_confirmed_and_upgrades():
+    secs = [{"validated": True, "independent": True, "value_match": True, "tier": 3}]
+    r = subprocess.run([sys.executable, str(_SCRIPT), "corroborate",
+                        "--base-status", "flagged-low-reputation", "--tier", "5",
+                        "--secondaries-json", _json.dumps(secs)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = _json.loads(r.stdout)
+    assert out["corroboration_status"] == "confirmed"
+    assert out["final_status"] == "auto-approved"
+
+def test_corroborate_cli_empty_is_uncorroborated_no_upgrade():
+    r = subprocess.run([sys.executable, str(_SCRIPT), "corroborate",
+                        "--base-status", "flagged-low-reputation", "--tier", "5",
+                        "--secondaries-json", "[]"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = _json.loads(r.stdout)
+    assert out["corroboration_status"] == "uncorroborated"
+    assert out["final_status"] == "flagged-low-reputation"

@@ -96,6 +96,11 @@ def main():
         pr.add_argument(a)
     pr.add_argument("value_match"); pr.add_argument("value_determinable")
 
+    co = sub.add_parser("corroborate")
+    co.add_argument("--base-status", required=True)
+    co.add_argument("--tier", default="null")
+    co.add_argument("--secondaries-json", required=True)
+
     args = p.parse_args()
 
     def _t(v):
@@ -111,6 +116,11 @@ def main():
     elif args.cmd == "promote":
         print(promote_verdict(_t(args.orig_tier), args.orig_date, _t(args.new_tier),
                               args.new_date, _b(args.value_match), _b(args.value_determinable)))
+    elif args.cmd == "corroborate":
+        secs = json.loads(args.secondaries_json)
+        cs = corroboration_status(secs)
+        fs = apply_corroboration(args.base_status, _t(args.tier), secs)
+        print(json.dumps({"corroboration_status": cs, "final_status": fs}))
     sys.exit(0)
 
 

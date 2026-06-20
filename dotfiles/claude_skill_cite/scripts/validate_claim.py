@@ -16,7 +16,7 @@ STATUS_ENUM = {
     "flagged-low-reputation", "flagged-unsourceable", "flagged-stale-stat",
     "flagged-validation-failed",
     # diagnosis of existing citations
-    "uncited", "cited-healthy", "cited-broken", "cited-stale", "cited-low-tier",
+    "uncited", "cited-healthy", "cited-broken", "cited-stale", "cited-low-tier", "pending-audit",
     # promote / corroboration outcomes
     "auto-promoted", "flagged-claim-conflict", "flagged-better-source",
 }

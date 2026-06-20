@@ -22,3 +22,7 @@ def test_new_diagnosis_status_allowed():
 def test_unknown_status_rejected():
     c = _claim(); c["status"] = "bogus"
     assert any("status" in e for e in vc.validate(c, _page()))
+
+def test_pending_audit_status_allowed():
+    c = _claim(); c["status"] = "pending-audit"
+    assert vc.validate(c, _page()) == []
