@@ -920,6 +920,62 @@
             },
             "only_devices": null,
             "variants": null
+        },
+        "claude_skill_cite": {
+            "alias": "claude_skill_cite",
+            "main": "dotfiles/claude_skill_cite",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/cite",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_cite_diagnose": {
+            "alias": "claude_skill_cite_diagnose",
+            "main": "dotfiles/claude_skill_cite_diagnose",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/cite-diagnose",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_cite_remediate": {
+            "alias": "claude_skill_cite_remediate",
+            "main": "dotfiles/claude_skill_cite_remediate",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/cite-remediate",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_cite_correct": {
+            "alias": "claude_skill_cite_correct",
+            "main": "dotfiles/claude_skill_cite_correct",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/cite-correct",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
         }
     },
     "devices": {
