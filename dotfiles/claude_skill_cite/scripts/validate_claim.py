@@ -40,6 +40,37 @@ def _normalize_whitespace(s):
     return re.sub(r"\s+", " ", s).strip()
 
 
+_NUM_RE = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _numbers(text):
+    """Extract comparable numeric tokens after stripping thousands separators."""
+    if not text:
+        return set()
+    # remove thousands separators: ',' and ASCII/narrow/no-break spaces between digits
+    cleaned = re.sub(r"(?<=\d)[,   ](?=\d)", "", text)
+    return set(_NUM_RE.findall(cleaned))
+
+
+def value_determinable(claim_text):
+    """True if the claim contains numeric tokens we can verify against a source."""
+    return len(_numbers(claim_text)) > 0
+
+
+def values_match(claim_text, quote):
+    """Conservative numeric match: every number in the claim must appear in the quote.
+
+    Returns False when the claim has no numbers (not determinable) — callers should
+    use value_determinable() to distinguish 'mismatch' from 'unknown'. Scale words
+    (billion/trillion) are NOT reconciled: differing digit tokens never auto-match.
+    """
+    claim_nums = _numbers(claim_text)
+    if not claim_nums:
+        return False
+    quote_nums = _numbers(quote)
+    return claim_nums.issubset(quote_nums)
+
+
 def _registered_domain(url):
     host = urlparse(url).netloc.lower()
     if host.startswith("www."):
