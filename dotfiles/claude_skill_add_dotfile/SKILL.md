@@ -47,7 +47,11 @@ claude-log add-dotfile CRITICAL "add-dotfile: target /home/ezalos/.foorc does no
 
 1. `~/Setup/` is a git repo: `git -C ~/Setup rev-parse --is-inside-work-tree` returns `true`.
 2. `~/Setup/dotfiles/dotfiles.json` exists and parses as JSON: `python -c "import json; json.load(open('/home/ezalos/Setup/dotfiles/dotfiles.json'))"`.
-3. `python -m src_dotfiles --help` runs successfully from `~/Setup/`.
+3. `~/Setup/.venv/bin/python -m src_dotfiles --help` runs successfully from `~/Setup/`.
+   **Always invoke the CLI via `~/Setup/.venv/bin/python`, NOT bare `python`/`python3`** —
+   system Python lacks `ezpy_logs` (a sibling editable package the venv provides) and
+   every `src_dotfiles` command will `ModuleNotFoundError` otherwise. Use the venv python
+   for `config.identifier` and all subcommands throughout this skill.
 
 If any fail: log CRITICAL `add-dotfile: setup broken: <reason>` and report the failing precondition to Louis. Do not proceed.
 
@@ -118,10 +122,22 @@ When intent classified as ADD:
 The canonical `add` subcommand handles 3b/3c/3d in one transactional call: it creates the model, backs up any existing file at target_path, copies it into `dotfiles/<alias>`, and symlinks target_path back to the copy.
 
 ```bash
-cd ~/Setup && python -m src_dotfiles add <absolute target_path> --alias=<alias>
+cd ~/Setup && .venv/bin/python -m src_dotfiles add <absolute target_path> --alias=<alias>
 ```
 
-For skill-style dotfiles that should not auto-deploy to every device, add `--only-device=<current_device>` so the entry gets `only_devices=[<current_device>]`.
+For skill-style dotfiles that should not auto-deploy to every device, add `--only_device=<current_device>` so the entry gets `only_devices=[<current_device>]`.
+
+> **`add` is file-only.** Its copy step uses `shutil.copy`, which raises
+> `IsADirectoryError` on a directory. A **Claude skill is a directory**
+> (`~/.claude/skills/<name>/` with a `SKILL.md` inside), so `add` will fail. For any
+> directory target, do NOT use `add` — instead:
+> 1. `mv <target_path> ~/Setup/dotfiles/<alias>` (move the dir into the dotfiles tree),
+> 2. `.venv/bin/python -m src_dotfiles register <alias> <target_path> --only_device=<current_device>`
+>    (creates the entry + symlink in place; `--main` defaults to `dotfiles/<alias>`).
+>
+> This is the same flow the routing note prescribes for "source already inside
+> `~/Setup/dotfiles/`". The `add` backup it may leave in `dotfiles/old/` on failure is
+> orphaned — remove it with `rip` (never `rm`).
 
 If it exits non-zero or returns `None` (alias collision when `force=False`):
 - Log CRITICAL `add-dotfile: deployer failed for <alias>: <reason>`.
