@@ -817,6 +817,10 @@
                 "Louiss.MacBook.Pro.3.local.ezalos": {
                     "deploy_path": "/Users/ezalos/.local/bin/claude-log",
                     "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.local/bin/claude-log",
+                    "backups": []
                 }
             },
             "only_devices": null,
@@ -836,6 +840,10 @@
                 },
                 "Louiss.MacBook.Pro.3.local.ezalos": {
                     "deploy_path": "/Users/ezalos/.claude/skills/wrap-up",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/skills/wrap-up",
                     "backups": []
                 }
             },
@@ -857,6 +865,10 @@
                 "Louiss.MacBook.Pro.3.local.ezalos": {
                     "deploy_path": "/Users/ezalos/.claude/skills/audit-observability",
                     "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/skills/audit-observability",
+                    "backups": []
                 }
             },
             "only_devices": null,
@@ -876,6 +888,10 @@
                 },
                 "Louiss.MacBook.Pro.3.local.ezalos": {
                     "deploy_path": "/Users/ezalos/.claude/skills/add-dotfile",
+                    "backups": []
+                },
+                "MacBook.Pro.de.Louis.local.louis": {
+                    "deploy_path": "/Users/louis/.claude/skills/add-dotfile",
                     "backups": []
                 }
             },
