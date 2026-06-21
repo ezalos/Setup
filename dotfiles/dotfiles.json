@@ -1006,6 +1006,34 @@
                 "TheBeast.ezalos"
             ],
             "variants": null
+        },
+        "claude_skill_post": {
+            "alias": "claude_skill_post",
+            "main": "dotfiles/claude_skill_post",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/post",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
+        },
+        "claude_skill_log": {
+            "alias": "claude_skill_log",
+            "main": "dotfiles/claude_skill_log",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/log",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
         }
     },
     "devices": {
