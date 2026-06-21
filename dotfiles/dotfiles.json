@@ -992,6 +992,20 @@
                 "TheBeast.ezalos"
             ],
             "variants": null
+        },
+        "claude_skill_visual": {
+            "alias": "claude_skill_visual",
+            "main": "dotfiles/claude_skill_visual",
+            "deploy": {
+                "TheBeast.ezalos": {
+                    "deploy_path": "/home/ezalos/.claude/skills/visual",
+                    "backups": []
+                }
+            },
+            "only_devices": [
+                "TheBeast.ezalos"
+            ],
+            "variants": null
         }
     },
     "devices": {
