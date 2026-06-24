@@ -31,6 +31,15 @@ Stop.
 
 Read `$SOCIAL_HOME/voice/<platform>.md` fully. Internalise format, tone, hook patterns, structure, vocabulary, what-to-avoid, endings.
 
+### Step 2.5: Quality bar and freshness check
+
+Internalise the bar Louis holds posts to (learned from real sessions):
+- **Value-first, depth over breadth.** A post earns attention with ONE advanced, non-obvious idea, exhausted, backed by a real number, ending in a portable mental model. Avoid the generic event-recap ("great day, AI is the future"). If a senior person in the audience already knows the point, go one level deeper.
+- **Ground every claim in what was actually taught or in a real source.** Do not attribute lessons, stats, or frameworks Louis did not actually cover. The citation gate (Step 6.5) enforces sources; this enforces honesty about provenance.
+- **No em-dashes (`—`) and no AI tells.** Use periods, commas, colons. (Mirrors the voice rules.)
+
+**Freshness:** glob `posted/*-<platform>.md` and `drafts/*-<platform>.md`. If the angle Louis is describing was used recently, say so and offer a fresh one before drafting (he has flagged reusing a topic mid-draft).
+
 ### Step 3: Interview
 
 Ask one question at a time via AskUserQuestion. Capture answers.
@@ -44,6 +53,8 @@ Ask one question at a time via AskUserQuestion. Capture answers.
 | 5 | Audience | (free-text) specifically who? not "everyone"             |
 
 If Media = Video, ask a follow-up: "Paste transcript or key points (3-5 bullets)."
+
+If Media = Image(s) or Carousel: the visuals are produced by `/visual <platform>` from the saved draft, and the post TEXT must complement them, not duplicate them (see Step 5). When capturing the Message (Q3), push for the single sharpest, most advanced point rather than a list of everything that happened.
 
 ### Step 4: Generate 5 hooks
 
@@ -62,6 +73,8 @@ Use AskUserQuestion: "Which hook do you want to build the post around?" (Options
 If Regenerate: generate 5 new hooks (different patterns), repeat.
 If Edit: ask which hook, accept the edited text, use that.
 
+Record the chosen hook. If later iteration pivots the post's core idea, do NOT silently swap the hook: call out that the hook is changing and re-confirm with Louis (he has objected to losing a hook he picked).
+
 ### Step 5: Draft the full post
 
 Build the post around the chosen hook applying every voice rule from `voice/<platform>.md`:
@@ -70,6 +83,10 @@ Build the post around the chosen hook applying every voice rule from `voice/<pla
 - Tone matching documented confidence/language conventions
 - Structure: opener (the hook) → context → bullets → reflection → gratitude (if applicable) → CTA → hashtags (LinkedIn) or nothing (X)
 - Avoid every pattern in "What to avoid"
+- **One idea, deep.** Exhaust a single advanced point, back it with a concrete number, close on a reusable mental model. Cut breadth-for-its-own-sake.
+- **No em-dashes (`—`).** Periods, commas, colons instead.
+- **If a carousel/visual accompanies the post**, the body complements it: hook + narrative + the one takeaway + a nudge to swipe. Do NOT restate the carousel's bullet content in the body.
+- **Credits and CTA:** tag generously. Every person and org worth crediting, including names tagged in others' posts about the same event (it widens reach). Never promise to share an asset (deck/slides) unless Louis confirms it is shareable.
 
 Output the full draft.
 
