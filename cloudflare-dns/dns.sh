@@ -31,6 +31,24 @@ if [ -z "$CF_TOKEN" ]; then
     exit 1
 fi
 
+# ── Home-IP protection ───────────────────────────────────────────────
+# When a config sets "protect_home_ip": true (e.g. develle.fr, whose A records
+# point at home connections), every A/AAAA content IP is APPENDED to the
+# content-scrub forbidden list so it can never be committed to a public repo.
+# Append-only + idempotent — as machines/IPs are added, the list accumulates.
+# No-op if the list doesn't exist (so this stays safe in other projects).
+SCRUB_LIST="${PRO_CONTENT_SCRUB_LIST:-$HOME/.config/git-content-scrub/forbidden.txt}"
+register_protected_ip() {
+    local ip="$1"
+    [ -n "$ip" ] || return 0
+    case "$ip" in ""|*[!0-9.]*) return 0 ;; esac   # IPv4-literals only; skip hostnames
+    [ -f "$SCRUB_LIST" ] || return 0
+    if ! grep -qxF "$ip" "$SCRUB_LIST"; then
+        printf '\n# home IP auto-added by cloudflare-dns (%s)\n%s\n' "$(date +%Y-%m-%d)" "$ip" >> "$SCRUB_LIST"
+        echo "  [home-ip-guard] registered $ip in content-scrub forbidden list" >&2
+    fi
+}
+
 # ── Helpers ──────────────────────────────────────────────────────────
 
 cf_api() {
@@ -202,6 +220,14 @@ cmd_sync() {
 
     echo -e "${BOLD}Syncing DNS for ${zone_name} (${record_count} records)${RESET}"
     echo ""
+
+    # Protect home IPs: append every A/AAAA content to the content-scrub forbidden list.
+    if [ "$(jq -r '.protect_home_ip // false' "$CONFIG_FILE")" = "true" ]; then
+        local pip
+        for pip in $(jq -r '.records[] | select(.type=="A" or .type=="AAAA") | .content' "$CONFIG_FILE"); do
+            register_protected_ip "$pip"
+        done
+    fi
 
     for i in $(seq 0 $((record_count - 1))); do
         local type name content proxied ttl comment full_name
