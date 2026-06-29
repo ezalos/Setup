@@ -103,7 +103,7 @@ Then `./dns.sh list` to confirm the record landed.
 ## Combined flows
 
 - **Need an external port too?** Run `open-local-port` first; if the port is non-standard (not 80/443), set `proxied: false` because Cloudflare's proxy only forwards a fixed list of HTTP/HTTPS ports.
-- **For proxied A records**, `content` is still the **public IP** of the home connection (currently `REDACTED-HOME-IP` per the `vjaygent` record). Cloudflare hides it from outside DNS lookups.
+- **For proxied A records**, `content` is the **current public IP** of the home connection. NEVER hardcode it here — it rotates, and a committed home IP is a deanonymization leak. Fetch it at use time: `curl -s https://api.ipify.org`. Cloudflare hides it from outside DNS lookups while the record is proxied.
 - **Apex (`develle.fr` itself)** uses `name: "@"`. Do not write `develle.fr` as the name.
 
 ## Reminders
