@@ -39,7 +39,7 @@
 </head>
 <body>
 <h1>Upload to inbox</h1>
-<div class="sub">Files land on TinyButMighty. Pull on the laptop with <code>pull-uploads</code>.</div>
+<div class="sub">Files land on TinyButMighty. Pull on the laptop with <code>pull-uploads</code>. Resumable &amp; chunked — large files are fine.</div>
 
 <label class="drop" id="drop">
   <input type="file" id="files" multiple accept="*/*">
@@ -50,9 +50,15 @@
 <progress id="prog" hidden></progress>
 <div class="log" id="log"></div>
 
+<!-- tus resumable-upload client, vendored locally (no external CDN dependency) -->
+<script src="/tus.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const drop = $("drop"), input = $("files"), go = $("go"), prog = $("prog"), log = $("log"), dropmsg = $("dropmsg");
+
+// Each PATCH chunk stays under Cloudflare's 100MB proxy cap, so any file size works
+// through the tunnel. Resumable: an interrupted upload continues instead of restarting.
+const CHUNK = 48 * 1024 * 1024;
 
 function append(msg, cls = "info") {
   const d = document.createElement("div");
@@ -68,7 +74,6 @@ async function copyText(text) {
       return true;
     }
   } catch (e) { /* fall through */ }
-  // Fallback for older browsers / non-HTTPS.
   const ta = document.createElement("textarea");
   ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
   document.body.appendChild(ta); ta.select();
@@ -79,9 +84,6 @@ async function copyText(text) {
 }
 
 function appendPath(filename) {
-  // Copy a usable Claude Code prompt, not just the path. "pull uploads"
-  // triggers the pull-uploads skill so Claude rsyncs the file off the Pi
-  // before doing anything with it.
   const prompt = `pull uploads then read "~/Inbox/${filename}"`;
   const d = document.createElement("div");
   d.className = "path";
@@ -114,19 +116,23 @@ input.addEventListener("input", updateMsg);
 }));
 drop.addEventListener("drop", ev => { input.files = ev.dataTransfer.files; updateMsg(); });
 
-function putFile(file, onSent) {
+function uploadFile(file) {
   return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.upload.onprogress = e => {
-      if (e.lengthComputable) { prog.max = e.total; prog.value = e.loaded; }
-    };
-    // Fires when all bytes have left the client; we're now waiting on the
-    // server to ack. Useful signal so the UI can switch to "still working".
-    xhr.upload.onload = () => { if (onSent) onSent(); };
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`HTTP ${xhr.status}`));
-    xhr.onerror = () => reject(new Error("network error"));
-    xhr.open("PUT", `/inbox/${encodeURIComponent(file.name)}`);
-    xhr.send(file);
+    const upload = new tus.Upload(file, {
+      endpoint: "/files/",
+      chunkSize: CHUNK,
+      retryDelays: [0, 1000, 3000, 5000, 10000],
+      removeFingerprintOnSuccess: true,
+      metadata: { filename: file.name, filetype: file.type || "application/octet-stream" },
+      onProgress: (sent, total) => { prog.max = total; prog.value = sent; },
+      onSuccess: () => { append(`ok  ${file.name}`, "ok"); appendPath(file.name); resolve(); },
+      onError: err => { append(`err ${file.name}: ${err}`, "err"); reject(err); },
+    });
+    // Resume if this exact file was interrupted before; otherwise start fresh.
+    upload.findPreviousUploads().then(prev => {
+      if (prev.length) upload.resumeFromPreviousUpload(prev[0]);
+      upload.start();
+    });
   });
 }
 
@@ -136,19 +142,18 @@ go.addEventListener("click", async () => {
     append("no files selected — tap the box above to pick some first", "err");
     return;
   }
+  if (typeof tus === "undefined") {
+    append("upload library failed to load — reload the page", "err");
+    return;
+  }
   go.disabled = true; prog.hidden = false;
   for (const file of files) {
     append(`uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)…`, "info");
+    prog.value = 0;
     try {
-      prog.value = 0;
-      await putFile(file, () => {
-        prog.removeAttribute("value");
-        append(`bytes sent — waiting on server for ${file.name}…`, "info");
-      });
-      append(`ok  ${file.name}`, "ok");
-      appendPath(file.name);
+      await uploadFile(file);
     } catch (e) {
-      append(`err ${file.name}: ${e.message}`, "err");
+      /* onError already logged */
     }
   }
   prog.hidden = true;

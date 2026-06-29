@@ -18,6 +18,21 @@ Local machine: pull-uploads
    └─ ssh cleanup of empty subdirs
 ```
 
+## Resumable / chunked uploads (tus)
+
+The browser UI at `/` uploads via the **tus** resumable protocol (tusd on
+`127.0.0.1:1080`, proxied by Caddy at `/files/*`), in ~48 MB chunks. This is
+what lets `upload.develle.fr` sit behind a Cloudflare Tunnel: each chunk stays
+under Cloudflare's 100 MB proxied-request cap, so any file size works and the
+home IP is never exposed. A `tusd` post-finish hook (`/etc/tusd/hooks/post-finish`)
+moves the completed file into `/srv/upload/inbox/` under its real name, so
+`pull-uploads` is unchanged. tus is also resumable — an interrupted upload
+continues instead of restarting.
+
+The WebDAV `PUT /inbox/*` path still exists for native clients (iOS Files), but
+behind the tunnel it is capped at 100 MB (it can't chunk) — use the browser UI
+for large files.
+
 ## Daily use
 
 - **Phone**: open Files (iOS) or any WebDAV-capable file manager (Android:
